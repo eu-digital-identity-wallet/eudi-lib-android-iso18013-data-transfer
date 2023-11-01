@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- Ignore everything in the test source set -->
+    <issue id="all">
+        <ignore path="\*/test/\*" />
+    </issue>
+
+    <!-- TODO investigate and fix this so that this rule will be removed -->
+    <issue id="TrustAllX509TrustManager" severity="ignore" />
+
+    <issue id="UnusedAttribute" severity="ignore" />
+
+    <issue id="UnusedResources">
+        <ignore path="res/xml/nfc_engagement_apdu_service.xml" />
+        <ignore path="res/values/strings.xml" />
+    </issue>
+
+    <!-- Change the severity of hardcoded strings to "error" -->
+    <issue id="HardcodedText" severity="error" />
+</lint>
