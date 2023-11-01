@@ -1,0 +1,11 @@
+//[transfer-manager](../../../index.md)/[eu.europa.ec.eudi.iso18013.transfer](../index.md)/[RetrievalMethod](index.md)
+
+# RetrievalMethod
+
+interface [RetrievalMethod](index.md)
+
+#### Inheritors
+
+| |
+|---|
+| [DeviceRetrievalMethod](../-device-retrieval-method/index.md) |
