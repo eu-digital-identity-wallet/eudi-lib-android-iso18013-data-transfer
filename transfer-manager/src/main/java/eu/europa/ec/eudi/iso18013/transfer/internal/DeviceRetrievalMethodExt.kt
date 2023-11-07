@@ -27,12 +27,14 @@ internal val DeviceRetrievalMethod.connectionMethod: List<ConnectionMethod>
         is BleRetrievalMethod -> {
             mutableListOf<ConnectionMethod>().apply {
                 val randomUUID = UUID.randomUUID()
-                if (peripheralServerMode) {
-                    add(ConnectionMethodBle(true, false, randomUUID, null))
-                }
-                if (centralClientMode) {
-                    add(ConnectionMethodBle(false, true, null, randomUUID))
-                }
+                add(
+                    ConnectionMethodBle(
+                        peripheralServerMode,
+                        centralClientMode,
+                        if (peripheralServerMode) randomUUID else null,
+                        if (centralClientMode) randomUUID else null
+                    )
+                )
             }
         }
 
