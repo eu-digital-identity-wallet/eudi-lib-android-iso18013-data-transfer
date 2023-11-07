@@ -25,16 +25,19 @@ import java.util.UUID
 internal val DeviceRetrievalMethod.connectionMethod: List<ConnectionMethod>
     get() = when (this) {
         is BleRetrievalMethod -> {
-            mutableListOf<ConnectionMethod>().apply {
-                val randomUUID = UUID.randomUUID()
-                add(
-                    ConnectionMethodBle(
-                        peripheralServerMode,
-                        centralClientMode,
-                        if (peripheralServerMode) randomUUID else null,
-                        if (centralClientMode) randomUUID else null
+            if (!peripheralServerMode && !centralClientMode) emptyList()
+            else {
+                mutableListOf<ConnectionMethod>().apply {
+                    val randomUUID = UUID.randomUUID()
+                    add(
+                        ConnectionMethodBle(
+                            peripheralServerMode,
+                            centralClientMode,
+                            if (peripheralServerMode) randomUUID else null,
+                            if (centralClientMode) randomUUID else null
+                        )
                     )
-                )
+                }
             }
         }
 
