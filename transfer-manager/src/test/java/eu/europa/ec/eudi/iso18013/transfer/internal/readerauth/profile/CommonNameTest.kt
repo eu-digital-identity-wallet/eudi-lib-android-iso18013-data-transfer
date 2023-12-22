@@ -16,9 +16,11 @@
 package eu.europa.ec.eudi.iso18013.transfer.internal.readerauth.profile
 
 import android.util.Log
+import eu.europa.ec.eudi.iso18013.transfer.mockAndroidLog
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadCert
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadInvalidCert
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadTrustCert
+import org.bouncycastle.asn1.x509.Extension
 import org.junit.After
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -30,6 +32,7 @@ import org.mockito.MockedStatic
 import org.mockito.Mockito
 import org.mockito.kotlin.any
 import java.security.cert.X509Certificate
+import javax.security.auth.x500.X500Principal
 
 @RunWith(JUnit4::class)
 class CommonNameTest {
@@ -47,9 +50,7 @@ class CommonNameTest {
         trustCA = loadTrustCert()
         validation = CommonName()
 
-        mockLog = Mockito.mockStatic(Log::class.java).apply {
-            Mockito.`when`(Log.d(Mockito.anyString(), Mockito.anyString(), any())).thenAnswer { 1 }
-        }
+        mockLog = mockAndroidLog()
     }
 
     @Test
@@ -63,10 +64,14 @@ class CommonNameTest {
 
     @Test
     fun testVerify_Invalid() {
-        val invalidCert = loadInvalidCert()
+        val mockCert = Mockito.mock(X509Certificate::class.java)
+        val principal = Mockito.mock(X500Principal::class.java).apply {
+            Mockito.`when`(name).thenReturn("")
+        }
+        Mockito.`when`(mockCert.subjectX500Principal).thenReturn(principal)
 
         // Call the method under test
-        val result = validation.validate(invalidCert, trustCA)
+        val result = validation.validate(mockCert, trustCA)
 
         // Assert the result
         assertFalse(result)

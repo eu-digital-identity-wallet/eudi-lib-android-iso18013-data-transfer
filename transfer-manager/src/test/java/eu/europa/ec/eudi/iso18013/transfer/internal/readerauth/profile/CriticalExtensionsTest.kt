@@ -16,6 +16,7 @@
 package eu.europa.ec.eudi.iso18013.transfer.internal.readerauth.profile
 
 import android.util.Log
+import eu.europa.ec.eudi.iso18013.transfer.mockAndroidLog
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadCert
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadTrustCert
 import org.bouncycastle.asn1.x509.Extension.policyMappings
@@ -49,9 +50,7 @@ class CriticalExtensionsTest {
         trustCA = loadTrustCert()
         validation = CriticalExtensions()
 
-        mockLog = Mockito.mockStatic(Log::class.java).apply {
-            `when`(Log.d(Mockito.anyString(), Mockito.anyString(), any())).thenAnswer { 1 }
-        }
+        mockLog = mockAndroidLog()
     }
 
     @Test

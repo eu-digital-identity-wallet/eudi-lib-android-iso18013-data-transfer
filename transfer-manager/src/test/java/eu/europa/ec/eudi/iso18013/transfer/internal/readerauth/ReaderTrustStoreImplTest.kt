@@ -18,6 +18,7 @@ package eu.europa.ec.eudi.iso18013.transfer.internal.readerauth
 import android.util.Log
 import eu.europa.ec.eudi.iso18013.transfer.internal.readerauth.crl.CertificateCRLValidation
 import eu.europa.ec.eudi.iso18013.transfer.internal.readerauth.profile.ProfileValidation
+import eu.europa.ec.eudi.iso18013.transfer.mockAndroidLog
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadCert
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadInvalidCert
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadTrustCert
@@ -48,9 +49,7 @@ class ReaderTrustStoreImplTest {
         trustedCertificates = listOf(loadTrustCert())
         readerTrustStore = ReaderTrustStoreImpl(trustedCertificates, ProfileValidation.DEFAULT)
 
-        mockLog = mockStatic(Log::class.java).apply {
-            `when`(Log.d(anyString(), anyString(), any())).thenAnswer { 1 }
-        }
+        mockLog = mockAndroidLog()
     }
 
     @Test

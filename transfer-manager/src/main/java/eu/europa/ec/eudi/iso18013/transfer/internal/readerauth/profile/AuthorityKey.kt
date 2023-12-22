@@ -30,26 +30,31 @@ internal class AuthorityKey : ProfileValidation {
         readerAuthCertificate: X509Certificate,
         trustCA: X509Certificate,
     ): Boolean {
-        val authorityKeyIdentifier: AuthorityKeyIdentifier =
-            AuthorityKeyIdentifier.getInstance(
-                DEROctetString.getInstance(
-                    readerAuthCertificate.getExtensionValue(Extension.authorityKeyIdentifier.id),
-                ).octets,
-            )
+        try {
+            val authorityKeyIdentifier: AuthorityKeyIdentifier =
+                AuthorityKeyIdentifier.getInstance(
+                    DEROctetString.getInstance(
+                        readerAuthCertificate.getExtensionValue(Extension.authorityKeyIdentifier.id),
+                    ).octets,
+                )
 
-        val subjectKeyIdentifier: SubjectKeyIdentifier =
-            SubjectKeyIdentifier.getInstance(
-                DEROctetString.getInstance(
-                    trustCA.getExtensionValue(Extension.subjectKeyIdentifier.id),
-                ).octets,
-            )
+            val subjectKeyIdentifier: SubjectKeyIdentifier =
+                SubjectKeyIdentifier.getInstance(
+                    DEROctetString.getInstance(
+                        trustCA.getExtensionValue(Extension.subjectKeyIdentifier.id),
+                    ).octets,
+                )
 
-        return Arrays.equals(
-            authorityKeyIdentifier.keyIdentifier,
-            subjectKeyIdentifier.keyIdentifier,
-        )
-            .also {
-                Log.d(this.TAG, "AuthorityKeyIdentifier: $it")
-            }
+            return Arrays.equals(
+                authorityKeyIdentifier.keyIdentifier,
+                subjectKeyIdentifier.keyIdentifier,
+            )
+                .also {
+                    Log.d(this.TAG, "AuthorityKeyIdentifier: $it")
+                }
+        } catch (e: Throwable) {
+            Log.e(this.TAG, "Error", e)
+            return false
+        }
     }
 }

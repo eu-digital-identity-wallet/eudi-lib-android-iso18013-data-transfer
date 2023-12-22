@@ -15,83 +15,167 @@
  */
 package eu.europa.ec.eudi.iso18013.transfer.readerauth
 
-import java.io.ByteArrayInputStream
-import java.security.cert.CertificateFactory
+import org.bouncycastle.asn1.ASN1EncodableVector
+import org.bouncycastle.asn1.ASN1Object
+import org.bouncycastle.asn1.ASN1ObjectIdentifier
+import org.bouncycastle.asn1.DERSequence
+import org.bouncycastle.asn1.x500.X500Name
+import org.bouncycastle.asn1.x509.CRLDistPoint
+import org.bouncycastle.asn1.x509.DistributionPoint
+import org.bouncycastle.asn1.x509.DistributionPointName
+import org.bouncycastle.asn1.x509.ExtendedKeyUsage
+import org.bouncycastle.asn1.x509.Extension
+import org.bouncycastle.asn1.x509.GeneralName
+import org.bouncycastle.asn1.x509.GeneralNames
+import org.bouncycastle.asn1.x509.KeyPurposeId
+import org.bouncycastle.asn1.x509.KeyUsage
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter
+import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils
+import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder
+import java.math.BigInteger
+import java.security.KeyPair
+import java.security.KeyPairGenerator
+import java.security.SecureRandom
 import java.security.cert.X509Certificate
+import java.security.spec.ECGenParameterSpec
+import java.time.Instant
+import java.util.Date
 
-fun loadCert(): X509Certificate {
-    return loadCertificate(cert)
+private const val signatureAlgorithm: String = "SHA256withECDSA"
+private val extUtils = JcaX509ExtensionUtils()
+private val trustedKeyPair: KeyPair by lazy {
+    KeyPairGenerator.getInstance("EC").apply {
+        initialize(ECGenParameterSpec("secp256r1"))
+    }.generateKeyPair()
 }
 
-fun loadInvalidCert(): X509Certificate {
-    return loadCertificate(invalidCert)
+val trustedCertificate: X509Certificate by lazy {
+    val serialNumber = BigInteger(64, SecureRandom())
+    val issuer = X500Name("CN=Root CA")
+    val subject = X500Name("CN=Root CA")
+    val notBefore = Date.from(Instant.now().minusSeconds(86400))
+    val notAfter = Date(notBefore.time + 30 * 86400000L)
+    val builder = JcaX509v3CertificateBuilder(
+        issuer,
+        serialNumber,
+        notBefore,
+        notAfter,
+        subject,
+        trustedKeyPair.public
+    ).apply {
+        addExtension(
+            Extension.subjectKeyIdentifier,
+            false,
+            extUtils.createSubjectKeyIdentifier(trustedKeyPair.public)
+        )
+    }
+    val signer = JcaContentSignerBuilder(signatureAlgorithm).build(trustedKeyPair.private)
+    JcaX509CertificateConverter().getCertificate(builder.build(signer))
 }
 
-fun loadTrustCert(): X509Certificate {
-    return loadCertificate(trustCert)
+val validCertificate: X509Certificate by lazy {
+    val keyPair = KeyPairGenerator.getInstance("EC").apply {
+        initialize(ECGenParameterSpec("secp256r1"))
+    }.generateKeyPair()
+    val serialNumber = BigInteger(64, SecureRandom())
+    val issuer = X500Name(trustedCertificate.issuerX500Principal.name)
+    val subject = X500Name("CN=ValidCertificate")
+    val notBefore = Date()
+    val notAfter = Date(notBefore.time + 30 * 86400000L)
+    val builder = JcaX509v3CertificateBuilder(
+        issuer,
+        serialNumber,
+        notBefore,
+        notAfter,
+        subject,
+        keyPair.public
+    ).apply {
+        addExtension(
+            Extension.subjectKeyIdentifier,
+            false,
+            extUtils.createSubjectKeyIdentifier(keyPair.public)
+        )
+        addExtension(
+            Extension.authorityKeyIdentifier,
+            false,
+            extUtils.createAuthorityKeyIdentifier(trustedCertificate)
+        )
+        addExtension(Extension.keyUsage, false, KeyUsage(KeyUsage.digitalSignature))
+        addExtension(Extension.extendedKeyUsage, false, ExtendedKeyUsage.getInstance(
+            ASN1EncodableVector().apply {
+                add(ASN1ObjectIdentifier("1.0.18013.5.1.6"))
+            }.let { DERSequence(it) }
+        ))
+        addExtension(Extension.cRLDistributionPoints,
+            false,
+            GeneralNames(GeneralName(GeneralName.uniformResourceIdentifier, "https://example.com"))
+                .let {
+                    DistributionPoint(DistributionPointName(it), null, null)
+                }.let {
+                    CRLDistPoint(arrayOf(it))
+                })
+    }
+    val signer = JcaContentSignerBuilder(signatureAlgorithm).build(trustedKeyPair.private)
+    JcaX509CertificateConverter().getCertificate(builder.build(signer))
 }
 
-private fun loadCertificate(cert: String): X509Certificate {
-    val certificateFactory = CertificateFactory.getInstance("X.509")
-    val certificateBytes = cert.toByteArray()
-    val bais = ByteArrayInputStream(certificateBytes)
-    val certificate = certificateFactory.generateCertificate(bais) as X509Certificate
-    bais.close()
+private val untrustedKeyPair = KeyPairGenerator.getInstance("RSA").apply {
+    initialize(2048)
+}.generateKeyPair()
 
-    return certificate
+private val untrustedRoot: X509Certificate
+    get() {
+        val serialNumber = BigInteger(64, SecureRandom())
+        val issuer = X500Name("CN=Untrusted Root CA")
+        val subject = X500Name("CN=Untrusted Root CA")
+        val notBefore = Date.from(Instant.now().minusSeconds(86400))
+        val notAfter = Date(notBefore.time + 30 * 86400000L)
+        val builder = JcaX509v3CertificateBuilder(
+            issuer,
+            serialNumber,
+            notBefore,
+            notAfter,
+            subject,
+            untrustedKeyPair.public
+        ).apply {
+            addExtension(
+                Extension.subjectKeyIdentifier,
+                false,
+                extUtils.createSubjectKeyIdentifier(untrustedKeyPair.public)
+            )
+        }
+        val signer = JcaContentSignerBuilder("SHA256WithRSAEncryption").build(untrustedKeyPair.private)
+        return JcaX509CertificateConverter().getCertificate(builder.build(signer))
+    }
+
+val invalidCertificate: X509Certificate by lazy {
+    val keyPair = KeyPairGenerator.getInstance("RSA").apply {
+        initialize(2048)
+    }.generateKeyPair()
+    val serialNumber = BigInteger(64, SecureRandom())
+    val issuer = X500Name(untrustedRoot.issuerX500Principal.name)
+    val subject = X500Name("CN=ValidCertificate")
+    val notBefore = Date.from(Instant.now().minusSeconds(10))
+    // add 10 years to notBefore
+    val notAfter = Date.from(notBefore.toInstant().plusSeconds(10 * 365 * 86400L))
+    val builder = JcaX509v3CertificateBuilder(
+        issuer,
+        serialNumber,
+        notBefore,
+        notAfter,
+        subject,
+        keyPair.public
+    )
+    val signer = JcaContentSignerBuilder("SHA256WithRSAEncryption").build(untrustedKeyPair.private)
+    JcaX509CertificateConverter().getCertificate(builder.build(signer))
+
+
 }
 
-private val cert = """-----BEGIN CERTIFICATE-----
-MIICNzCCAd2gAwIBAgIII545Wo0NixkwCgYIKoZIzj0EAwIwOzELMAkGA1UEBhMC
-U0UxETAPBgNVBAoTCFNjeXRhbGVzMRkwFwYDVQQDExBTY3l0YWxlcyBSb290IENB
-MB4XDTIyMDUxNjA4MzQwMFoXDTIzMTIxMTA4MzQwMFowMjEwMC4GA1UEAxMnc2N5
-dGFsZXMgbWRvYyByZWFkZXIgYXV0aGVudGljYXRpb24gMDAxMFkwEwYHKoZIzj0C
-AQYIKoZIzj0DAQcDQgAEJmM5OLeg4V2frBce5J1yTFbQJ0rOCM6zsKeiNz736k8/
-5osL3wphIHFeMJL8E1zKObhKPTMidBXJ68IHMFEwkqOB0zCB0DAMBgNVHRMBAf8E
-AjAAMB0GA1UdDgQWBBTg7CkvZqbdFfEv+6IPh/nLWvZkrTAfBgNVHSMEGDAWgBRK
-b7Q/bk68GFXJwg9Vk1mHfBU1NDAOBgNVHQ8BAf8EBAMCB4AwEgYDVR0lBAswCQYH
-KIGMXQUBBjAiBgNVHRIEGzAZhhdodHRwOi8vd3d3LnNjeXRhbGVzLmNvbTA4BgNV
-HR8EMTAvMC2gK6AphidodHRwczovL3N0YXRpYy5tZG9jLmlkL2NybC9zY3l0YWxl
-cy5jcmwwCgYIKoZIzj0EAwIDSAAwRQIgLCdgkKOjv8qad6V0UHPiLcmMp0DXWMrP
-B2lpHr9KsAwCIQDEjAcdYiidxtf2pZUCwdt6utVUU10EgcQVObSu1Q5img==
------END CERTIFICATE-----
-""".trimIndent()
 
-private val invalidCert = """-----BEGIN CERTIFICATE-----   
-MIIDazCCAlOgAwIBAgIUDd7Mm6qLoItjEhp+EpN7lTAmK1AwDQYJKoZIhvcNAQEL
-BQAwRTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUxITAfBgNVBAoM
-GEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDAeFw0yMzA3MjQxMDE0NTJaFw0zMzA3
-MjExMDE0NTJaMEUxCzAJBgNVBAYTAkFVMRMwEQYDVQQIDApTb21lLVN0YXRlMSEw
-HwYDVQQKDBhJbnRlcm5ldCBXaWRnaXRzIFB0eSBMdGQwggEiMA0GCSqGSIb3DQEB
-AQUAA4IBDwAwggEKAoIBAQDEdo2/C6xzYSS6Nh/yDJo6IdznZi4OHQoZZd4MSvEF
-WaYfuWWglywBMwKbI9u16abilsyn1YA+UxU/Egb2SZd565hz0FkZMCuVcRfva7lI
-V1J5eAeNmtceu4MQRkXxBeI0cDYtS33GUD3X29DvWsVXBg9k0qiajXP0kokqzJCm
-zGyzs8T4/LyduV9Bvk3sj6COwWPgbnemTXd/MO16AMly/3lt2PQO74wgX+rNtE0R
-Y+WcuNo+U9wn75c0LKUJ5aQhSp183yqw6OESX3bujFNg0Txyd5toauW509VZOjJL
-arw560uGPFvEBVYfxGm+sn+znjJ7ctFntH+fIAdY7JBHAgMBAAGjUzBRMB0GA1Ud
-DgQWBBS65jlNMl1hz0dA0WAn7Q+qNPO7kzAfBgNVHSMEGDAWgBS65jlNMl1hz0dA
-0WAn7Q+qNPO7kzAPBgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBCwUAA4IBAQAy
-zP7WmGdE72dNuM4JL8WhMFhtDnO2FeYAfSQtnlZ+2ALT7nKXuHKZSGzFTUTZ56DM
-FYtv32yon1QhcQmbtn6NmZXOHGBT7BEc7a9KE8D6gubVAhth8LYb5EMXPq2POeZq
-EKNW8MtixcEtsa06sAkvUIkq3Q2ZJHjZ0em1Z9A7dAE1lO8TTtKrXQC3clVH4KiF
-w4wJUsEVYKqcBQwQXiCeehcTD+YZLwN1pRzOLv9WMgr9jAt0zp8zHLbUepAu5ZcQ
-1qMpVebrWdNwcOF7nOSKEkh54KzOJgAPlX6JV4bRAVziUYVxtLekc/iuJxUy63Ro
-ZCn4vkqI1/UU8PKEXcsZ
------END CERTIFICATE-----
-""".trimIndent()
+fun loadCert(): X509Certificate = validCertificate
 
-private val trustCert = """-----BEGIN CERTIFICATE-----
-MIICDzCCAbWgAwIBAgIJfXsIRsWZBcBTMAoGCCqGSM49BAMCMDsxCzAJBgNVBAYT
-AlNFMREwDwYDVQQKEwhTY3l0YWxlczEZMBcGA1UEAxMQU2N5dGFsZXMgUm9vdCBD
-QTAeFw0yMjAxMDExMjAwMDBaFw0zMjAxMDExMjAwMDBaMDsxCzAJBgNVBAYTAlNF
-MREwDwYDVQQKEwhTY3l0YWxlczEZMBcGA1UEAxMQU2N5dGFsZXMgUm9vdCBDQTBZ
-MBMGByqGSM49AgEGCCqGSM49AwEHA0IABIzq9cNAf2RdNgiBUIs81s1OjR5BQfey
-2SqeUrilq8OF4+43EWE4xj7FpvME2fIU9xDj33qMDeDaEvXJXGr7iJ6jgaEwgZ4w
-EgYDVR0TAQH/BAgwBgEB/wIBADAdBgNVHQ4EFgQUSm+0P25OvBhVycIPVZNZh3wV
-NTQwCwYDVR0PBAQDAgEGMCIGA1UdEgQbMBmGF2h0dHA6Ly93d3cuc2N5dGFsZXMu
-Y29tMDgGA1UdHwQxMC8wLaAroCmGJ2h0dHBzOi8vc3RhdGljLm1kb2MuaWQvY3Js
-L3NjeXRhbGVzLmNybDAKBggqhkjOPQQDAgNIADBFAiA34hF87sx96Z38W48kR88q
-gEoCIgOYjCLLP8iUuardIAIhAK0Z63sJ2cISZJsAf0fznPL83+/xMhoOtMmlmBr2
-BiWO
------END CERTIFICATE-----
-""".trimIndent()
+fun loadInvalidCert(): X509Certificate = invalidCertificate
+
+fun loadTrustCert(): X509Certificate = trustedCertificate
