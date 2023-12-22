@@ -16,6 +16,7 @@
 package eu.europa.ec.eudi.iso18013.transfer.internal.readerauth.profile
 
 import android.util.Log
+import eu.europa.ec.eudi.iso18013.transfer.mockAndroidLog
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadCert
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadInvalidCert
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadTrustCert
@@ -48,9 +49,7 @@ class ProfileValidationImplTest {
         trustCA = loadTrustCert()
         validation = ProfileValidation.DEFAULT
 
-        mockLog = mockStatic(Log::class.java).apply {
-            Mockito.`when`(Log.d(Mockito.anyString(), Mockito.anyString(), any())).thenAnswer { 1 }
-        }
+        mockLog = mockAndroidLog()
     }
 
     @Test

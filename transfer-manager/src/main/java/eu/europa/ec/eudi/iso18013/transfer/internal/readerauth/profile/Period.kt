@@ -20,9 +20,11 @@ import eu.europa.ec.eudi.iso18013.transfer.internal.TAG
 import java.security.cert.X509Certificate
 import java.util.concurrent.TimeUnit
 
-private const val MAX_VALIDITY_PERIOD_DAYS = 1187
-
 internal class Period : ProfileValidation {
+
+    companion object {
+        internal const val MAX_VALIDITY_PERIOD_DAYS = 1187
+    }
 
     override fun validate(
         readerAuthCertificate: X509Certificate,
@@ -33,12 +35,12 @@ internal class Period : ProfileValidation {
         val diff = expireDate.time - fromDate.time
 
         return (
-            TimeUnit.DAYS.convert(
-                diff,
-                TimeUnit.MILLISECONDS,
-            ) <= MAX_VALIDITY_PERIOD_DAYS
-            ).also {
-            Log.d(this.TAG, "ValidityPeriod: $it")
-        }
+                TimeUnit.DAYS.convert(
+                    diff,
+                    TimeUnit.MILLISECONDS,
+                ) <= MAX_VALIDITY_PERIOD_DAYS
+                ).also {
+                Log.d(this.TAG, "ValidityPeriod: $it")
+            }
     }
 }
