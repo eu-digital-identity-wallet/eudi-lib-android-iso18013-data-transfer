@@ -64,8 +64,12 @@ android {
 dependencies {
 
     // Google library
-    implementation libs.identity.credential
-    implementation libs.android.identity.credential
+    implementation (libs.identity.credential) {
+        exclude group: "org.bouncycastle"
+    }
+    implementation (libs.android.identity.credential) {
+        exclude group: "org.bouncycastle"
+    }
 
     implementation libs.biometric.ktx
 
