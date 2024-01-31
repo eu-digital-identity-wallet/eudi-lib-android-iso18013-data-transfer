@@ -124,7 +124,7 @@ The available events are:
 3. `TransferEvent.Connected`: The devices are connected.
 4. `TransferEvent.RequestReceived`: A request is received. Get the request from `event.request`.
 5. `TransferEvent.ResponseSent`: A response is sent.
-6. `TransferEvent.Redirect`: This event prompts to redirect the user to the given the Redirect URI. Get the Redirect URI from `event.redirectUri`.
+6. `TransferEvent.Redirect`: This event prompts to redirect the user to the given Redirect URI. Get the Redirect URI from `event.redirectUri`.
 7. `TransferEvent.Disconnected`: The devices are disconnected.
 8. `TransferEvent.Error`: An error occurred. Get the `Throwable` error from `event.error`.
 
