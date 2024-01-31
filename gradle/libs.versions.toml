@@ -7,7 +7,7 @@ gradle-plugin = "7.4.0"
 dependency-license-report = "2.4"
 identity-credential = "20231002"
 identity-credential-android = "20231002"
-bouncy-castle = "1.67"
+bouncy-castle = "1.77"
 junit = "4.13.2"
 junit-android = "1.1.5"
 mockito-inline = "4.0.0"
@@ -23,8 +23,8 @@ biometric-ktx = { module = "androidx.biometric:biometric-ktx", version.ref = "bi
 zxing-core = { module = "com.google.zxing:core", version.ref = "zxing-core" }
 identity-credential = { module = "com.android.identity:identity-credential", version.ref = "identity-credential" }
 android-identity-credential = { module = "com.android.identity:identity-credential-android", version.ref = "identity-credential-android" }
-bouncy-castle-prov = { module = "org.bouncycastle:bcprov-jdk15on", version.ref = "bouncy-castle" }
-bouncy-castle-pkix = { module = "org.bouncycastle:bcpkix-jdk15on", version.ref = "bouncy-castle" }
+bouncy-castle-prov = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncy-castle" }
+bouncy-castle-pkix = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncy-castle" }
 junit = { module = "junit:junit", version.ref = "junit" }
 mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockito-inline" }
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito-inline" }
