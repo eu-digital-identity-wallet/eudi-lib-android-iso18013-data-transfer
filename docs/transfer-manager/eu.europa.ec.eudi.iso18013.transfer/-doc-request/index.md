@@ -3,7 +3,7 @@
 # DocRequest
 
 [androidJvm]\
-class [DocRequest](index.md)(val docType: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html), val requestItems: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)&lt;[DocItem](../-doc-item/index.md)&gt;, val encodedRequestItems: [ByteArray](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html), val readerAuth: [ReaderAuth](../-reader-auth/index.md)?) : [Parcelable](https://developer.android.com/reference/kotlin/android/os/Parcelable.html)
+class [DocRequest](index.md)(val docType: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html), val requestItems: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)&lt;[DocItem](../-doc-item/index.md)&gt;, val readerAuth: [ReaderAuth](../-reader-auth/index.md)?) : [Parcelable](https://developer.android.com/reference/kotlin/android/os/Parcelable.html)
 
 Represents a Device Request
 
@@ -11,7 +11,7 @@ Represents a Device Request
 
 | | |
 |---|---|
-| [DocRequest](-doc-request.md) | [androidJvm]<br>constructor(docType: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html), requestItems: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)&lt;[DocItem](../-doc-item/index.md)&gt;, encodedRequestItems: [ByteArray](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html), readerAuth: [ReaderAuth](../-reader-auth/index.md)?)<br>Create empty Doc request |
+| [DocRequest](-doc-request.md) | [androidJvm]<br>constructor(docType: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html), requestItems: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)&lt;[DocItem](../-doc-item/index.md)&gt;, readerAuth: [ReaderAuth](../-reader-auth/index.md)?)<br>Create empty Doc request |
 
 ## Functions
 
@@ -25,6 +25,5 @@ Represents a Device Request
 | Name | Summary |
 |---|---|
 | [docType](doc-type.md) | [androidJvm]<br>val [docType](doc-type.md): [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)<br>the document type e.g. eu.europa.ec.eudiw.pid.1 |
-| [encodedRequestItems](encoded-request-items.md) | [androidJvm]<br>val [encodedRequestItems](encoded-request-items.md): [ByteArray](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html)<br>a [ByteArray](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html) representing the ItemsRequestBytes from DeviceRequest structure |
 | [readerAuth](reader-auth.md) | [androidJvm]<br>val [readerAuth](reader-auth.md): [ReaderAuth](../-reader-auth/index.md)?<br>reader authentication [ReaderAuth](../-reader-auth/index.md) object if exist |
 | [requestItems](request-items.md) | [androidJvm]<br>val [requestItems](request-items.md): [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)&lt;[DocItem](../-doc-item/index.md)&gt;<br>a [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html) of the requested document elements [DocItem](../-doc-item/index.md) (namespace and element identifier) |

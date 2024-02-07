@@ -1,4 +1,4 @@
-//[transfer-manager](../../../index.md)/[eu.europa.ec.eudi.iso18013.transfer](../index.md)/[Request](index.md)/[documents](documents.md)
+//[transfer-manager](../../../index.md)/[eu.europa.ec.eudi.iso18013.transfer](../index.md)/[RequestedDocumentData](index.md)/[documents](documents.md)
 
 # documents
 

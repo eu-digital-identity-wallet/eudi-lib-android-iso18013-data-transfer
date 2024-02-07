@@ -17,12 +17,11 @@ package eu.europa.ec.eudi.iso18013.transfer
 
 import android.content.Context
 import android.content.Intent
-import com.android.identity.android.securearea.AndroidKeystoreSecureArea
-import com.android.identity.android.storage.AndroidStorageEngine
-import com.android.identity.storage.StorageEngine
 import eu.europa.ec.eudi.iso18013.transfer.engagement.NfcEngagementService
 import eu.europa.ec.eudi.iso18013.transfer.internal.TransferManagerImpl
-import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStore
+import eu.europa.ec.eudi.iso18013.transfer.response.DeviceRequest
+import eu.europa.ec.eudi.iso18013.transfer.response.DeviceResponseGeneratorImpl
+import eu.europa.ec.eudi.iso18013.transfer.response.ResponseGenerator
 
 /**
  * Transfer manager
@@ -31,6 +30,8 @@ import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStore
  */
 interface TransferManager : TransferEvent.Listenable {
 
+    val responseGenerator: ResponseGenerator<DeviceRequest>
+
     /**
      * Set retrieval methods
      *
@@ -38,14 +39,6 @@ interface TransferManager : TransferEvent.Listenable {
      * @return a [TransferManager]
      */
     fun setRetrievalMethods(retrievalMethods: List<DeviceRetrievalMethod>): TransferManager
-
-    /**
-     * Set reader trust store
-     *
-     * @param readerTrustStore
-     * @return a [TransferManager]
-     */
-    fun setReaderTrustStore(readerTrustStore: ReaderTrustStore): TransferManager
 
     /**
      * Setup the [NfcEngagementService]
@@ -67,15 +60,6 @@ interface TransferManager : TransferEvent.Listenable {
      * @param intent The intent being received
      */
     fun startEngagementToApp(intent: Intent)
-
-    /**
-     * Create response
-     *
-     * @param disclosedDocuments as list of [DisclosedDocument]
-     * @return a [ResponseResult]
-     */
-    @Throws(IllegalStateException::class)
-    fun createResponse(disclosedDocuments: DisclosedDocuments): ResponseResult
 
     /**
      * Send response
@@ -106,26 +90,16 @@ interface TransferManager : TransferEvent.Listenable {
      */
     class Builder(context: Context) {
         private val context = context.applicationContext
-        var documentsResolver: DocumentsResolver? = null
-        var readerTrustStore: ReaderTrustStore? = null
+        var responseGenerator: ResponseGenerator<DeviceRequest>? = null
         var retrievalMethods: List<DeviceRetrievalMethod>? = null
 
         /**
-         * Document resolver that will be used to resolve the documents for the selective disclosure
-         * when creating the response
+         * Response generator that will be parse the request and will create the response
          *
-         * @param documentsResolver
+         * @param responseGenerator
          */
-        fun documentResolver(documentsResolver: DocumentsResolver) =
-            apply { this.documentsResolver = documentsResolver }
-
-        /**
-         * Reader trust store that will be used to validate the certificate chain of the mdoc verifier
-         *
-         * @param readerTrustStore
-         */
-        fun readerTrustStore(readerTrustStore: ReaderTrustStore) =
-            apply { this.readerTrustStore = readerTrustStore }
+        fun responseGenerator(responseGenerator: DeviceResponseGeneratorImpl) =
+            apply { this.responseGenerator = responseGenerator }
 
         /**
          * Retrieval methods that will be used to retrieve the device request from the mdoc verifier
@@ -141,20 +115,11 @@ interface TransferManager : TransferEvent.Listenable {
          * @return [TransferManager]
          */
         fun build(): TransferManager {
-            return documentsResolver?.let { documentsResolver ->
-                TransferManagerImpl(context, documentsResolver, storageEngine, androidSecureArea).apply {
-                    readerTrustStore?.let { setReaderTrustStore(it) }
+            return responseGenerator?.let { responseGenerator ->
+                TransferManagerImpl(context, responseGenerator as DeviceResponseGeneratorImpl).apply {
                     retrievalMethods?.let { setRetrievalMethods(it) }
                 }
-            } ?: throw IllegalArgumentException("documentResolver not set")
+            } ?: throw IllegalArgumentException("responseGenerator not set")
         }
-
-        private val storageEngine: StorageEngine
-            get() = AndroidStorageEngine.Builder(context, context.noBackupFilesDir)
-                .setUseEncryption(true)
-                .build()
-
-        private val androidSecureArea: AndroidKeystoreSecureArea
-            get() = AndroidKeystoreSecureArea(context, storageEngine)
     }
 }

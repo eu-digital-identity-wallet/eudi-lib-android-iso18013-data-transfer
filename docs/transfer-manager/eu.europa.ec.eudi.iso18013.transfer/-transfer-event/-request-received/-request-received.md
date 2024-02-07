@@ -3,4 +3,4 @@
 # RequestReceived
 
 [androidJvm]\
-constructor(request: [Request](../../-request/index.md))
+constructor(requestedDocumentData: [RequestedDocumentData](../../-requested-document-data/index.md), request: [Request](../../../eu.europa.ec.eudi.iso18013.transfer.response/-request/index.md))

@@ -16,6 +16,7 @@
 package eu.europa.ec.eudi.iso18013.transfer
 
 import eu.europa.ec.eudi.iso18013.transfer.engagement.QrCode
+import eu.europa.ec.eudi.iso18013.transfer.response.Request
 import java.net.URI
 
 sealed interface TransferEvent {
@@ -29,7 +30,7 @@ sealed interface TransferEvent {
         override fun toString() = "Connected"
     }
 
-    data class RequestReceived(val request: Request) : TransferEvent
+    data class RequestReceived(val requestedDocumentData: RequestedDocumentData, val request: Request) : TransferEvent
 
     object ResponseSent : TransferEvent {
         override fun toString() = "ResponseSent"

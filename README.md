@@ -57,7 +57,7 @@ file.
 
 ```groovy
 dependencies {
-    implementation "eu.europa.ec.eudi:eudi-lib-android-iso18013-data-transfer:0.1.0-SNAPSHOT"
+    implementation "eu.europa.ec.eudi:eudi-lib-android-iso18013-data-transfer:0.1.1-SNAPSHOT"
     implementation "androidx.biometric:biometric-ktx:1.2.0-alpha05"
 }
 ```
@@ -80,6 +80,7 @@ the `TransferManager.Builder` class:
 import java.security.cert.X509Certificate
 import eu.europa.ec.eudi.iso18013.transfer.TransferManager
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStore
+import eu.europa.ec.eudi.iso18013.transfer.response.ResponseGenerator
 import eu.europa.ec.eudi.iso18013.transfer.retrieval.BleRetrievalMethod
 import eu.europa.ec.eudi.iso18013.transfer.retrieval.DocumentResolver
 import eu.europa.ec.eudi.iso18013.transfer.retrieval.DocRequest
@@ -91,7 +92,6 @@ val certificates = listOf<X509Certificate>(
 val readerTrustStore = ReaderTrustStore.getDefault(
     listOf(context.applicationContext.getCertificate(certificates))
 )
-val hardwareBacked = false // true if you want to use hardware backed keystore
 val retrievalMethods = listOf<RetrievalMethod>(
     BleRetrievalMethod(
         peripheralServerMode = true,
@@ -104,11 +104,16 @@ val documentedResolver = DocumentResolver { docRequest: DocRequest ->
     // usually document resolution is done based on `docRequest.docType`
 }
 
+// use the ResponseGenerator that parses the request and creates the response
+// set it to the Transfer Manager
+val deviceResponseGenerator = ResponseGenerator.Builder(context)
+    .readerTrustStore(readerTrustStore)
+    .documentsResolver(documentedResolver)
+    .build()
+
 val transferManager = TransferManager.Builder(context)
-    .setReaderTrustStore(readerTrustStore)
-    .hardwareBacked(hardwareBacked)
     .retrievalMethods(retrievalMethods)
-    .documentResolver(documentResolver)
+    .responseGenerator(deviceResponseGenerator)
     .build()
 ``` 
 
@@ -122,7 +127,8 @@ The available events are:
 2. `TransferEvent.Connecting`: The devices are connecting. Use this event to display a progress
    indicator.
 3. `TransferEvent.Connected`: The devices are connected.
-4. `TransferEvent.RequestReceived`: A request is received. Get the request from `event.request`.
+4. `TransferEvent.RequestReceived`: A request is received. Get the parsed request from `event.requestedDocumentData` 
+   and the initial request as received by the verifier from `event.request`.
 5. `TransferEvent.ResponseSent`: A response is sent.
 6. `TransferEvent.Redirect`: This event prompts to redirect the user to the given Redirect URI. Get the Redirect URI from `event.redirectUri`.
 7. `TransferEvent.Disconnected`: The devices are disconnected.
@@ -153,21 +159,23 @@ val transferEventListener = TransferEvent.Listener { event ->
         }
 
         is TransferEvent.RequestReceived -> {
-            // event when a request is received. Get the request from event.request
-            // use the received request to generate the appropriate response
+            // event when a request is received. 
+            // Get the parsed request from event.requestedDocumentData
 
             val disclosedDocuments = DisclosedDocuments(
                 listOf(
                     // add the disclosed documents here
                 )
             )
-            when (val responseResult = transferManager.createResponse(disclosedDocuments)) {
+            
+            // create the response providing the disclosed documents
+            when (val responseResult = responseGenerator.createResponse(disclosedDocuments)) {
                 is ResponseResult.Failure -> {
                     // handle the failure
                 }
-                is ResponseResult.Response -> {
-                    val responseBytes = responseResult.bytes
-                    transferManager.sendResponse(responseBytes)
+                is ResponseResult.Success -> {
+                    // send the response
+                    transferManager.sendResponse(responseResult.response)
                 }
                 is ResponseResult.UserAuthRequired -> {
                     // user authentication is required. Get the crypto object from responseResult.cryptoObject
@@ -351,30 +359,28 @@ This way, you can define the `NfcEngagementServiceImpl` service to be preferred 
 
 ### Receiving and sending response
 
-When a request is received, the `TransferEvent.RequestReceived` event is triggered. The request can
-be retrieved from `event.request`.
+When a request is received, the `TransferEvent.RequestReceived` event is triggered. The parsed request can
+be retrieved from `event.requestedDocumentData`, while the initial request, as received by the verifier,
+can be retrieved from `event.request`.
 
-The request contains a list of `RequestedDocument` objects, which can be used to show the user what
+The parsed request contains a list of `RequestedDocument` objects, which can be used to show the user what
 documents are requested. Also, a selectively disclosure option can be implemented using the
 requested documents, so user can choose which of the documents to share.
 
 Then, a `DisclosedDocuments` object must be created with the list of documents to be disclosed and
-hhe response can be created using the `TransferManager.createResponse(DisclosedDocuments)` method.
-
+the response can be created using the `createResponse(DisclosedDocuments)` of `ResponseGenerator`.
 The method returns a `ResponseResult` object, which can be one of the following:
 
 1. `ResponseResult.Failure`: The response creation failed. The error can be retrieved from
    `responseResult.error`.
-2. `ResponseResult.Response`: The response was created successfully. The response bytes can be
-   retrieved from `responseResult.bytes`.
+2. `ResponseResult.Success`: The response was created successfully. The response can be
+   retrieved from `responseResult.response`.
 3. `ResponseResult.UserAuthRequired`: The response creation requires user authentication. The
    `CryptoObject` can be retrieved from `responseResult.cryptoObject`. After success authentication
    the response can be created again, using the `TransferManager.createResponse(DisclosedDocuments)`
    method.
 
-Finally, when `createResponse(DisclosedDocuments)` returns a `ResponseResult.Response`, the response
-can be sent using the `TransferManager.sendResponse(ByteArray)` method, by getting the response
-bytes from `responseResult.bytes`.
+Then, the response can be send using the `TransferManager.sendResponse(response.deviceResponseBytes)`.
 
 The following example demonstrates the above steps:
 
@@ -397,8 +403,8 @@ val transferEventListener = TransferEvent.Listener { event ->
                     // handle the failure
                 }
                 is ResponseResult.Response -> {
-                    val responseBytes = responseResult.bytes
-                    transferManager.sendResponse(responseBytes)
+                    val response = responseResult.response
+                    transferManager.sendResponse(response.deviceResponseBytes)
                 }
                 is ResponseResult.UserAuthRequired -> {
                     // user authentication is required. Get the crypto object from responseResult.cryptoObject

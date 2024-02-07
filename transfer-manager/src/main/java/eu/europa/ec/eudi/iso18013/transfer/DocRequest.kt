@@ -26,7 +26,6 @@ import java.security.cert.X509Certificate
  *
  * @property docType the document type e.g. eu.europa.ec.eudiw.pid.1
  * @property requestItems a [List] of the requested document elements [DocItem] (namespace and element identifier)
- * @property encodedRequestItems a [ByteArray] representing the ItemsRequestBytes from DeviceRequest structure
  * @property readerAuth reader authentication [ReaderAuth] object if exist
  * @constructor Create empty Doc request
  */
@@ -34,8 +33,7 @@ import java.security.cert.X509Certificate
 class DocRequest(
     val docType: String,
     val requestItems: List<DocItem>,
-    val encodedRequestItems: ByteArray,
-    val readerAuth: ReaderAuth?,
+    val readerAuth: ReaderAuth?
 ) : Parcelable
 
 /**
