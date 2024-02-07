@@ -20,38 +20,16 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import com.android.identity.android.mdoc.deviceretrieval.DeviceRetrievalHelper
-import com.android.identity.android.securearea.AndroidKeystoreSecureArea
-import com.android.identity.android.securearea.AndroidKeystoreSecureArea.KeyUnlockData
-import com.android.identity.credential.CredentialRequest
-import com.android.identity.credential.CredentialStore
-import com.android.identity.credential.NameSpacedData
-import com.android.identity.mdoc.mso.StaticAuthDataParser
 import com.android.identity.mdoc.origininfo.OriginInfo
 import com.android.identity.mdoc.origininfo.OriginInfoReferrerUrl
-import com.android.identity.mdoc.request.DeviceRequestParser
-import com.android.identity.mdoc.response.DeviceResponseGenerator
-import com.android.identity.mdoc.response.DocumentGenerator
-import com.android.identity.mdoc.util.MdocUtil
-import com.android.identity.securearea.SecureArea
-import com.android.identity.securearea.SecureArea.ALGORITHM_ES256
-import com.android.identity.securearea.SecureAreaRepository
-import com.android.identity.storage.StorageEngine
 import com.android.identity.util.Constants
-import com.android.identity.util.Timestamp
 import eu.europa.ec.eudi.iso18013.transfer.DeviceRetrievalMethod
-import eu.europa.ec.eudi.iso18013.transfer.DisclosedDocument
-import eu.europa.ec.eudi.iso18013.transfer.DisclosedDocuments
-import eu.europa.ec.eudi.iso18013.transfer.DocItem
-import eu.europa.ec.eudi.iso18013.transfer.DocRequest
-import eu.europa.ec.eudi.iso18013.transfer.DocumentsResolver
-import eu.europa.ec.eudi.iso18013.transfer.ReaderAuth
-import eu.europa.ec.eudi.iso18013.transfer.Request
-import eu.europa.ec.eudi.iso18013.transfer.ResponseResult
 import eu.europa.ec.eudi.iso18013.transfer.TransferEvent
 import eu.europa.ec.eudi.iso18013.transfer.TransferManager
 import eu.europa.ec.eudi.iso18013.transfer.engagement.NfcEngagementService
 import eu.europa.ec.eudi.iso18013.transfer.engagement.QrCode
-import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStore
+import eu.europa.ec.eudi.iso18013.transfer.response.DeviceRequest
+import eu.europa.ec.eudi.iso18013.transfer.response.DeviceResponseGeneratorImpl
 import java.util.OptionalLong
 
 private const val TRANSFER_STARTED_MSG = "Transfer has already started."
@@ -60,16 +38,12 @@ private const val TRANSFER_STARTED_MSG = "Transfer has already started."
  * Transfer Manager class used for performing device engagement and data retrieval.
  *
  * @param context application context
- * @param documentsResolver document manager instance
- * @param storageEngine storage engine used to store documents
- * @param secureArea secure area used to store documents' keys
+ * @param responseGenerator response generator instance that parses the request and creates the response
  * @constructor Create empty Transfer manager
  */
 internal class TransferManagerImpl(
     context: Context,
-    private val documentsResolver: DocumentsResolver,
-    private val storageEngine: StorageEngine,
-    private val secureArea: AndroidKeystoreSecureArea,
+    override val responseGenerator: DeviceResponseGeneratorImpl
 ) : TransferManager {
     private val context = context.applicationContext
 
@@ -78,25 +52,6 @@ internal class TransferManagerImpl(
     private var engagementToApp: EngagementToApp? = null
     private var qrEngagement: QrEngagement? = null
     private var hasStarted = false
-
-    private val secureAreaRepository: SecureAreaRepository by lazy {
-        SecureAreaRepository().apply {
-            addImplementation(secureArea)
-        }
-    }
-
-    private var readerTrustStore: ReaderTrustStore? = null
-
-    /**
-     * Set a trust store so that reader authentication can be performed.
-     *
-     * If it is not provided, reader authentication will not be performed.
-     *
-     * @param readerTrustStore a trust store for reader authentication, e.g. DefaultReaderTrustStore
-     */
-    override fun setReaderTrustStore(readerTrustStore: ReaderTrustStore) = apply {
-        this.readerTrustStore = readerTrustStore
-    }
 
     private val transferEventListeners = mutableListOf<TransferEvent.Listener>()
 
@@ -169,8 +124,17 @@ internal class TransferManagerImpl(
                 transferEventListeners.onTransferEvent(TransferEvent.Connected)
             },
             onNewDeviceRequest = { deviceRequestBytes ->
-                val request = parseRequestBytes(deviceRequestBytes)
-                transferEventListeners.onTransferEvent(TransferEvent.RequestReceived(request))
+                val deviceRequest = DeviceRequest(
+                    deviceRequestBytes,
+                    deviceRetrievalHelper?.sessionTranscript!!
+                )
+                transferEventListeners.onTransferEvent(
+                    TransferEvent.RequestReceived(
+                        responseGenerator.parseRequest(
+                            deviceRequest
+                        ), deviceRequest
+                    )
+                )
             },
             onDisconnected = {
                 transferEventListeners.onTransferEvent(TransferEvent.Disconnected)
@@ -195,11 +159,16 @@ internal class TransferManagerImpl(
                 transferEventListeners.onTransferEvent(TransferEvent.Connected)
             }
             onNewDeviceRequest = { deviceRequestBytes ->
-                val request = parseRequestBytes(deviceRequestBytes)
+                val deviceRequest = DeviceRequest(
+                    deviceRequestBytes,
+                    deviceRetrievalHelper?.sessionTranscript!!
+                )
                 transferEventListeners.onTransferEvent(
                     TransferEvent.RequestReceived(
-                        request,
-                    ),
+                        responseGenerator.parseRequest(
+                            deviceRequest
+                        ), deviceRequest
+                    )
                 )
             }
             onDisconnected = {
@@ -261,9 +230,16 @@ internal class TransferManagerImpl(
                 transferEventListeners.onTransferEvent(TransferEvent.Connected)
             },
             onNewRequest = { deviceRequestBytes ->
-                val request = parseRequestBytes(deviceRequestBytes)
+                val deviceRequest = DeviceRequest(
+                    deviceRequestBytes,
+                    deviceRetrievalHelper?.sessionTranscript!!
+                )
                 transferEventListeners.onTransferEvent(
-                    TransferEvent.RequestReceived(request),
+                    TransferEvent.RequestReceived(
+                        responseGenerator.parseRequest(
+                            deviceRequest
+                        ), deviceRequest
+                    )
                 )
             },
             onDisconnected = {
@@ -279,91 +255,6 @@ internal class TransferManagerImpl(
         hasStarted = true
     }
 
-    private fun parseRequestBytes(deviceRequestBytes: ByteArray): Request {
-        return DeviceRequestParser()
-            .setSessionTranscript(deviceRetrievalHelper?.sessionTranscript ?: byteArrayOf(0))
-            .setDeviceRequest(deviceRequestBytes).parse()
-            .documentRequests
-            .map {
-                DocRequest(
-                    it.docType,
-                    requestedElementsFrom(it),
-                    it.itemsRequest,
-                    setReaderAuthResultToDocRequest(it),
-                )
-            }.flatMap {
-                documentsResolver.resolveDocuments(it)
-            }.let {
-                Request(it)
-            }
-    }
-
-    private fun setReaderAuthResultToDocRequest(documentRequest: DeviceRequestParser.DocumentRequest): ReaderAuth? {
-        return readerTrustStore?.let { readerTS ->
-            documentRequest.readerAuth?.let {
-                val trustPath =
-                    readerTS.createCertificationTrustPath(documentRequest.readerCertificateChain)
-                val certChain = if (trustPath?.isNotEmpty() == true) {
-                    trustPath
-                } else {
-                    documentRequest.readerCertificateChain
-                }
-                var readerCommonName = ""
-                certChain.first().subjectX500Principal.name.split(",")
-                    .forEach { line ->
-                        val (key, value) = line.split("=", limit = 2)
-                        if (key == "CN") {
-                            readerCommonName = value
-                        }
-                    }
-                ReaderAuth(
-                    it,
-                    documentRequest.readerAuthenticated,
-                    documentRequest.readerCertificateChain,
-                    readerTS.validateCertificationTrustPath(documentRequest.readerCertificateChain),
-                    readerCommonName,
-                )
-            }
-        }
-    }
-
-    private fun requestedElementsFrom(
-        requestedDocument: DeviceRequestParser.DocumentRequest,
-    ): ArrayList<DocItem> {
-        val result = arrayListOf<DocItem>()
-        requestedDocument.namespaces.forEach { namespace ->
-            val elements = requestedDocument.getEntryNames(namespace).map { element ->
-                DocItem(namespace, element)
-            }
-            result.addAll(elements)
-        }
-        return result
-    }
-
-    /**
-     * Create document response
-     *
-     * @param disclosedDocuments a [List] of [Request]
-     * @return a [ResponseResult]
-     */
-    @Throws(IllegalStateException::class)
-    override fun createResponse(disclosedDocuments: DisclosedDocuments): ResponseResult {
-        try {
-            val deviceResponse = DeviceResponseGenerator(Constants.DEVICE_RESPONSE_STATUS_OK)
-            disclosedDocuments.documents.forEach { responseDocument ->
-                val addResult = addDocumentToResponse(deviceResponse, responseDocument)
-                if (addResult is AddDocumentToResponse.UserAuthRequired) {
-                    return ResponseResult.UserAuthRequired(
-                        addResult.keyUnlockData.getCryptoObjectForSigning(ALGORITHM_ES256),
-                    )
-                }
-            }
-            return ResponseResult.Response(deviceResponse.generate())
-        } catch (e: Exception) {
-            return ResponseResult.Failure(e)
-        }
-    }
-
     override fun sendResponse(responseBytes: ByteArray) {
         val progressListener: (Long, Long) -> Unit = { progress, max ->
             Log.d(this.TAG, "Progress: $progress of $max")
@@ -376,48 +267,6 @@ internal class TransferManagerImpl(
             context.mainExecutor(),
         )
         transferEventListeners.onTransferEvent(TransferEvent.ResponseSent)
-    }
-
-    @Throws(IllegalStateException::class)
-    private fun addDocumentToResponse(
-        responseGenerator: DeviceResponseGenerator,
-        disclosedDocument: DisclosedDocument,
-    ): AddDocumentToResponse {
-        val dataElements = disclosedDocument.selectedDocItems.map {
-            CredentialRequest.DataElement(it.namespace, it.elementIdentifier, false)
-        }
-        val request = CredentialRequest(dataElements)
-        val credentialStore = CredentialStore(storageEngine, secureAreaRepository)
-        val credential =
-            requireNotNull(credentialStore.lookupCredential(disclosedDocument.documentId))
-        val authKey = credential.findAuthenticationKey(Timestamp.now())
-            ?: throw IllegalStateException("No auth key available")
-        val staticAuthData = StaticAuthDataParser(authKey.issuerProvidedData).parse()
-        val mergedIssuerNamespaces = MdocUtil.mergeIssuerNamesSpaces(
-            request,
-            credential.nameSpacedData,
-            staticAuthData,
-        )
-        val transcript = deviceRetrievalHelper?.sessionTranscript ?: byteArrayOf(0)
-        val keyUnlockData = KeyUnlockData(authKey.alias)
-        try {
-            val generator =
-                DocumentGenerator(disclosedDocument.docType, staticAuthData.issuerAuth, transcript)
-                    .setIssuerNamespaces(mergedIssuerNamespaces)
-            generator.setDeviceNamespacesSignature(
-                NameSpacedData.Builder().build(),
-                authKey.secureArea,
-                authKey.alias,
-                keyUnlockData,
-                ALGORITHM_ES256,
-            )
-            val data = generator.generate()
-            responseGenerator.addDocument(data)
-        } catch (lockedException: SecureArea.KeyLockedException) {
-            Log.e(this.TAG, "error", lockedException)
-            return AddDocumentToResponse.UserAuthRequired(keyUnlockData)
-        }
-        return AddDocumentToResponse.Success
     }
 
     /**
@@ -449,12 +298,6 @@ internal class TransferManagerImpl(
         qrEngagement = null
         engagementToApp = null
         hasStarted = false
-    }
-
-    private sealed interface AddDocumentToResponse {
-        object Success : AddDocumentToResponse
-        data class UserAuthRequired(val keyUnlockData: KeyUnlockData) :
-            AddDocumentToResponse
     }
 }
 

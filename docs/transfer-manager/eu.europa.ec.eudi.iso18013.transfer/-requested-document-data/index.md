@@ -1,15 +1,15 @@
-//[transfer-manager](../../../index.md)/[eu.europa.ec.eudi.iso18013.transfer](../index.md)/[Request](index.md)
+//[transfer-manager](../../../index.md)/[eu.europa.ec.eudi.iso18013.transfer](../index.md)/[RequestedDocumentData](index.md)
 
-# Request
+# RequestedDocumentData
 
 [androidJvm]\
-data class [Request](index.md)(val documents: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)&lt;[RequestDocument](../-request-document/index.md)&gt;) : [Parcelable](https://developer.android.com/reference/kotlin/android/os/Parcelable.html)
+data class [RequestedDocumentData](index.md)(val documents: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)&lt;[RequestDocument](../-request-document/index.md)&gt;) : [Parcelable](https://developer.android.com/reference/kotlin/android/os/Parcelable.html)
 
 ## Constructors
 
 | | |
 |---|---|
-| [Request](-request.md) | [androidJvm]<br>constructor(documents: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)&lt;[RequestDocument](../-request-document/index.md)&gt;) |
+| [RequestedDocumentData](-requested-document-data.md) | [androidJvm]<br>constructor(documents: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)&lt;[RequestDocument](../-request-document/index.md)&gt;) |
 
 ## Functions
 

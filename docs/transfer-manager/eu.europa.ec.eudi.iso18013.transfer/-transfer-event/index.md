@@ -29,5 +29,5 @@ interface [TransferEvent](index.md)
 | [Listener](-listener/index.md) | [androidJvm]<br>fun interface [Listener](-listener/index.md) |
 | [QrEngagementReady](-qr-engagement-ready/index.md) | [androidJvm]<br>data class [QrEngagementReady](-qr-engagement-ready/index.md)(val qrCode: [QrCode](../../eu.europa.ec.eudi.iso18013.transfer.engagement/-qr-code/index.md)) : [TransferEvent](index.md) |
 | [Redirect](-redirect/index.md) | [androidJvm]<br>data class [Redirect](-redirect/index.md)(val redirectUri: [URI](https://developer.android.com/reference/kotlin/java/net/URI.html)) : [TransferEvent](index.md) |
-| [RequestReceived](-request-received/index.md) | [androidJvm]<br>data class [RequestReceived](-request-received/index.md)(val request: [Request](../-request/index.md)) : [TransferEvent](index.md) |
+| [RequestReceived](-request-received/index.md) | [androidJvm]<br>data class [RequestReceived](-request-received/index.md)(val requestedDocumentData: [RequestedDocumentData](../-requested-document-data/index.md), val request: [Request](../../eu.europa.ec.eudi.iso18013.transfer.response/-request/index.md)) : [TransferEvent](index.md) |
 | [ResponseSent](-response-sent/index.md) | [androidJvm]<br>object [ResponseSent](-response-sent/index.md) : [TransferEvent](index.md) |

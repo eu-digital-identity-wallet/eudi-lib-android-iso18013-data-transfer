@@ -1,7 +1,7 @@
 
 # EUDI ISO 18013-5 document transfer library
 ## Dependency License Report
-_2024-01-31 13:28:59 EET_
+_2024-02-07 20:38:32 EET_
 ## Apache License, Version 2.0
 
 **1** **Group:** `androidx.biometric` **Name:** `biometric-ktx` **Version:** `1.2.0-alpha05` 

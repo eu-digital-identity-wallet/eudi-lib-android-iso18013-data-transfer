@@ -25,14 +25,12 @@ androidJvm
 | Name | Summary |
 |---|---|
 | [build](build.md) | [androidJvm]<br>fun [build](build.md)(): [TransferManager](../index.md)<br>Build a [TransferManager](../index.md) instance |
-| [documentResolver](document-resolver.md) | [androidJvm]<br>fun [documentResolver](document-resolver.md)(documentsResolver: [DocumentsResolver](../../-documents-resolver/index.md)): [TransferManager.Builder](index.md)<br>Document resolver that will be used to resolve the documents for the selective disclosure when creating the response |
-| [readerTrustStore](reader-trust-store.md) | [androidJvm]<br>fun [readerTrustStore](reader-trust-store.md)(readerTrustStore: [ReaderTrustStore](../../../eu.europa.ec.eudi.iso18013.transfer.readerauth/-reader-trust-store/index.md)): [TransferManager.Builder](index.md)<br>Reader trust store that will be used to validate the certificate chain of the mdoc verifier |
+| [responseGenerator](response-generator.md) | [androidJvm]<br>fun [responseGenerator](response-generator.md)(responseGenerator: [DeviceResponseGeneratorImpl](../../../eu.europa.ec.eudi.iso18013.transfer.response/-device-response-generator-impl/index.md)): [TransferManager.Builder](index.md)<br>Response generator that will be parse the request and will create the response |
 | [retrievalMethods](retrieval-methods.md) | [androidJvm]<br>fun [retrievalMethods](retrieval-methods.md)(retrievalMethods: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)&lt;[DeviceRetrievalMethod](../../-device-retrieval-method/index.md)&gt;): [TransferManager.Builder](index.md)<br>Retrieval methods that will be used to retrieve the device request from the mdoc verifier |
 
 ## Properties
 
 | Name | Summary |
 |---|---|
-| [documentsResolver](documents-resolver.md) | [androidJvm]<br>var [documentsResolver](documents-resolver.md): [DocumentsResolver](../../-documents-resolver/index.md)? |
-| [readerTrustStore](reader-trust-store.md) | [androidJvm]<br>var [readerTrustStore](reader-trust-store.md): [ReaderTrustStore](../../../eu.europa.ec.eudi.iso18013.transfer.readerauth/-reader-trust-store/index.md)? |
+| [responseGenerator](response-generator.md) | [androidJvm]<br>var [responseGenerator](response-generator.md): [ResponseGenerator](../../../eu.europa.ec.eudi.iso18013.transfer.response/-response-generator/index.md)&lt;[DeviceRequest](../../../eu.europa.ec.eudi.iso18013.transfer.response/-device-request/index.md)&gt;? |
 | [retrievalMethods](retrieval-methods.md) | [androidJvm]<br>var [retrievalMethods](retrieval-methods.md): [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)&lt;[DeviceRetrievalMethod](../../-device-retrieval-method/index.md)&gt;? |

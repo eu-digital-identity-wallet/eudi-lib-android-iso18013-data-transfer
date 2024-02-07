@@ -21,7 +21,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class Request(val documents: List<RequestDocument>) : Parcelable
+data class RequestedDocumentData(val documents: List<RequestDocument>) : Parcelable
 
 /**
  * Represents a request received by an mdoc verifier and contains the requested document data

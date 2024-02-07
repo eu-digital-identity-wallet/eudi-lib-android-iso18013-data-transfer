@@ -16,27 +16,13 @@
 package eu.europa.ec.eudi.iso18013.transfer
 
 import androidx.biometric.BiometricPrompt
+import eu.europa.ec.eudi.iso18013.transfer.response.Response
 
 sealed interface ResponseResult {
     data class UserAuthRequired(val cryptoObject: BiometricPrompt.CryptoObject?) :
         ResponseResult
 
-    data class Response(val bytes: ByteArray) : ResponseResult {
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
-
-            other as Response
-
-            if (!bytes.contentEquals(other.bytes)) return false
-
-            return true
-        }
-
-        override fun hashCode(): Int {
-            return bytes.contentHashCode()
-        }
-    }
+    data class Success(val response: Response) : ResponseResult
 
     data class Failure(val throwable: Throwable) : ResponseResult
 }
