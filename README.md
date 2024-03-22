@@ -35,29 +35,51 @@ The library is written in Kotlin and is available for Android.
 
 ## :heavy_exclamation_mark: Disclaimer
 
-The released software is a initial development release version: 
--  The initial development release is an early endeavor reflecting the efforts of a short timeboxed period, and by no means can be considered as the final product.  
--  The initial development release may be changed substantially over time, might introduce new features but also may change or remove existing ones, potentially breaking compatibility with your existing code.
--  The initial development release is limited in functional scope.
--  The initial development release may contain errors or design flaws and other problems that could cause system or other failures and data loss.
--  The initial development release has reduced security, privacy, availability, and reliability standards relative to future releases. This could make the software slower, less reliable, or more vulnerable to attacks than mature software.
--  The initial development release is not yet comprehensively documented. 
--  Users of the software must perform sufficient engineering and additional testing in order to properly evaluate their application and determine whether any of the open-sourced components is suitable for use in that application.
--  We strongly recommend not putting this version of the software into production use.
--  Only the latest version of the software will be supported
-  
+The released software is an initial development release version:
+
+- The initial development release is an early endeavor reflecting the efforts of a short timeboxed period, and by no
+  means can be considered as the final product.
+- The initial development release may be changed substantially over time, might introduce new features but also may
+  change or remove existing ones, potentially breaking compatibility with your existing code.
+- The initial development release is limited in functional scope.
+- The initial development release may contain errors or design flaws and other problems that could cause system or other
+  failures and data loss.
+- The initial development release has reduced security, privacy, availability, and reliability standards relative to
+  future releases. This could make the software slower, less reliable, or more vulnerable to attacks than mature
+  software.
+- The initial development release is not yet comprehensively documented.
+- Users of the software must perform sufficient engineering and additional testing in order to properly evaluate their
+  application and determine whether any of the open-sourced components is suitable for use in that application.
+- We strongly recommend not putting this version of the software into production use.
+- Only the latest version of the software will be supported
+
 ## Requirements
 
 - Android 8 (API level 26) or higher
 
 ### Dependencies
 
+To use snapshot versions, add the following to your project's settings.gradle file:
+
+```groovy
+dependencyResolutionManagement {
+    repositories {
+        // ...
+        maven {
+            url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+            mavenContent { snapshotsOnly() }
+        }
+        // ...
+    }
+}
+```
+
 To include the library in your project, add the following dependencies to your app's build.gradle
 file.
 
 ```groovy
 dependencies {
-    implementation "eu.europa.ec.eudi:eudi-lib-android-iso18013-data-transfer:0.2.0-SNAPSHOT"
+    implementation "eu.europa.ec.eudi:eudi-lib-android-iso18013-data-transfer:0.2.0"
     implementation "androidx.biometric:biometric-ktx:1.2.0-alpha05"
 }
 ```
@@ -66,41 +88,43 @@ dependencies {
 
 Below is a quick overview of how to use the library.
 
-For source code documentation, see in [docs](docs/index.md) directory.
+For source code documentation, see in the [docs](docs/index.md) directory.
 
 ### Instantiating the TransferManager
 
-The library provides a `TransferManager` class that can be used to transfer data.
+The library provides
+a [`TransferManager`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-transfer-manager/index.md)
+implementation that can be used to transfer data.
 
-To create a new instance of the `TransferManager` class, use
-the `TransferManager.Builder` class:
+To create a new instance of
+the [`TransferManager`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-transfer-manager/index.md) interface,
+use
+the [`TransferManager.Builder`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-transfer-manager/-builder/index.md)
+class:
 
 ```kotlin
-
-import java.security.cert.X509Certificate
+import eu.europa.ec.eudi.iso18013.transfer.DeviceRetrievalMethod
+import eu.europa.ec.eudi.iso18013.transfer.DocumentsResolver
 import eu.europa.ec.eudi.iso18013.transfer.TransferManager
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStore
 import eu.europa.ec.eudi.iso18013.transfer.response.ResponseGenerator
 import eu.europa.ec.eudi.iso18013.transfer.retrieval.BleRetrievalMethod
-import eu.europa.ec.eudi.iso18013.transfer.retrieval.DocumentResolver
-import eu.europa.ec.eudi.iso18013.transfer.retrieval.DocRequest
-import eu.europa.ec.eudi.iso18013.transfer.retrieval.RetrievalMethod
+import java.security.cert.X509Certificate
 
 val certificates = listOf<X509Certificate>(
     // put trusted reader certificates here
 )
-val readerTrustStore = ReaderTrustStore.getDefault(
-    listOf(context.applicationContext.getCertificate(certificates))
-)
-val retrievalMethods = listOf<RetrievalMethod>(
+val readerTrustStore = ReaderTrustStore.getDefault(certificates)
+
+val retrievalMethods = listOf<DeviceRetrievalMethod>(
     BleRetrievalMethod(
         peripheralServerMode = true,
         centralClientMode = true,
         clearBleCache = true
     )
 )
-val documentedResolver = DocumentResolver { docRequest: DocRequest ->
-    // put your code here to resolve the document
+val documentResolver = DocumentsResolver { docRequest: DocRequest ->
+    // place your code here to resolve documents, 
     // usually document resolution is done based on `docRequest.docType`
 }
 
@@ -108,7 +132,7 @@ val documentedResolver = DocumentResolver { docRequest: DocRequest ->
 // set it to the Transfer Manager
 val deviceResponseGenerator = ResponseGenerator.Builder(context)
     .readerTrustStore(readerTrustStore)
-    .documentsResolver(documentedResolver)
+    .documentResolver(documentResolver)
     .build()
 
 val transferManager = TransferManager.Builder(context)
@@ -119,25 +143,39 @@ val transferManager = TransferManager.Builder(context)
 
 ### Attaching a TransferEvent.Listener
 
-It is possible to attach a `TransferEvent.Listener` to the `TransferManager` to receive events.
+It is possible to attach
+a [`TransferEvent.Listener`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-transfer-event/-listener/index.md)
+to the [`TransferManager`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-transfer-manager/index.md) to
+receive events.
 The available events are:
 
-1. `TransferEvent.QrEngagementReady`: The QR code is ready to be displayed. Get the QR code from
-   `event.qrCode`.
-2. `TransferEvent.Connecting`: The devices are connecting. Use this event to display a progress
+1. [`TransferEvent.QrEngagementReady`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-transfer-event/-qr-engagement-ready/index.md):
+   The QR code is ready to be displayed. Get the QR code from
+   [`TransferEvent.QrEngagementReady.qrCode`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-transfer-event/-qr-engagement-ready/qr-code.md).
+2. [`TransferEvent.Connecting`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-transfer-event/-connecting/index.md):
+   The devices are connecting. Use this event to display a progress
    indicator.
-3. `TransferEvent.Connected`: The devices are connected.
-4. `TransferEvent.RequestReceived`: A request is received. Get the parsed request from `event.requestedDocumentData` 
-   and the initial request as received by the verifier from `event.request`.
-5. `TransferEvent.ResponseSent`: A response is sent.
-6. `TransferEvent.Redirect`: This event prompts to redirect the user to the given Redirect URI. Get the Redirect URI from `event.redirectUri`.
-7. `TransferEvent.Disconnected`: The devices are disconnected.
-8. `TransferEvent.Error`: An error occurred. Get the `Throwable` error from `event.error`.
+3. [`TransferEvent.Connected`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-transfer-event/-connected/index.md):
+   The devices are connected.
+4. [`TransferEvent.RequestReceived`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-transfer-event/-request-received/index.md):
+   A request is received. Get the parsed request from `event.requestedDocumentData`
+   and the initial request as received by the verifier
+   from [`TransferEvent.RequestReceived.request`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-transfer-event/-request-received/request.md).
+5. [`TransferEvent.ResponseSent`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-transfer-event/-response-sent/index.md):
+   A response is sent.
+6. [`TransferEvent.Redirect`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-transfer-event/-redirect/index.md):
+   This event prompts to redirect the user to the given Redirect URI. Get the Redirect URI
+   from [`TransferEvent.Redirect.redirectUri`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-transfer-event/-redirect/redirect-uri.md).
+7. [`TransferEvent.Disconnected`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-transfer-event/-disconnected/index.md):
+   The devices are disconnected.
+8. [`TransferEvent.Error`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-transfer-event/-error/index.md):
+   An error occurred. Get the `Throwable` error
+   from [`TransferEvent.Error.error`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-transfer-event/-error/-error.md).
 
-To receive events from the `TransferManager`, you must attach a `TransferEvent.Listener` to it:
-
-The following example demonstrates how to implement a `TransferEvent.Listener` and attach it to the
-transfer manager.
+The following example demonstrates how to implement
+a [`TransferEvent.Listener`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-transfer-event/-listener/index.md)
+and attach it to
+the [`TransferManager`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-transfer-manager/index.md).
 
 ```kotlin
 
@@ -167,18 +205,20 @@ val transferEventListener = TransferEvent.Listener { event ->
                     // add the disclosed documents here
                 )
             )
-            
+
             // create the response providing the disclosed documents
-            when (val responseResult = responseGenerator.createResponse(disclosedDocuments)) {
+            when (val responseResult = transferManager.responseGenerator.createResponse(disclosedDocuments)) {
                 is ResponseResult.Failure -> {
                     // handle the failure
                 }
                 is ResponseResult.Success -> {
                     // send the response
-                    transferManager.sendResponse(responseResult.response)
+                    transferManager.sendResponse(
+                        (responseResult.response as DeviceResponse).deviceResponseBytes
+                    )
                 }
                 is ResponseResult.UserAuthRequired -> {
-                    // user authentication is required. Get the crypto object from responseResult.cryptoObject
+                    // User authentication is required. Get the crypto object from responseResult.cryptoObject
                     val cryptoObject = responseResult.cryptoObject
                 }
             }
@@ -189,7 +229,7 @@ val transferEventListener = TransferEvent.Listener { event ->
         }
 
         is TransferEvent.Disconnected -> {
-            // event when the devices are disconnected
+            // event when the devices are disconnected, 
             // presentation can be stopped here
             transferManager.stopPresentation()
         }
@@ -221,7 +261,8 @@ These engagement methods offer seamless device pairing and data transfer initiat
 #### Using QR Code
 
 Once the transfer manager is created and a transfer event listener is attached, use
-the `startQrEngagement()` method to start the QR code engagement.
+the [`TransferManager.startQrEngagement`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-transfer-manager/start-qr-engagement.md)`
+method to start the QR code engagement.
 
 ```kotlin
 transferManager.startQrEngagement()
@@ -243,28 +284,28 @@ when (event) {
 
 #### Using App Link
 
-To enable 18013-7 REST API functionality, declare to your app's manifest file (AndroidManifest.xml)
+To enable ISO 18013-7 REST API functionality, declare to your app's manifest file (AndroidManifest.xml)
 an Intent Filter for your MainActivity:
 
 ```xml
 
 <intent-filter>
-    <action android:name="android.intent.action.VIEW" />
-    <category android:name="android.intent.category.DEFAULT" />
-    <category android:name="android.intent.category.BROWSABLE" />
-    <data android:scheme="mdoc" android:host="*" />
+    <action android:name="android.intent.action.VIEW"/>
+    <category android:name="android.intent.category.DEFAULT"/>
+    <category android:name="android.intent.category.BROWSABLE"/>
+    <data android:scheme="mdoc" android:host="*"/>
 </intent-filter>
 ```
 
 and set `launchMode="singleTask"` for this activity.
 
 To initiate the transfer using an app link (reverse engagement), use
-the `startEngagementToApp(Intent)` method.
+the [`TransferManager.startEngagementToApp(Intent)`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-transfer-manager/start-engagement-to-app.md)
+method.
 
 The method receives as a parameter an `Intent` that contains the data for the device engagement.
 
-The example below demonstrates how to use the `startEngagementToApp(Intent)` method to initiate the
-device engagement and transfer.
+The example below demonstrates how to initiate the device engagement and transfer.
 
 ```kotlin
 import androidx.appcompat.app.AppCompatActivity
@@ -288,8 +329,11 @@ class MainActivity : AppCompatActivity() {
 
 #### Using NFC
 
-In order to use NFC, you must create a service that extends `NfcEngagementService` and override
-the `transferManager` property.
+To use NFC, you must create a service that
+extends [`NfcEngagementService`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer.engagement/-nfc-engagement-service/index.md)
+and override
+the  [`NfcEngagementService.transferManager`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer.engagement/-nfc-engagement-service/transfer-manager.md)
+property.
 
 For example:
 
@@ -311,23 +355,25 @@ Then add the service to your application's manifest file, like shown below:
 <application>
     <!-- rest of manifest -->
     <service android:exported="true" android:label="@string/nfc_engagement_service_desc"
-        android:name="com.example.myapp.NfcEngagementServiceImpl"
-        android:permission="android.permission.BIND_NFC_SERVICE">
+             android:name="com.example.myapp.NfcEngagementServiceImpl"
+             android:permission="android.permission.BIND_NFC_SERVICE">
         <intent-filter>
-            <action android:name="android.nfc.action.NDEF_DISCOVERED" />
-            <action android:name="android.nfc.cardemulation.action.HOST_APDU_SERVICE" />
+            <action android:name="android.nfc.action.NDEF_DISCOVERED"/>
+            <action android:name="android.nfc.cardemulation.action.HOST_APDU_SERVICE"/>
         </intent-filter>
 
         <!-- the following "@xml/nfc_engagement_apdu_service" in meta-data is provided by the library -->
         <meta-data android:name="android.nfc.cardemulation.host_apdu_service"
-            android:resource="@xml/nfc_engagement_apdu_service" />
+                   android:resource="@xml/nfc_engagement_apdu_service"/>
     </service>
 
 </application>
 ```
 
-You can enable or disable the NFC device engagement in your app by calling the `enable()`
-and `disable()` methods of the `NfcEngagementService` class.
+You can enable or disable the NFC device engagement in your app by calling
+the [`NfcEngagementService.enable()`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer.engagement/-nfc-engagement-service/-companion/enable.md)
+and [`NfcEngagementService.disable()`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer.engagement/-nfc-engagement-service/-companion/disable.md)
+methods.
 
 In the example below, the NFC device engagement is enabled when activity is resumed and disabled
 when the activity is paused.
@@ -349,38 +395,67 @@ class MainActivity : AppCompatActivity() {
     }
 }
 ```
-Optionally, in the `enable()` method you can define your class that implements `NfcEngagementService`, e.g.:
+
+Optionally,
+in
+the [`NfcEngagementService.enable()`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer.engagement/-nfc-engagement-service/-companion/enable.md)
+method you can define your class
+that
+implements [`NfcEngagementService`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer.engagement/-nfc-engagement-service/index.md).
+
+For example:
 
 ```kotlin
  NfcEngagementService.enable(this, NfcEngagementServiceImpl::class.java)
 ```
 
-This way, you can define the `NfcEngagementServiceImpl` service to be preferred while this activity is in the foreground.
+This way, you can define the `NfcEngagementServiceImpl` service to be preferred while this activity is in the
+foreground.
 
-### Receiving and sending response
+### Receiving a request and sending a response
 
-When a request is received, the `TransferEvent.RequestReceived` event is triggered. The parsed request can
-be retrieved from `event.requestedDocumentData`, while the initial request, as received by the verifier,
-can be retrieved from `event.request`.
+When a request is received,
+the [`TransferEvent.RequestReceived`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-transfer-event/-request-received/index.md)
+event is triggered. The parsed request can
+be retrieved
+from [`TransferEvent.RequestReceived.requestedDocumentData`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-transfer-event/-request-received/requested-document-data.md),
+while the initial request, as received by the verifier,
+can be retrieved
+from [`TransferEvent.RequestReceived.request`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-transfer-event/-request-received/request.md).
 
-The parsed request contains a list of `RequestedDocument` objects, which can be used to show the user what
-documents are requested. Also, a selectively disclosure option can be implemented using the
-requested documents, so user can choose which of the documents to share.
+The parsed request contains a list
+of [`RequestDocument`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-request-document) objects, which can
+be used to show the user what
+documents are requested. Also, a selective disclosure option can be implemented using the
+requested documents, so the user can choose which of the documents to share.
 
-Then, a `DisclosedDocuments` object must be created with the list of documents to be disclosed and
-the response can be created using the `createResponse(DisclosedDocuments)` of `ResponseGenerator`.
-The method returns a `ResponseResult` object, which can be one of the following:
+Then [`DisclosedDocuments`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-disclosed-documents) must be
+created that contains the documents to include in the response. After that, use the
+[`TransferManager.responseGenerator.createResponse(DisclosedDocuments)`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer.response/-response-generator/create-response.md)
+method.
 
-1. `ResponseResult.Failure`: The response creation failed. The error can be retrieved from
-   `responseResult.error`.
-2. `ResponseResult.Success`: The response was created successfully. The response can be
-   retrieved from `responseResult.response`.
-3. `ResponseResult.UserAuthRequired`: The response creation requires user authentication. The
-   `CryptoObject` can be retrieved from `responseResult.cryptoObject`. After success authentication
-   the response can be created again, using the `TransferManager.createResponse(DisclosedDocuments)`
+The method returns
+a [`ResponseResult`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-response-result/index.md) object, which
+can be one of the following:
+
+1. [`ResponseResult.Failure`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-response-result/-failure/index.md):
+   The response creation failed. The error can be retrieved
+   from [`ResponseResult.Failure.throwable`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-response-result/-failure/throwable.md).
+2. [`ResponseResult.Success`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-response-result/-success/index.md):
+   The response was created successfully. The response can be
+   retrieved
+   from [`ResponseResult.Success.response`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-response-result/-success/response.md)
+3. [`ResponseResult.UserAuthRequired`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-response-result/-user-auth-required/index.md):
+   The response creation requires user authentication. The
+   `CryptoObject` can be retrieved
+   from [`ResponseResult.UserAuthRequired.cryptoObject`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-response-result/-user-auth-required/crypto-object.md).
+   After success authentication the response can be created again,
+   using [`TransferManager.responseGenerator.createResponse(DisclosedDocuments)`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer.response/-response-generator/create-response.md)
    method.
 
-Then, the response can be send using the `TransferManager.sendResponse(response.deviceResponseBytes)`.
+Send the response bytes using
+the [`TransferManager.sendResponse(ByteArray)`](docs/transfer-manager/eu.europa.ec.eudi.iso18013.transfer/-transfer-manager/send-response.md)
+method.
 
 The following example demonstrates the above steps:
 
@@ -398,13 +473,13 @@ val transferEventListener = TransferEvent.Listener { event ->
                     // add the disclosed documents here
                 )
             )
-            when (val responseResult = transferManager.createResponse(disclosedDocuments)) {
+            when (val responseResult = transferManager.responseGenerator.createResponse(disclosedDocuments)) {
                 is ResponseResult.Failure -> {
                     // handle the failure
                 }
                 is ResponseResult.Response -> {
                     val response = responseResult.response
-                    transferManager.sendResponse(response.deviceResponseBytes)
+                    transferManager.sendResponse((response as DeviceResponse).deviceResponseBytes)
                 }
                 is ResponseResult.UserAuthRequired -> {
                     // user authentication is required. Get the crypto object from responseResult.cryptoObject
@@ -418,7 +493,7 @@ val transferEventListener = TransferEvent.Listener { event ->
 ```
 
 ## How to contribute
-   
+
 We welcome contributions to this project. To ensure that the process is smooth for everyone
 involved, follow the guidelines found in [CONTRIBUTING.md](CONTRIBUTING.md).
 

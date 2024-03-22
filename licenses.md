@@ -1,7 +1,8 @@
 
 # EUDI ISO 18013-5 document transfer library
 ## Dependency License Report
-_2024-02-07 20:38:32 EET_
+
+_2024-07-16 15:19:25 EEST_
 ## Apache License, Version 2.0
 
 **1** **Group:** `androidx.biometric` **Name:** `biometric-ktx` **Version:** `1.2.0-alpha05` 
@@ -29,11 +30,11 @@ _2024-02-07 20:38:32 EET_
 
 ## Bouncy Castle Licence
 
-**7** **Group:** `org.bouncycastle` **Name:** `bcpkix-jdk18on` **Version:** `1.77` 
+**7** **Group:** `org.bouncycastle` **Name:** `bcprov-jdk18on` **Version:** `1.77`
 > - **POM Project URL**: [https://www.bouncycastle.org/java.html](https://www.bouncycastle.org/java.html)
 > - **POM License**: Bouncy Castle Licence - [https://www.bouncycastle.org/licence.html](https://www.bouncycastle.org/licence.html)
 
-**8** **Group:** `org.bouncycastle` **Name:** `bcprov-jdk18on` **Version:** `1.77` 
+**8** **Group:** `org.bouncycastle` **Name:** `bcpkix-jdk18on` **Version:** `1.77`
 > - **POM Project URL**: [https://www.bouncycastle.org/java.html](https://www.bouncycastle.org/java.html)
 > - **POM License**: Bouncy Castle Licence - [https://www.bouncycastle.org/licence.html](https://www.bouncycastle.org/licence.html)
 
