@@ -7,7 +7,7 @@ on:
 
 jobs:
   Secret_Scanning_caller:
-      uses: eu-digital-identity-wallet/eudi-infra-ci/.github/workflows/secretscanning.yml@main
-      secrets:
-       DOJO_TOKEN: ${{ secrets.DOJO_TOKEN }}
-       DOJO_URL: ${{ secrets.DOJO_URL }}
+    uses: eu-digital-identity-wallet/eudi-infra-ci/.github/workflows/secretscanning.yml@main
+    secrets:
+      DOJO_TOKEN: ${{ secrets.DOJO_TOKEN }}
+      DOJO_URL: ${{ secrets.DOJO_URL }}
