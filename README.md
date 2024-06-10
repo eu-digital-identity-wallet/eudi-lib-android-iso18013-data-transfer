@@ -52,6 +52,21 @@ The released software is a initial development release version:
 
 ### Dependencies
 
+In order to use snapshot versions add the following to your project's settings.gradle file:
+
+```groovy
+dependencyResolutionManagement {
+    repositories {
+        // ...
+        maven {
+            url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+            mavenContent { snapshotsOnly() }
+        }
+        // ...
+    }
+}
+```
+
 To include the library in your project, add the following dependencies to your app's build.gradle
 file.
 
@@ -76,30 +91,27 @@ To create a new instance of the `TransferManager` class, use
 the `TransferManager.Builder` class:
 
 ```kotlin
-
-import java.security.cert.X509Certificate
+import eu.europa.ec.eudi.iso18013.transfer.DeviceRetrievalMethod
+import eu.europa.ec.eudi.iso18013.transfer.DocumentsResolver
 import eu.europa.ec.eudi.iso18013.transfer.TransferManager
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStore
 import eu.europa.ec.eudi.iso18013.transfer.response.ResponseGenerator
 import eu.europa.ec.eudi.iso18013.transfer.retrieval.BleRetrievalMethod
-import eu.europa.ec.eudi.iso18013.transfer.retrieval.DocumentResolver
-import eu.europa.ec.eudi.iso18013.transfer.retrieval.DocRequest
-import eu.europa.ec.eudi.iso18013.transfer.retrieval.RetrievalMethod
+import java.security.cert.X509Certificate
 
 val certificates = listOf<X509Certificate>(
     // put trusted reader certificates here
 )
-val readerTrustStore = ReaderTrustStore.getDefault(
-    listOf(context.applicationContext.getCertificate(certificates))
-)
-val retrievalMethods = listOf<RetrievalMethod>(
+val readerTrustStore = ReaderTrustStore.getDefault(certificates)
+
+val retrievalMethods = listOf<DeviceRetrievalMethod>(
     BleRetrievalMethod(
         peripheralServerMode = true,
         centralClientMode = true,
         clearBleCache = true
     )
 )
-val documentedResolver = DocumentResolver { docRequest: DocRequest ->
+val documentResolver = DocumentsResolver { docRequest: DocRequest ->
     // put your code here to resolve the document
     // usually document resolution is done based on `docRequest.docType`
 }
@@ -108,7 +120,7 @@ val documentedResolver = DocumentResolver { docRequest: DocRequest ->
 // set it to the Transfer Manager
 val deviceResponseGenerator = ResponseGenerator.Builder(context)
     .readerTrustStore(readerTrustStore)
-    .documentsResolver(documentedResolver)
+    .documentResolver(documentResolver)
     .build()
 
 val transferManager = TransferManager.Builder(context)
@@ -134,8 +146,7 @@ The available events are:
 7. `TransferEvent.Disconnected`: The devices are disconnected.
 8. `TransferEvent.Error`: An error occurred. Get the `Throwable` error from `event.error`.
 
-To receive events from the `TransferManager`, you must attach a `TransferEvent.Listener` to it:
-
+To receive events from the `TransferManager`, you must attach a `TransferEvent.Listener` to it.
 The following example demonstrates how to implement a `TransferEvent.Listener` and attach it to the
 transfer manager.
 
@@ -169,13 +180,15 @@ val transferEventListener = TransferEvent.Listener { event ->
             )
             
             // create the response providing the disclosed documents
-            when (val responseResult = responseGenerator.createResponse(disclosedDocuments)) {
+            when (val responseResult = deviceResponseGenerator.createResponse(disclosedDocuments)) {
                 is ResponseResult.Failure -> {
                     // handle the failure
                 }
                 is ResponseResult.Success -> {
                     // send the response
-                    transferManager.sendResponse(responseResult.response)
+                    transferManager.sendResponse(
+                        (responseResult.response as DeviceResponse).deviceResponseBytes
+                    )
                 }
                 is ResponseResult.UserAuthRequired -> {
                     // user authentication is required. Get the crypto object from responseResult.cryptoObject
@@ -377,10 +390,10 @@ The method returns a `ResponseResult` object, which can be one of the following:
    retrieved from `responseResult.response`.
 3. `ResponseResult.UserAuthRequired`: The response creation requires user authentication. The
    `CryptoObject` can be retrieved from `responseResult.cryptoObject`. After success authentication
-   the response can be created again, using the `TransferManager.createResponse(DisclosedDocuments)`
+   the response can be created again, using the `deviceResponseGenerator.createResponse(DisclosedDocuments)`
    method.
 
-Then, the response can be send using the `TransferManager.sendResponse(response.deviceResponseBytes)`.
+Then, the response can be send using the `transferManager.sendResponse((responseResult.response as DeviceResponse).deviceResponseBytes))`.
 
 The following example demonstrates the above steps:
 
@@ -404,7 +417,7 @@ val transferEventListener = TransferEvent.Listener { event ->
                 }
                 is ResponseResult.Response -> {
                     val response = responseResult.response
-                    transferManager.sendResponse(response.deviceResponseBytes)
+                    transferManager.sendResponse((response as DeviceResponse).deviceResponseBytes)
                 }
                 is ResponseResult.UserAuthRequired -> {
                     // user authentication is required. Get the crypto object from responseResult.cryptoObject
