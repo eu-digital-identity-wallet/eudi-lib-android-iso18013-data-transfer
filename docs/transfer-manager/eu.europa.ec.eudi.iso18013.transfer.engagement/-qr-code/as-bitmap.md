@@ -4,3 +4,7 @@
 
 [androidJvm]\
 fun [asBitmap](as-bitmap.md)(size: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)): [Bitmap](https://developer.android.com/reference/kotlin/android/graphics/Bitmap.html)
+
+Returns the QR code as
+a [Bitmap](https://developer.android.com/reference/kotlin/android/graphics/Bitmap.html) with the
+given [size](as-bitmap.md).

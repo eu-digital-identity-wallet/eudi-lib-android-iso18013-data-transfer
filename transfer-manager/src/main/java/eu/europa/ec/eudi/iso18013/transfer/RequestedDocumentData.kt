@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 European Commission
+ * Copyright (c) 2023-2024 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,9 @@ package eu.europa.ec.eudi.iso18013.transfer
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
+/**
+ * Wrapper class that contains the requested document data
+ */
 @Parcelize
 data class RequestedDocumentData(val documents: List<RequestDocument>) : Parcelable
 

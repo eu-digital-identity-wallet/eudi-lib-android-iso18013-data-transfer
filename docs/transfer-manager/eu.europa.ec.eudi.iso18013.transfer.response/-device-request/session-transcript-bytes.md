@@ -3,4 +3,4 @@
 # sessionTranscriptBytes
 
 [androidJvm]\
-val [sessionTranscriptBytes](session-transcript-bytes.md): [SessionTranscriptBytes](../index.md#-274759174%2FClasslikes%2F-360525760)
+val [sessionTranscriptBytes](session-transcript-bytes.md): [SessionTranscriptBytes](../-session-transcript-bytes/index.md)

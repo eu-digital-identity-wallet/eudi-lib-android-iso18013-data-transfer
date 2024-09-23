@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 European Commission
+ * Copyright (c) 2023-2024 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,35 +19,71 @@ import eu.europa.ec.eudi.iso18013.transfer.engagement.QrCode
 import eu.europa.ec.eudi.iso18013.transfer.response.Request
 import java.net.URI
 
+/**
+ * Transfer event
+ */
 sealed interface TransferEvent {
-
+    /**
+     * Qr engagement ready event. This event is triggered when the QR code is ready to be displayed.
+     * @property qrCode the QR code
+     */
     data class QrEngagementReady(val qrCode: QrCode) : TransferEvent
-    object Connecting : TransferEvent {
-        override fun toString() = "Connecting"
-    }
 
-    object Connected : TransferEvent {
-        override fun toString() = "Connected"
-    }
+    /**
+     * Connecting event. This event is triggered when the transfer is connecting.
+     */
+    data object Connecting : TransferEvent
 
-    data class RequestReceived(val requestedDocumentData: RequestedDocumentData, val request: Request) : TransferEvent
+    /**
+     * Connected event. This event is triggered when the transfer is connected.
+     */
+    data object Connected : TransferEvent
 
-    object ResponseSent : TransferEvent {
-        override fun toString() = "ResponseSent"
-    }
+    /**
+     * Request received event. This event is triggered when the request is received.
+     * @property requestedDocumentData the requested document data
+     * @property request the request
+     */
+    data class RequestReceived(
+        val requestedDocumentData: RequestedDocumentData,
+        val request: Request
+    ) : TransferEvent
 
+    /**
+     * Response sent event. This event is triggered when the response is sent.
+     */
+    data object ResponseSent : TransferEvent
+
+    /**
+     * Redirect event. This event is triggered when the requires a redirect.
+     * @property redirectUri the redirect URI
+     */
     data class Redirect(val redirectUri: URI) : TransferEvent
 
-    object Disconnected : TransferEvent {
-        override fun toString() = "Disconnected"
-    }
+    /**
+     * Disconnected event. This event is triggered when the transfer is disconnected.
+     */
+    data object Disconnected : TransferEvent
 
+    /**
+     * Error event. This event is triggered when an error occurs.
+     * @property error the error
+     */
     data class Error(val error: Throwable) : TransferEvent
 
+    /**
+     * Interface for transfer event listener
+     */
     fun interface Listener {
+        /**
+         * On transfer event callback
+         */
         fun onTransferEvent(event: TransferEvent)
     }
 
+    /**
+     * Interface for events listenable
+     */
     interface Listenable {
         /**
          * Add transfer event listener

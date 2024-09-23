@@ -3,10 +3,6 @@
 # Connected
 
 [androidJvm]\
-object [Connected](index.md) : [TransferEvent](../index.md)
+data object [Connected](index.md) : [TransferEvent](../index.md)
 
-## Functions
-
-| Name | Summary |
-|---|---|
-| [toString](to-string.md) | [androidJvm]<br>open override fun [toString](to-string.md)(): [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
+Connected event. This event is triggered when the transfer is connected.

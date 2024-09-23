@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 European Commission
+ * Copyright (c) 2023-2024 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,20 +18,25 @@ package eu.europa.ec.eudi.iso18013.transfer.response
 
 import android.content.Context
 import android.util.Log
+import com.android.identity.android.securearea.AndroidKeystoreKeyUnlockData
 import com.android.identity.android.securearea.AndroidKeystoreSecureArea
-import com.android.identity.credential.CredentialRequest
-import com.android.identity.credential.CredentialStore
-import com.android.identity.credential.NameSpacedData
+import com.android.identity.credential.CredentialFactory
+import com.android.identity.crypto.Algorithm
+import com.android.identity.crypto.javaX509Certificates
+import com.android.identity.document.Document
+import com.android.identity.document.DocumentRequest
+import com.android.identity.document.DocumentStore
+import com.android.identity.document.NameSpacedData
+import com.android.identity.mdoc.credential.MdocCredential
 import com.android.identity.mdoc.mso.StaticAuthDataParser
 import com.android.identity.mdoc.request.DeviceRequestParser
 import com.android.identity.mdoc.response.DeviceResponseGenerator
 import com.android.identity.mdoc.response.DocumentGenerator
 import com.android.identity.mdoc.util.MdocUtil
-import com.android.identity.securearea.SecureArea
+import com.android.identity.securearea.KeyLockedException
 import com.android.identity.securearea.SecureAreaRepository
 import com.android.identity.storage.StorageEngine
 import com.android.identity.util.Constants
-import com.android.identity.util.Timestamp
 import eu.europa.ec.eudi.iso18013.transfer.DisclosedDocument
 import eu.europa.ec.eudi.iso18013.transfer.DisclosedDocuments
 import eu.europa.ec.eudi.iso18013.transfer.DocItem
@@ -42,7 +47,8 @@ import eu.europa.ec.eudi.iso18013.transfer.RequestedDocumentData
 import eu.europa.ec.eudi.iso18013.transfer.ResponseResult
 import eu.europa.ec.eudi.iso18013.transfer.internal.TAG
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStore
-import java.util.ArrayList
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
 /**
  * DeviceResponseGeneratorImpl class is used for parsing a DeviceRequest and generating the DeviceResponse
@@ -52,11 +58,12 @@ import java.util.ArrayList
  * @param storageEngine storage engine used to store documents
  * @param secureArea secure area used to store documents' keys
  */
-class DeviceResponseGeneratorImpl(val context: Context,
-                                           private val documentsResolver: DocumentsResolver,
-                                           private val storageEngine: StorageEngine,
-                                           private val secureArea: AndroidKeystoreSecureArea
-): ResponseGenerator<DeviceRequest>() {
+class DeviceResponseGeneratorImpl(
+    val context: Context,
+    private val documentsResolver: DocumentsResolver,
+    private val storageEngine: StorageEngine,
+    private val secureArea: AndroidKeystoreSecureArea
+) : ResponseGenerator<DeviceRequest> {
 
     private var readerTrustStore: ReaderTrustStore? = null
     private var sessionTranscript: ByteArray? = null
@@ -89,6 +96,14 @@ class DeviceResponseGeneratorImpl(val context: Context,
         }
     }
 
+    private val credentialFactory: CredentialFactory by lazy {
+        CredentialFactory().apply {
+            addCredentialImplementation(MdocCredential::class) { document, dataItem ->
+                MdocCredential(document, dataItem)
+            }
+        }
+    }
+
     /**
      * Creates a response and returns a ResponseResult
      *
@@ -111,7 +126,7 @@ class DeviceResponseGeneratorImpl(val context: Context,
                     addDocumentToResponse(deviceResponse, responseDocument, sessionTranscript!!)
                 if (addResult is AddDocumentToResponse.UserAuthRequired)
                     return ResponseResult.UserAuthRequired(
-                        addResult.keyUnlockData.getCryptoObjectForSigning(SecureArea.ALGORITHM_ES256)
+                        addResult.keyUnlockData.getCryptoObjectForSigning(Algorithm.ES256)
                     )
             }
             sessionTranscript = null
@@ -127,34 +142,36 @@ class DeviceResponseGeneratorImpl(val context: Context,
         disclosedDocument: DisclosedDocument,
         transcript: ByteArray
     ): AddDocumentToResponse {
+
         val dataElements = disclosedDocument.selectedDocItems.map {
-            CredentialRequest.DataElement(it.namespace, it.elementIdentifier, false)
+            DocumentRequest.DataElement(it.namespace, it.elementIdentifier, false)
         }
-        val request = CredentialRequest(dataElements)
-        val credentialStore = CredentialStore(storageEngine, secureAreaRepository)
-        val credential =
-            requireNotNull(credentialStore.lookupCredential(disclosedDocument.documentId))
-        val authKey = credential.findAuthenticationKey(Timestamp.now())
-            ?: throw IllegalStateException("No auth key available")
-        val staticAuthData = StaticAuthDataParser(authKey.issuerProvidedData).parse()
+        val request = DocumentRequest(dataElements)
+        val documentStore =
+            DocumentStore(storageEngine, secureAreaRepository, credentialFactory)
+        val document = documentStore.lookupDocument(disclosedDocument.documentId)
+            ?: throw IllegalStateException("Document not found")
+        val credential = document.findCredential(Clock.System.now())
+            ?: throw IllegalStateException("No credential available")
+        val staticAuthData = StaticAuthDataParser(credential.issuerProvidedData).parse()
         val mergedIssuerNamespaces = MdocUtil.mergeIssuerNamesSpaces(
-            request, credential.nameSpacedData, staticAuthData
+            request, document.applicationData.getNameSpacedData("nameSpacedData"), staticAuthData
         )
-        val keyUnlockData = AndroidKeystoreSecureArea.KeyUnlockData(authKey.alias)
+        val keyUnlockData = AndroidKeystoreKeyUnlockData(credential.alias)
         try {
             val generator =
                 DocumentGenerator(disclosedDocument.docType, staticAuthData.issuerAuth, transcript)
                     .setIssuerNamespaces(mergedIssuerNamespaces)
             generator.setDeviceNamespacesSignature(
                 NameSpacedData.Builder().build(),
-                authKey.secureArea,
-                authKey.alias,
+                credential.secureArea,
+                credential.alias,
                 keyUnlockData,
-                SecureArea.ALGORITHM_ES256
+                Algorithm.ES256
             )
             val data = generator.generate()
             responseGenerator.addDocument(data)
-        } catch (lockedException: SecureArea.KeyLockedException) {
+        } catch (lockedException: KeyLockedException) {
             Log.e(TAG, "error", lockedException)
             return AddDocumentToResponse.UserAuthRequired(keyUnlockData)
         }
@@ -164,13 +181,12 @@ class DeviceResponseGeneratorImpl(val context: Context,
     /** Parses a request and returns the requested document data
      * @param request the received request
      * @return [RequestedDocumentData]
-    */
+     */
     override fun parseRequest(request: DeviceRequest): RequestedDocumentData {
         this.sessionTranscript = request.sessionTranscriptBytes
-        return DeviceRequestParser()
-            .setSessionTranscript(request.sessionTranscriptBytes)
-            .setDeviceRequest(request.deviceRequestBytes).parse()
-            .documentRequests
+        return DeviceRequestParser(request.deviceRequestBytes, request.sessionTranscriptBytes)
+            .parse()
+            .docRequests
             .map {
                 DocRequest(
                     it.docType,
@@ -185,7 +201,7 @@ class DeviceResponseGeneratorImpl(val context: Context,
     }
 
     private fun requestedElementsFrom(
-        requestedDocument: DeviceRequestParser.DocumentRequest,
+        requestedDocument: DeviceRequestParser.DocRequest,
     ): ArrayList<DocItem> {
         val result = arrayListOf<DocItem>()
         requestedDocument.namespaces.forEach { namespace ->
@@ -197,38 +213,58 @@ class DeviceResponseGeneratorImpl(val context: Context,
         return result
     }
 
-    private fun setReaderAuthResultToDocRequest(documentRequest: DeviceRequestParser.DocumentRequest): ReaderAuth? {
-        return readerTrustStore?.let { readerTS ->
-            documentRequest.readerAuth?.let {
-                val trustPath =
-                    readerTS.createCertificationTrustPath(documentRequest.readerCertificateChain)
-                val certChain = if (trustPath?.isNotEmpty() == true) {
-                    trustPath
-                } else {
-                    documentRequest.readerCertificateChain
-                }
-                var readerCommonName = ""
-                certChain.first().subjectX500Principal.name.split(",")
-                    .forEach { line ->
-                        val (key, value) = line.split("=", limit = 2)
-                        if (key == "CN") {
-                            readerCommonName = value
-                        }
-                    }
-                ReaderAuth(
-                    it,
-                    documentRequest.readerAuthenticated,
-                    documentRequest.readerCertificateChain,
-                    readerTS.validateCertificationTrustPath(documentRequest.readerCertificateChain),
-                    readerCommonName
-                )
-            }
-        }
+    private fun setReaderAuthResultToDocRequest(documentRequest: DeviceRequestParser.DocRequest): ReaderAuth? {
+        val trustStore = readerTrustStore ?: return null
+        val readerAuth = documentRequest.readerAuth ?: return null
+        val readerCertificateChain = documentRequest.readerCertificateChain ?: return null
+        if (documentRequest.readerCertificateChain?.javaX509Certificates?.isEmpty() == true) return null
+
+        val certChain =
+            trustStore.createCertificationTrustPath(readerCertificateChain.javaX509Certificates)
+                ?.takeIf { it.isNotEmpty() } ?: readerCertificateChain.javaX509Certificates
+
+        val readerCommonName = certChain.firstOrNull()
+            ?.subjectX500Principal
+            ?.name
+            ?.split(",")
+            ?.map { it.split("=", limit = 2) }
+            ?.firstOrNull { it.size == 2 && it[0] == "CN" }
+            ?.get(1)
+            ?.trim()
+            ?: ""
+        return ReaderAuth(
+            readerAuth,
+            documentRequest.readerAuthenticated,
+            readerCertificateChain.javaX509Certificates,
+            trustStore.validateCertificationTrustPath(readerCertificateChain.javaX509Certificates),
+            readerCommonName
+        )
     }
 
     private sealed interface AddDocumentToResponse {
         object Success : AddDocumentToResponse
-        data class UserAuthRequired(val keyUnlockData: AndroidKeystoreSecureArea.KeyUnlockData) :
+        data class UserAuthRequired(val keyUnlockData: AndroidKeystoreKeyUnlockData) :
             AddDocumentToResponse
+    }
+
+    private fun Document.findCredential(
+        now: Instant
+    ): MdocCredential? {
+        var candidate: MdocCredential? = null
+        certifiedCredentials
+            .filterIsInstance<MdocCredential>()
+            .filter { now >= it.validFrom && now <= it.validUntil }
+            .forEach { credential ->
+                // If we already have a candidate, prefer this one if its usage count is lower
+                candidate?.let { candidateCredential ->
+                    if (credential.usageCount < candidateCredential.usageCount) {
+                        candidate = credential
+                    }
+                } ?: run {
+                    candidate = credential
+                }
+
+            }
+        return candidate
     }
 }

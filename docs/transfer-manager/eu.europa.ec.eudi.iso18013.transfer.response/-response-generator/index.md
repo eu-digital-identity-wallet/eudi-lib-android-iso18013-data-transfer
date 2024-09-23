@@ -2,7 +2,7 @@
 
 # ResponseGenerator
 
-abstract class [ResponseGenerator](index.md)&lt;[T](index.md)&gt;
+interface [ResponseGenerator](index.md)&lt;in [T](index.md) : [Request](../-request/index.md)&gt;
 
 Response Generator
 
@@ -12,12 +12,6 @@ Response Generator
 |---|
 | [DeviceResponseGeneratorImpl](../-device-response-generator-impl/index.md) |
 
-## Constructors
-
-| | |
-|---|---|
-| [ResponseGenerator](-response-generator.md) | [androidJvm]<br>constructor() |
-
 ## Types
 
 | Name | Summary |
@@ -26,8 +20,8 @@ Response Generator
 
 ## Functions
 
-| Name | Summary |
-|---|---|
-| [createResponse](create-response.md) | [androidJvm]<br>abstract fun [createResponse](create-response.md)(disclosedDocuments: [DisclosedDocuments](../../eu.europa.ec.eudi.iso18013.transfer/-disclosed-documents/index.md)): [ResponseResult](../../eu.europa.ec.eudi.iso18013.transfer/-response-result/index.md) |
-| [parseRequest](parse-request.md) | [androidJvm]<br>abstract fun [parseRequest](parse-request.md)(request: [T](index.md)): [RequestedDocumentData](../../eu.europa.ec.eudi.iso18013.transfer/-requested-document-data/index.md) |
-| [setReaderTrustStore](set-reader-trust-store.md) | [androidJvm]<br>abstract fun [setReaderTrustStore](set-reader-trust-store.md)(readerTrustStore: [ReaderTrustStore](../../eu.europa.ec.eudi.iso18013.transfer.readerauth/-reader-trust-store/index.md)): [ResponseGenerator](index.md)&lt;[T](index.md)&gt; |
+| Name                                             | Summary                                                                                                                                                                                                                                                                                                                                         |
+|--------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [createResponse](create-response.md)             | [androidJvm]<br>abstract fun [createResponse](create-response.md)(disclosedDocuments: [DisclosedDocuments](../../eu.europa.ec.eudi.iso18013.transfer/-disclosed-documents/index.md)): [ResponseResult](../../eu.europa.ec.eudi.iso18013.transfer/-response-result/index.md)<br>Create a response based on the disclosed documents               |
+| [parseRequest](parse-request.md)                 | [androidJvm]<br>abstract fun [parseRequest](parse-request.md)(request: [T](index.md)): [RequestedDocumentData](../../eu.europa.ec.eudi.iso18013.transfer/-requested-document-data/index.md)<br>Parse the request and extract the requested document data                                                                                        |
+| [setReaderTrustStore](set-reader-trust-store.md) | [androidJvm]<br>abstract fun [setReaderTrustStore](set-reader-trust-store.md)(readerTrustStore: [ReaderTrustStore](../../eu.europa.ec.eudi.iso18013.transfer.readerauth/-reader-trust-store/index.md)): [ResponseGenerator](index.md)&lt;[T](index.md)&gt;<br>Set the reader trust store. This is used to accomplish the reader authentication. |

@@ -4,6 +4,8 @@
 
 interface [DeviceRetrievalMethod](index.md) : [RetrievalMethod](../-retrieval-method/index.md)
 
+Device Retrieval Method
+
 #### Inheritors
 
 | |

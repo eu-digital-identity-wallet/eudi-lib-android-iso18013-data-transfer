@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 European Commission
+ * Copyright (c) 2024 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.europa.ec.eudi.iso18013.transfer.internal
+
+package eu.europa.ec.eudi.iso18013.transfer
 
 import android.content.Context
 import android.content.Intent
@@ -21,18 +22,17 @@ import android.net.Uri
 import android.util.Log
 import com.android.identity.android.mdoc.deviceretrieval.DeviceRetrievalHelper
 import com.android.identity.mdoc.origininfo.OriginInfo
-import com.android.identity.mdoc.origininfo.OriginInfoReferrerUrl
+import com.android.identity.mdoc.origininfo.OriginInfoDomain
 import com.android.identity.util.Constants
-import eu.europa.ec.eudi.iso18013.transfer.DeviceRetrievalMethod
-import eu.europa.ec.eudi.iso18013.transfer.TransferEvent
-import eu.europa.ec.eudi.iso18013.transfer.TransferManager
 import eu.europa.ec.eudi.iso18013.transfer.engagement.NfcEngagementService
 import eu.europa.ec.eudi.iso18013.transfer.engagement.QrCode
+import eu.europa.ec.eudi.iso18013.transfer.internal.EngagementToApp
+import eu.europa.ec.eudi.iso18013.transfer.internal.QrEngagement
+import eu.europa.ec.eudi.iso18013.transfer.internal.TAG
+import eu.europa.ec.eudi.iso18013.transfer.internal.stopPresentation
+import eu.europa.ec.eudi.iso18013.transfer.internal.transportOptions
 import eu.europa.ec.eudi.iso18013.transfer.response.DeviceRequest
 import eu.europa.ec.eudi.iso18013.transfer.response.DeviceResponseGeneratorImpl
-import java.util.OptionalLong
-
-private const val TRANSFER_STARTED_MSG = "Transfer has already started."
 
 /**
  * Transfer Manager class used for performing device engagement and data retrieval.
@@ -41,7 +41,7 @@ private const val TRANSFER_STARTED_MSG = "Transfer has already started."
  * @param responseGenerator response generator instance that parses the request and creates the response
  * @constructor Create empty Transfer manager
  */
-internal class TransferManagerImpl(
+class TransferManagerImpl(
     context: Context,
     override val responseGenerator: DeviceResponseGeneratorImpl
 ) : TransferManager {
@@ -110,15 +110,6 @@ internal class TransferManagerImpl(
             onConnecting = {
                 transferEventListeners.onTransferEvent(TransferEvent.Connecting)
             },
-            onQrEngagementReady = {
-                transferEventListeners.onTransferEvent(
-                    TransferEvent.QrEngagementReady(
-                        QrCode(
-                            qrEngagement?.deviceEngagementUriEncoded ?: "",
-                        ),
-                    ),
-                )
-            },
             onDeviceRetrievalHelperReady = { deviceRetrievalHelper ->
                 this.deviceRetrievalHelper = deviceRetrievalHelper
                 transferEventListeners.onTransferEvent(TransferEvent.Connected)
@@ -143,8 +134,13 @@ internal class TransferManagerImpl(
                 Log.d(this.TAG, "onError: ${error.message}")
                 transferEventListeners.onTransferEvent(TransferEvent.Error(error))
             },
-        ).apply { configure() }
-
+        )
+            .apply { configure() }
+            .also { engagement ->
+                transferEventListeners.onTransferEvent(
+                    TransferEvent.QrEngagementReady(QrCode(engagement.deviceEngagementUriEncoded)),
+                )
+            }
         hasStarted = true
     }
 
@@ -219,7 +215,7 @@ internal class TransferManagerImpl(
             Log.w(this.TAG, "No referrer URI")
         } else {
             Log.i(this.TAG, "referrer: $mdocReferrerUri")
-            originInfos.add(OriginInfoReferrerUrl(mdocReferrerUri))
+            originInfos.add(OriginInfoDomain(mdocReferrerUri))
         }
 
         engagementToApp = EngagementToApp(
@@ -256,15 +252,9 @@ internal class TransferManagerImpl(
     }
 
     override fun sendResponse(responseBytes: ByteArray) {
-        val progressListener: (Long, Long) -> Unit = { progress, max ->
-            Log.d(this.TAG, "Progress: $progress of $max")
-            if (progress == max) Log.d(this.TAG, "Completed...")
-        }
         deviceRetrievalHelper?.sendDeviceResponse(
             responseBytes,
-            OptionalLong.of(Constants.SESSION_DATA_STATUS_SESSION_TERMINATION),
-            progressListener,
-            context.mainExecutor(),
+            Constants.SESSION_DATA_STATUS_SESSION_TERMINATION
         )
         transferEventListeners.onTransferEvent(TransferEvent.ResponseSent)
     }
@@ -299,8 +289,12 @@ internal class TransferManagerImpl(
         engagementToApp = null
         hasStarted = false
     }
-}
 
-private fun Collection<TransferEvent.Listener>.onTransferEvent(event: TransferEvent) {
-    forEach { it.onTransferEvent(event) }
+    companion object {
+        private const val TRANSFER_STARTED_MSG = "Transfer has already started."
+
+        private fun Collection<TransferEvent.Listener>.onTransferEvent(event: TransferEvent) {
+            forEach { it.onTransferEvent(event) }
+        }
+    }
 }

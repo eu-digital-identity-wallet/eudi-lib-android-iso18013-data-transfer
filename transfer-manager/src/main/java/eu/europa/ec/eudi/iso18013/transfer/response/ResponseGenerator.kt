@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 European Commission
+ * Copyright (c) 2023-2024 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,17 +27,36 @@ import eu.europa.ec.eudi.iso18013.transfer.DocumentsResolver
 import eu.europa.ec.eudi.iso18013.transfer.RequestedDocumentData
 import eu.europa.ec.eudi.iso18013.transfer.ResponseResult
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStore
+import kotlinx.io.files.Path
+import java.io.File
 
 /**
  * Response Generator
  */
-abstract class ResponseGenerator<T> {
-    abstract fun parseRequest(request: T): RequestedDocumentData
-    abstract fun createResponse(
-        disclosedDocuments: DisclosedDocuments
-    ): ResponseResult
+interface ResponseGenerator<in T : Request> {
+    /**
+     * Parse the request and extract the requested document data
+     *
+     * @param request
+     * @return [RequestedDocumentData]
+     */
+    fun parseRequest(request: T): RequestedDocumentData
 
-    abstract fun setReaderTrustStore(readerTrustStore: ReaderTrustStore): ResponseGenerator<T>
+    /**
+     * Create a response based on the disclosed documents
+     *
+     * @param disclosedDocuments
+     * @return [ResponseResult]
+     */
+    fun createResponse(disclosedDocuments: DisclosedDocuments): ResponseResult
+
+    /**
+     * Set the reader trust store.
+     * This is used to accomplish the reader authentication.
+     *
+     * @param readerTrustStore
+     */
+    fun setReaderTrustStore(readerTrustStore: ReaderTrustStore): ResponseGenerator<T>
 
     /**
      * Builder class for instantiating a [ResponseGenerator] implementation
@@ -52,11 +71,11 @@ abstract class ResponseGenerator<T> {
         var readerTrustStore: ReaderTrustStore? = null
 
         /**
-        * Document resolver that will be used to resolve the documents for the selective disclosure
-        * when creating the response
-        *
-        * @param documentsResolver
-        */
+         * Document resolver that will be used to resolve the documents for the selective disclosure
+         * when creating the response
+         *
+         * @param documentsResolver
+         */
         fun documentResolver(documentsResolver: DocumentsResolver) =
             apply { this.documentsResolver = documentsResolver }
 
@@ -86,21 +105,19 @@ abstract class ResponseGenerator<T> {
             } ?: throw IllegalArgumentException("documentResolver not set")
         }
 
-        private val storageEngine: StorageEngine
-            get() = AndroidStorageEngine.Builder(_context, _context.noBackupFilesDir)
+        private val storageEngine: StorageEngine by lazy {
+            AndroidStorageEngine.Builder(
+                _context,
+                Path(File(_context.noBackupFilesDir.path, "eudi-identity.bin").path)
+            )
                 .setUseEncryption(true)
                 .build()
-        private val androidSecureArea: AndroidKeystoreSecureArea
-            get() = AndroidKeystoreSecureArea(_context, storageEngine)
+        }
+
+        private val androidSecureArea: AndroidKeystoreSecureArea by lazy {
+            AndroidKeystoreSecureArea(_context, storageEngine)
+        }
     }
 }
 
-interface Response
-typealias DeviceResponseBytes = ByteArray
-class DeviceResponse(val deviceResponseBytes: DeviceResponseBytes): Response
 
-interface Request
-typealias SessionTranscriptBytes = ByteArray
-typealias DeviceRequestBytes = ByteArray
-class DeviceRequest(val deviceRequestBytes: DeviceRequestBytes,
-                    val sessionTranscriptBytes: SessionTranscriptBytes): Request

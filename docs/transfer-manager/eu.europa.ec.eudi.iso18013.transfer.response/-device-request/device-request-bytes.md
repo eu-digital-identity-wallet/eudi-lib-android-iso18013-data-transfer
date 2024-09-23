@@ -3,4 +3,4 @@
 # deviceRequestBytes
 
 [androidJvm]\
-val [deviceRequestBytes](device-request-bytes.md): [DeviceRequestBytes](../index.md#-1826744921%2FClasslikes%2F-360525760)
+val [deviceRequestBytes](device-request-bytes.md): [DeviceRequestBytes](../-device-request-bytes/index.md)

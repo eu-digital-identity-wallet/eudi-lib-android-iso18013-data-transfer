@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 European Commission
+ * Copyright (c) 2023-2024 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,15 +27,15 @@ import androidx.activity.ComponentActivity
 import com.android.identity.android.mdoc.deviceretrieval.DeviceRetrievalHelper
 import com.android.identity.android.mdoc.engagement.NfcEngagementHelper
 import com.android.identity.android.mdoc.transport.DataTransport
-import com.android.identity.internal.Util
-import com.android.identity.securearea.SecureArea
+import com.android.identity.crypto.Crypto
+import com.android.identity.crypto.EcCurve
+import com.android.identity.crypto.EcPublicKey
 import eu.europa.ec.eudi.iso18013.transfer.DeviceRetrievalMethod
 import eu.europa.ec.eudi.iso18013.transfer.TransferManager
 import eu.europa.ec.eudi.iso18013.transfer.internal.TAG
 import eu.europa.ec.eudi.iso18013.transfer.internal.connectionMethods
 import eu.europa.ec.eudi.iso18013.transfer.internal.mainExecutor
 import eu.europa.ec.eudi.iso18013.transfer.internal.transportOptions
-import java.security.PublicKey
 
 /**
  * Abstract Nfc engagement service.
@@ -119,8 +119,8 @@ abstract class NfcEngagementService : HostApduService() {
 
     private var deviceRetrievalHelper: DeviceRetrievalHelper? = null
 
-    private val eDeviceKeyPair by lazy {
-        Util.createEphemeralKeyPair(SecureArea.EC_CURVE_P256)
+    private val eDevicePrivateKey by lazy {
+        Crypto.createEcPrivateKey(EcCurve.P256)
     }
 
     companion object {
@@ -199,13 +199,13 @@ abstract class NfcEngagementService : HostApduService() {
                 return
             }
 
-            Log.d(this.TAG, "OnDeviceConnected via NFC: nfcEngagement=$nfcEngagement")
+            Log.d(this.TAG, "onDeviceConnected via NFC: nfcEngagement=$nfcEngagement")
 
             val builder = DeviceRetrievalHelper.Builder(
                 applicationContext,
                 deviceRetrievalHelperListener,
                 application.mainExecutor(),
-                eDeviceKeyPair,
+                eDevicePrivateKey,
             )
             builder.useForwardEngagement(
                 transport,
@@ -221,15 +221,20 @@ abstract class NfcEngagementService : HostApduService() {
             Log.d(this.TAG, "NFC onError: ${error.message}")
             onCommunicationError(error)
         }
+
+        override fun onHandoverSelectMessageSent() {
+            Log.d(this.TAG, "NFC Engagement: Handover Select Message Sent")
+            Log.d(this.TAG, "NFC Engagement: NegotiatedHandover not supported yet")
+        }
     }
 
     private val deviceRetrievalHelperListener = object : DeviceRetrievalHelper.Listener {
-        override fun onEReaderKeyReceived(p0: PublicKey) {
-            Log.d(this.TAG, "DeviceRetrievalHelper Listener (NFC): OnEReaderKeyReceived")
+        override fun onEReaderKeyReceived(eReaderKey: EcPublicKey) {
+            Log.d(this.TAG, "DeviceRetrievalHelper Listener (NFC): onEReaderKeyReceived")
         }
 
         override fun onDeviceRequest(deviceRequestBytes: ByteArray) {
-            Log.d(this.TAG, "DeviceRetrievalHelper Listener (NFC): OnDeviceRequest")
+            Log.d(this.TAG, "DeviceRetrievalHelper Listener (NFC): onDeviceRequest")
             onNewDeviceRequest(deviceRequestBytes)
         }
 
@@ -249,7 +254,7 @@ abstract class NfcEngagementService : HostApduService() {
         transferManager.setupNfcEngagement(this)
         nfcEngagement = NfcEngagementHelper.Builder(
             applicationContext,
-            eDeviceKeyPair.public,
+            eDevicePrivateKey.publicKey,
             retrievalMethods.transportOptions,
             nfcEngagementListener,
             applicationContext.mainExecutor(),

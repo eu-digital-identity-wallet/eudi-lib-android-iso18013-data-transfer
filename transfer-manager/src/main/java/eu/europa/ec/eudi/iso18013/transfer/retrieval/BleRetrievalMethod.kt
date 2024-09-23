@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 European Commission
+ * Copyright (c) 2023-2024 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,12 @@ package eu.europa.ec.eudi.iso18013.transfer.retrieval
 
 import eu.europa.ec.eudi.iso18013.transfer.DeviceRetrievalMethod
 
+/**
+ * BLE Retrieval Method
+ * @property peripheralServerMode set if the peripheral server mode is enabled
+ * @property centralClientMode set if the central client mode is enabled
+ * @property clearBleCache set if the BLE cache should be cleared
+ */
 data class BleRetrievalMethod(
     val peripheralServerMode: Boolean,
     val centralClientMode: Boolean,

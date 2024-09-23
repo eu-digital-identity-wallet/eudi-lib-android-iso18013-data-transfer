@@ -4,7 +4,7 @@
 
 ## Types
 
-| Name | Summary |
-|---|---|
+| Name                                                     | Summary                                                                                                                                                                                                                                        |
+|----------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [NfcEngagementService](-nfc-engagement-service/index.md) | [androidJvm]<br>abstract class [NfcEngagementService](-nfc-engagement-service/index.md) : [HostApduService](https://developer.android.com/reference/kotlin/android/nfc/cardemulation/HostApduService.html)<br>Abstract Nfc engagement service. |
-| [QrCode](-qr-code/index.md) | [androidJvm]<br>data class [QrCode](-qr-code/index.md)(val content: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)) |
+| [QrCode](-qr-code/index.md)                              | [androidJvm]<br>data class [QrCode](-qr-code/index.md)(val content: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html))<br>Wrapper for a QR code.                                                                |

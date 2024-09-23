@@ -3,16 +3,19 @@
 # DeviceResponse
 
 [androidJvm]\
-class [DeviceResponse](index.md)(val deviceResponseBytes: [DeviceResponseBytes](../index.md#-1761425419%2FClasslikes%2F-360525760)) : [Response](../-response/index.md)
+class [DeviceResponse](index.md)(val
+deviceResponseBytes: [DeviceResponseBytes](../-device-response-bytes/index.md)) : [Response](../-response/index.md)
+
+Represents a Device Response
 
 ## Constructors
 
-| | |
-|---|---|
-| [DeviceResponse](-device-response.md) | [androidJvm]<br>constructor(deviceResponseBytes: [DeviceResponseBytes](../index.md#-1761425419%2FClasslikes%2F-360525760)) |
+|                                       |                                                                                                             |
+|---------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| [DeviceResponse](-device-response.md) | [androidJvm]<br>constructor(deviceResponseBytes: [DeviceResponseBytes](../-device-response-bytes/index.md)) |
 
 ## Properties
 
-| Name | Summary |
-|---|---|
-| [deviceResponseBytes](device-response-bytes.md) | [androidJvm]<br>val [deviceResponseBytes](device-response-bytes.md): [DeviceResponseBytes](../index.md#-1761425419%2FClasslikes%2F-360525760) |
+| Name                                            | Summary                                                                                                                                                     |
+|-------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [deviceResponseBytes](device-response-bytes.md) | [androidJvm]<br>val [deviceResponseBytes](device-response-bytes.md): [DeviceResponseBytes](../-device-response-bytes/index.md)<br>the device response bytes |

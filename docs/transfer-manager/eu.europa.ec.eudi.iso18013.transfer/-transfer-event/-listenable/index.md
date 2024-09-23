@@ -4,6 +4,8 @@
 
 interface [Listenable](index.md)
 
+Interface for events listenable
+
 #### Inheritors
 
 | |
