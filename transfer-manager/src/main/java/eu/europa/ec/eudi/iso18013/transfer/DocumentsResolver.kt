@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 European Commission
+ * Copyright (c) 2023-2024 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,14 @@
  */
 package eu.europa.ec.eudi.iso18013.transfer
 
+/**
+ * Interface for resolving the documents for the given [docRequest].
+ */
 fun interface DocumentsResolver {
-
+    /**
+     * Resolves the documents for the given [docRequest].
+     * @param docRequest the request for the documents
+     * @return the list of documents
+     */
     fun resolveDocuments(docRequest: DocRequest): List<RequestDocument>
 }

@@ -2,16 +2,27 @@
 
 # TransferManager
 
-[androidJvm]\
 interface [TransferManager](index.md) : [TransferEvent.Listenable](../-transfer-event/-listenable/index.md)
 
 Transfer manager
+
+#### Inheritors
+
+|                                                           |
+|-----------------------------------------------------------|
+| [TransferManagerImpl](../-transfer-manager-impl/index.md) |
 
 ## Types
 
 | Name | Summary |
 |---|---|
 | [Builder](-builder/index.md) | [androidJvm]<br>class [Builder](-builder/index.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html))<br>Builder class for instantiating a [TransferManager](index.md) implementation |
+
+## Properties
+
+| Name                                       | Summary                                                                                                                                                                                                                                                                           |
+|--------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [responseGenerator](response-generator.md) | [androidJvm]<br>abstract val [responseGenerator](response-generator.md): [ResponseGenerator](../../eu.europa.ec.eudi.iso18013.transfer.response/-response-generator/index.md)&lt;[DeviceRequest](../../eu.europa.ec.eudi.iso18013.transfer.response/-device-request/index.md)&gt; |
 
 ## Functions
 
@@ -26,9 +37,3 @@ Transfer manager
 | [startEngagementToApp](start-engagement-to-app.md) | [androidJvm]<br>abstract fun [startEngagementToApp](start-engagement-to-app.md)(intent: [Intent](https://developer.android.com/reference/kotlin/android/content/Intent.html))<br>Starts the engagement to app, according to ISO 18013-7. |
 | [startQrEngagement](start-qr-engagement.md) | [androidJvm]<br>abstract fun [startQrEngagement](start-qr-engagement.md)()<br>Starts the QR Engagement and generates the QR code |
 | [stopPresentation](stop-presentation.md) | [androidJvm]<br>abstract fun [stopPresentation](stop-presentation.md)(sendSessionTerminationMessage: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) = true, useTransportSpecificSessionTermination: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) = false)<br>Closes the connection and clears the data of the session |
-
-## Properties
-
-| Name | Summary |
-|---|---|
-| [responseGenerator](response-generator.md) | [androidJvm]<br>abstract val [responseGenerator](response-generator.md): [ResponseGenerator](../../eu.europa.ec.eudi.iso18013.transfer.response/-response-generator/index.md)&lt;[DeviceRequest](../../eu.europa.ec.eudi.iso18013.transfer.response/-device-request/index.md)&gt; |

@@ -5,6 +5,8 @@
 [androidJvm]\
 data class [Error](index.md)(val error: [Throwable](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html)) : [TransferEvent](../index.md)
 
+Error event. This event is triggered when an error occurs.
+
 ## Constructors
 
 | | |
@@ -13,6 +15,6 @@ data class [Error](index.md)(val error: [Throwable](https://kotlinlang.org/api/l
 
 ## Properties
 
-| Name | Summary |
-|---|---|
-| [error](error.md) | [androidJvm]<br>val [error](error.md): [Throwable](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html) |
+| Name              | Summary                                                                                                                                    |
+|-------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| [error](error.md) | [androidJvm]<br>val [error](error.md): [Throwable](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html)<br>the error |

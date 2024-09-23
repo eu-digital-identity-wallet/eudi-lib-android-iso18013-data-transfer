@@ -4,3 +4,5 @@
 
 [androidJvm]\
 constructor(content: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html))
+
+Creates a QR code with the given content

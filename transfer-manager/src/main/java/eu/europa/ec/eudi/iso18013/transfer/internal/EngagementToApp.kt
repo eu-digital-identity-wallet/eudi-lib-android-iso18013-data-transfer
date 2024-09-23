@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 European Commission
+ * Copyright (c) 2023-2024 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,11 @@ import android.util.Log
 import com.android.identity.android.mdoc.deviceretrieval.DeviceRetrievalHelper
 import com.android.identity.android.mdoc.transport.DataTransport
 import com.android.identity.android.mdoc.transport.DataTransportOptions
-import com.android.identity.internal.Util
+import com.android.identity.crypto.Crypto
+import com.android.identity.crypto.EcCurve
+import com.android.identity.crypto.EcPublicKey
 import com.android.identity.mdoc.engagement.EngagementParser
 import com.android.identity.mdoc.origininfo.OriginInfo
-import com.android.identity.securearea.SecureArea
-import java.security.PublicKey
 
 /**
  * Set up Engagement-to-app engagement transmission technology according to the ISO 18013-7
@@ -87,10 +87,10 @@ internal class EngagementToApp(
     private val onCommunicationError: (error: Throwable) -> Unit,
 ) {
 
-    private val eDeviceKeyPair = Util.createEphemeralKeyPair(SecureArea.EC_CURVE_P256)
+    private val eDevicePrivateKey = Crypto.createEcPrivateKey(EcCurve.P256)
 
     private val presentationListener = object : DeviceRetrievalHelper.Listener {
-        override fun onEReaderKeyReceived(p0: PublicKey) {
+        override fun onEReaderKeyReceived(eReaderKey: EcPublicKey) {
             Log.d(TAG, "DeviceRetrievalHelper Listener (QR): OnEReaderKeyReceived")
         }
 
@@ -134,7 +134,7 @@ internal class EngagementToApp(
         val transport = DataTransport.fromConnectionMethod(
             context,
             connectionMethod,
-            DataTransport.ROLE_MDOC,
+            DataTransport.Role.MDOC,
             dataTransportOptions,
         )
 
@@ -142,7 +142,7 @@ internal class EngagementToApp(
             context,
             presentationListener,
             context.mainExecutor(),
-            eDeviceKeyPair,
+            eDevicePrivateKey,
         ).useReverseEngagement(transport, encodedReaderEngagement, origins)
         builder.build().apply {
             onPresentationReady(this)

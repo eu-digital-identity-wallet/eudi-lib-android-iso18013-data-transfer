@@ -4,6 +4,8 @@
 
 interface [RetrievalMethod](index.md)
 
+Retrieval Method
+
 #### Inheritors
 
 | |

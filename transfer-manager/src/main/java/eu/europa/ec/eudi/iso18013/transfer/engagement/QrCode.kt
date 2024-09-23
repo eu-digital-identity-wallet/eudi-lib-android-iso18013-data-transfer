@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 European Commission
+ * Copyright (c) 2023-2024 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,21 @@ import android.graphics.Bitmap
 import android.view.View
 import eu.europa.ec.eudi.iso18013.transfer.internal.QrCodeUtils
 
+/**
+ * Wrapper for a QR code.
+ * @property content the content of the QR code
+ * @constructor Creates a QR code with the given [content]
+ */
 data class QrCode(val content: String) {
+    /**
+     * Returns the QR code as a [View] with the given [size].
+     */
     fun asView(context: Context, size: Int): View =
         QrCodeUtils.getQRCodeAsView(context, content, size)
 
+    /**
+     * Returns the QR code as a [Bitmap] with the given [size].
+     */
     fun asBitmap(size: Int): Bitmap =
         QrCodeUtils.getQRCodeAsBitmap(content, size)
 }

@@ -3,10 +3,6 @@
 # ResponseSent
 
 [androidJvm]\
-object [ResponseSent](index.md) : [TransferEvent](../index.md)
+data object [ResponseSent](index.md) : [TransferEvent](../index.md)
 
-## Functions
-
-| Name | Summary |
-|---|---|
-| [toString](to-string.md) | [androidJvm]<br>open override fun [toString](to-string.md)(): [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
+Response sent event. This event is triggered when the response is sent.

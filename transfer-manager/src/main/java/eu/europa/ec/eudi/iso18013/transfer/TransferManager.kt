@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 European Commission
+ * Copyright (c) 2023-2024 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package eu.europa.ec.eudi.iso18013.transfer
 import android.content.Context
 import android.content.Intent
 import eu.europa.ec.eudi.iso18013.transfer.engagement.NfcEngagementService
-import eu.europa.ec.eudi.iso18013.transfer.internal.TransferManagerImpl
 import eu.europa.ec.eudi.iso18013.transfer.response.DeviceRequest
 import eu.europa.ec.eudi.iso18013.transfer.response.DeviceResponseGeneratorImpl
 import eu.europa.ec.eudi.iso18013.transfer.response.ResponseGenerator

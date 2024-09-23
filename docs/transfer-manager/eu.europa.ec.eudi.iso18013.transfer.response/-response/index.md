@@ -4,6 +4,8 @@
 
 interface [Response](index.md)
 
+Interface for response
+
 #### Inheritors
 
 | |

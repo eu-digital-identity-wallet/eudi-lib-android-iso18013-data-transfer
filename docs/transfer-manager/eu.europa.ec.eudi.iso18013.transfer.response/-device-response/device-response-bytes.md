@@ -3,4 +3,4 @@
 # deviceResponseBytes
 
 [androidJvm]\
-val [deviceResponseBytes](device-response-bytes.md): [DeviceResponseBytes](../index.md#-1761425419%2FClasslikes%2F-360525760)
+val [deviceResponseBytes](device-response-bytes.md): [DeviceResponseBytes](../-device-response-bytes/index.md)

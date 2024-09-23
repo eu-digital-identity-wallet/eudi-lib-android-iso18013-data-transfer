@@ -2,7 +2,7 @@
 
 # ResponseResult
 
-interface [ResponseResult](index.md)
+sealed interface [ResponseResult](index.md)
 
 #### Inheritors
 

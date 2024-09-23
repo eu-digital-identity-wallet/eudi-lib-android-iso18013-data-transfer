@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 European Commission
+ * Copyright (c) 2023-2024 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@ package eu.europa.ec.eudi.iso18013.transfer.internal
 import com.android.identity.android.mdoc.transport.DataTransportOptions
 import com.android.identity.mdoc.connectionmethod.ConnectionMethod
 import com.android.identity.mdoc.connectionmethod.ConnectionMethodBle
+import com.android.identity.util.UUID
 import eu.europa.ec.eudi.iso18013.transfer.DeviceRetrievalMethod
 import eu.europa.ec.eudi.iso18013.transfer.retrieval.BleRetrievalMethod
-import java.util.UUID
 
 internal val DeviceRetrievalMethod.connectionMethod: List<ConnectionMethod>
     get() = when (this) {

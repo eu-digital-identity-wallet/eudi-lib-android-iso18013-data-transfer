@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 European Commission
+ * Copyright (c) 2023-2024 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,7 @@ package eu.europa.ec.eudi.iso18013.transfer.internal.readerauth.profile
 import android.util.Log
 import eu.europa.ec.eudi.iso18013.transfer.mockAndroidLog
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadCert
-import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadInvalidCert
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadTrustCert
-import org.bouncycastle.asn1.x509.Extension
 import org.junit.After
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -30,7 +28,6 @@ import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import org.mockito.MockedStatic
 import org.mockito.Mockito
-import org.mockito.kotlin.any
 import java.security.cert.X509Certificate
 import javax.security.auth.x500.X500Principal
 

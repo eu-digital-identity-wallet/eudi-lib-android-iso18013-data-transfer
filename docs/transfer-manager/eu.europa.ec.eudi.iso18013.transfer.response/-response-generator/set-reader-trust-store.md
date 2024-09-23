@@ -4,3 +4,13 @@
 
 [androidJvm]\
 abstract fun [setReaderTrustStore](set-reader-trust-store.md)(readerTrustStore: [ReaderTrustStore](../../eu.europa.ec.eudi.iso18013.transfer.readerauth/-reader-trust-store/index.md)): [ResponseGenerator](index.md)&lt;[T](index.md)&gt;
+
+Set the reader trust store. This is used to accomplish the reader authentication.
+
+#### Parameters
+
+androidJvm
+
+|                  |
+|------------------|
+| readerTrustStore |

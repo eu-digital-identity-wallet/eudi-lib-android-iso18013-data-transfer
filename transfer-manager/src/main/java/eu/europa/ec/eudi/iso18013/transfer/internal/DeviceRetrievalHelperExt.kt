@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 European Commission
+ * Copyright (c) 2023-2024 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package eu.europa.ec.eudi.iso18013.transfer.internal
 import android.util.Log
 import com.android.identity.android.mdoc.deviceretrieval.DeviceRetrievalHelper
 import com.android.identity.util.Constants
-import java.util.OptionalLong
 
 internal fun DeviceRetrievalHelper.stopPresentation(
     sendSessionTerminationMessage: Boolean,
@@ -31,7 +30,7 @@ internal fun DeviceRetrievalHelper.stopPresentation(
             } else {
                 sendDeviceResponse(
                     null,
-                    OptionalLong.of(Constants.SESSION_DATA_STATUS_SESSION_TERMINATION),
+                    Constants.SESSION_DATA_STATUS_SESSION_TERMINATION,
                 )
             }
         }

@@ -5,6 +5,8 @@
 [androidJvm]\
 data class [Redirect](index.md)(val redirectUri: [URI](https://developer.android.com/reference/kotlin/java/net/URI.html)) : [TransferEvent](../index.md)
 
+Redirect event. This event is triggered when the requires a redirect.
+
 ## Constructors
 
 | | |
@@ -13,6 +15,6 @@ data class [Redirect](index.md)(val redirectUri: [URI](https://developer.android
 
 ## Properties
 
-| Name | Summary |
-|---|---|
-| [redirectUri](redirect-uri.md) | [androidJvm]<br>val [redirectUri](redirect-uri.md): [URI](https://developer.android.com/reference/kotlin/java/net/URI.html) |
+| Name                           | Summary                                                                                                                                         |
+|--------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| [redirectUri](redirect-uri.md) | [androidJvm]<br>val [redirectUri](redirect-uri.md): [URI](https://developer.android.com/reference/kotlin/java/net/URI.html)<br>the redirect URI |

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 European Commission
+ * Copyright (c) 2023-2024 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,7 @@ import androidx.biometric.BiometricPrompt
 import eu.europa.ec.eudi.iso18013.transfer.response.Response
 
 sealed interface ResponseResult {
-    data class UserAuthRequired(val cryptoObject: BiometricPrompt.CryptoObject?) :
-        ResponseResult
+    data class UserAuthRequired(val cryptoObject: BiometricPrompt.CryptoObject?) : ResponseResult
 
     data class Success(val response: Response) : ResponseResult
 

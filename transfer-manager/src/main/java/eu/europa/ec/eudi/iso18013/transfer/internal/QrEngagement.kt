@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 European Commission
+ * Copyright (c) 2023-2024 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ import android.util.Log
 import com.android.identity.android.mdoc.deviceretrieval.DeviceRetrievalHelper
 import com.android.identity.android.mdoc.engagement.QrEngagementHelper
 import com.android.identity.android.mdoc.transport.DataTransport
-import com.android.identity.internal.Util
-import com.android.identity.securearea.SecureArea
+import com.android.identity.crypto.Crypto
+import com.android.identity.crypto.EcCurve
+import com.android.identity.crypto.EcPublicKey
 import eu.europa.ec.eudi.iso18013.transfer.DeviceRetrievalMethod
-import java.security.PublicKey
 
 /**
  * Qr engagement
@@ -41,7 +41,6 @@ internal class QrEngagement(
     private val context: Context,
     private val retrievalMethods: List<DeviceRetrievalMethod>,
     private val onConnecting: () -> Unit,
-    private val onQrEngagementReady: () -> Unit,
     private val onDeviceRetrievalHelperReady: (deviceRetrievalHelper: DeviceRetrievalHelper) -> Unit,
     private val onNewDeviceRequest: (request: ByteArray) -> Unit,
     private val onDisconnected: (transportSpecificTermination: Boolean) -> Unit,
@@ -50,16 +49,11 @@ internal class QrEngagement(
 
     private var deviceRetrievalHelper: DeviceRetrievalHelper? = null
 
-    private val eDeviceKeyPair by lazy {
-        Util.createEphemeralKeyPair(SecureArea.EC_CURVE_P256)
+    private val eDevicePrivateKey by lazy {
+        Crypto.createEcPrivateKey(EcCurve.P256)
     }
 
     private val qrEngagementListener = object : QrEngagementHelper.Listener {
-
-        override fun onDeviceEngagementReady() {
-            Log.d(this.TAG, "QR Engagement: Device Engagement Ready")
-            onQrEngagementReady()
-        }
 
         override fun onDeviceConnecting() {
             Log.d(this.TAG, "QR Engagement: Device Connecting")
@@ -68,7 +62,10 @@ internal class QrEngagement(
 
         override fun onDeviceConnected(transport: DataTransport) {
             if (deviceRetrievalHelper != null) {
-                Log.d(this.TAG, "OnDeviceConnected for QR engagement -> ignoring due to active presentation")
+                Log.d(
+                    this.TAG,
+                    "OnDeviceConnected for QR engagement -> ignoring due to active presentation"
+                )
                 return
             }
 
@@ -78,7 +75,7 @@ internal class QrEngagement(
                 context,
                 deviceRetrievalHelperListener,
                 context.mainExecutor(),
-                eDeviceKeyPair,
+                eDevicePrivateKey,
             )
             builder.useForwardEngagement(
                 transport,
@@ -97,7 +94,7 @@ internal class QrEngagement(
     }
 
     private val deviceRetrievalHelperListener = object : DeviceRetrievalHelper.Listener {
-        override fun onEReaderKeyReceived(p0: PublicKey) {
+        override fun onEReaderKeyReceived(eReaderKey: EcPublicKey) {
             Log.d(this.TAG, "DeviceRetrievalHelper Listener (NFC): OnEReaderKeyReceived")
         }
 
@@ -123,13 +120,12 @@ internal class QrEngagement(
         get() = qrEngagement.deviceEngagementUriEncoded
 
     /**
-     * Configuration of the QR Engagement
-     *
+     * Configures the QR engagement
      */
     fun configure() {
         qrEngagement = QrEngagementHelper.Builder(
             context,
-            eDeviceKeyPair.public,
+            eDevicePrivateKey.publicKey,
             retrievalMethods.transportOptions,
             qrEngagementListener,
             context.mainExecutor(),
@@ -139,7 +135,6 @@ internal class QrEngagement(
 
     /**
      * Closes the connection with the mdoc verifier
-     *
      */
     fun close() {
         try {
