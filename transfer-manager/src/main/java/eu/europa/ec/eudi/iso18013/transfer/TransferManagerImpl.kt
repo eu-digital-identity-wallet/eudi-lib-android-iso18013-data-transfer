@@ -31,7 +31,7 @@ import eu.europa.ec.eudi.iso18013.transfer.internal.TAG
 import eu.europa.ec.eudi.iso18013.transfer.internal.stopPresentation
 import eu.europa.ec.eudi.iso18013.transfer.internal.transportOptions
 import eu.europa.ec.eudi.iso18013.transfer.response.DeviceRequest
-import eu.europa.ec.eudi.iso18013.transfer.response.DeviceResponseGeneratorImpl
+import eu.europa.ec.eudi.iso18013.transfer.response.ResponseGenerator
 
 /**
  * Transfer Manager class used for performing device engagement and data retrieval.
@@ -42,7 +42,7 @@ import eu.europa.ec.eudi.iso18013.transfer.response.DeviceResponseGeneratorImpl
  */
 class TransferManagerImpl(
     context: Context,
-    override val responseGenerator: DeviceResponseGeneratorImpl
+    override val responseGenerator: ResponseGenerator<DeviceRequest>
 ) : TransferManager {
     private val context = context.applicationContext
 

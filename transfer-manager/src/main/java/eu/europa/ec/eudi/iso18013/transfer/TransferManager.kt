@@ -19,7 +19,6 @@ import android.content.Context
 import android.content.Intent
 import eu.europa.ec.eudi.iso18013.transfer.engagement.NfcEngagementService
 import eu.europa.ec.eudi.iso18013.transfer.response.DeviceRequest
-import eu.europa.ec.eudi.iso18013.transfer.response.DeviceResponseGeneratorImpl
 import eu.europa.ec.eudi.iso18013.transfer.response.ResponseGenerator
 
 /**
@@ -97,7 +96,7 @@ interface TransferManager : TransferEvent.Listenable {
          *
          * @param responseGenerator
          */
-        fun responseGenerator(responseGenerator: DeviceResponseGeneratorImpl) =
+        fun responseGenerator(responseGenerator: ResponseGenerator<DeviceRequest>) =
             apply { this.responseGenerator = responseGenerator }
 
         /**
@@ -115,7 +114,7 @@ interface TransferManager : TransferEvent.Listenable {
          */
         fun build(): TransferManager {
             return responseGenerator?.let { responseGenerator ->
-                TransferManagerImpl(context, responseGenerator as DeviceResponseGeneratorImpl).apply {
+                TransferManagerImpl(context, responseGenerator).apply {
                     retrievalMethods?.let { setRetrievalMethods(it) }
                 }
             } ?: throw IllegalArgumentException("responseGenerator not set")
