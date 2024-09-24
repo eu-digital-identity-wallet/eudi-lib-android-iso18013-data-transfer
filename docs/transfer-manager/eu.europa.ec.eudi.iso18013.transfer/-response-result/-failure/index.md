@@ -3,7 +3,13 @@
 # Failure
 
 [androidJvm]\
-data class [Failure](index.md)(val throwable: [Throwable](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html)) : [ResponseResult](../index.md)
+data class [Failure](index.md)
+&lt;[R](index.md) : [Response](../../../eu.europa.ec.eudi.iso18013.transfer.response/-response/index.md)
+&gt;(val
+throwable: [Throwable](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html)) : [ResponseResult](../index.md)
+&lt;[R](index.md)&gt;
+
+The response generation failed
 
 ## Constructors
 
@@ -13,6 +19,6 @@ data class [Failure](index.md)(val throwable: [Throwable](https://kotlinlang.org
 
 ## Properties
 
-| Name | Summary |
-|---|---|
-| [throwable](throwable.md) | [androidJvm]<br>val [throwable](throwable.md): [Throwable](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html) |
+| Name                      | Summary                                                                                                                                                |
+|---------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [throwable](throwable.md) | [androidJvm]<br>val [throwable](throwable.md): [Throwable](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html)<br>the throwable |

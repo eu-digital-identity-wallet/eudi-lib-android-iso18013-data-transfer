@@ -63,7 +63,7 @@ class DeviceResponseGeneratorImpl(
     private val documentsResolver: DocumentsResolver,
     private val storageEngine: StorageEngine,
     private val secureArea: AndroidKeystoreSecureArea
-) : ResponseGenerator<DeviceRequest> {
+) : ResponseGenerator<DeviceRequest, DeviceResponse> {
 
     private var readerTrustStore: ReaderTrustStore? = null
     private var sessionTranscript: ByteArray? = null
@@ -112,7 +112,7 @@ class DeviceResponseGeneratorImpl(
      */
     override fun createResponse(
         disclosedDocuments: DisclosedDocuments
-    ): ResponseResult {
+    ): ResponseResult<DeviceResponse> {
         try {
             val deviceResponse = DeviceResponseGenerator(Constants.DEVICE_RESPONSE_STATUS_OK)
             disclosedDocuments.documents.forEach { responseDocument ->

@@ -5,7 +5,7 @@
 [androidJvm]\
 fun [responseGenerator](response-generator.md)(
 responseGenerator: [ResponseGenerator](../../../eu.europa.ec.eudi.iso18013.transfer.response/-response-generator/index.md)
-&lt;[DeviceRequest](../../../eu.europa.ec.eudi.iso18013.transfer.response/-device-request/index.md)
+&lt;[DeviceRequest](../../../eu.europa.ec.eudi.iso18013.transfer.response/-device-request/index.md), [DeviceResponse](../../../eu.europa.ec.eudi.iso18013.transfer.response/-device-response/index.md)
 &gt;): [TransferManager.Builder](index.md)
 
 Response generator that will be parse the request and will create the response
@@ -19,4 +19,6 @@ androidJvm
 | responseGenerator |
 
 [androidJvm]\
-var [responseGenerator](response-generator.md): [ResponseGenerator](../../../eu.europa.ec.eudi.iso18013.transfer.response/-response-generator/index.md)&lt;[DeviceRequest](../../../eu.europa.ec.eudi.iso18013.transfer.response/-device-request/index.md)&gt;?
+var [responseGenerator](response-generator.md): [ResponseGenerator](../../../eu.europa.ec.eudi.iso18013.transfer.response/-response-generator/index.md)
+&lt;[DeviceRequest](../../../eu.europa.ec.eudi.iso18013.transfer.response/-device-request/index.md), [DeviceResponse](../../../eu.europa.ec.eudi.iso18013.transfer.response/-device-response/index.md)
+&gt;?

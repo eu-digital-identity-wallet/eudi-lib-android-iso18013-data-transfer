@@ -3,7 +3,9 @@
 # createResponse
 
 [androidJvm]\
-open override fun [createResponse](create-response.md)(disclosedDocuments: [DisclosedDocuments](../../eu.europa.ec.eudi.iso18013.transfer/-disclosed-documents/index.md)): [ResponseResult](../../eu.europa.ec.eudi.iso18013.transfer/-response-result/index.md)
+open override fun [createResponse](create-response.md)(
+disclosedDocuments: [DisclosedDocuments](../../eu.europa.ec.eudi.iso18013.transfer/-disclosed-documents/index.md)): [ResponseResult](../../eu.europa.ec.eudi.iso18013.transfer/-response-result/index.md)
+&lt;[DeviceResponse](../-device-response/index.md)&gt;
 
 Creates a response and returns a ResponseResult
 

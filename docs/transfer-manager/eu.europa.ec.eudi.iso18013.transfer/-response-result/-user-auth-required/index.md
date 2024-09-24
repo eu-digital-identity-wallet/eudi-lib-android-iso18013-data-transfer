@@ -3,7 +3,13 @@
 # UserAuthRequired
 
 [androidJvm]\
-data class [UserAuthRequired](index.md)(val cryptoObject: [BiometricPrompt.CryptoObject](https://developer.android.com/reference/kotlin/androidx/biometric/BiometricPrompt.CryptoObject.html)?) : [ResponseResult](../index.md)
+data class [UserAuthRequired](index.md)
+&lt;[R](index.md) : [Response](../../../eu.europa.ec.eudi.iso18013.transfer.response/-response/index.md)
+&gt;(val
+cryptoObject: [BiometricPrompt.CryptoObject](https://developer.android.com/reference/kotlin/androidx/biometric/BiometricPrompt.CryptoObject.html)?) : [ResponseResult](../index.md)
+&lt;[R](index.md)&gt;
+
+User authentication is required to proceed with the response generation
 
 ## Constructors
 
@@ -13,6 +19,6 @@ data class [UserAuthRequired](index.md)(val cryptoObject: [BiometricPrompt.Crypt
 
 ## Properties
 
-| Name | Summary |
-|---|---|
-| [cryptoObject](crypto-object.md) | [androidJvm]<br>val [cryptoObject](crypto-object.md): [BiometricPrompt.CryptoObject](https://developer.android.com/reference/kotlin/androidx/biometric/BiometricPrompt.CryptoObject.html)? |
+| Name                             | Summary                                                                                                                                                                                                         |
+|----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [cryptoObject](crypto-object.md) | [androidJvm]<br>val [cryptoObject](crypto-object.md): [BiometricPrompt.CryptoObject](https://developer.android.com/reference/kotlin/androidx/biometric/BiometricPrompt.CryptoObject.html)?<br>the crypto object |
