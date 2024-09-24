@@ -25,7 +25,6 @@ import com.android.identity.mdoc.origininfo.OriginInfo
 import com.android.identity.mdoc.origininfo.OriginInfoDomain
 import com.android.identity.util.Constants
 import eu.europa.ec.eudi.iso18013.transfer.engagement.NfcEngagementService
-import eu.europa.ec.eudi.iso18013.transfer.engagement.QrCode
 import eu.europa.ec.eudi.iso18013.transfer.internal.EngagementToApp
 import eu.europa.ec.eudi.iso18013.transfer.internal.QrEngagement
 import eu.europa.ec.eudi.iso18013.transfer.internal.TAG
@@ -107,6 +106,11 @@ class TransferManagerImpl(
         qrEngagement = QrEngagement(
             context = context,
             retrievalMethods = retrievalMethods,
+            onQrEngagementReady = { qrCode ->
+                transferEventListeners.onTransferEvent(
+                    TransferEvent.QrEngagementReady(qrCode),
+                )
+            },
             onConnecting = {
                 transferEventListeners.onTransferEvent(TransferEvent.Connecting)
             },
@@ -134,13 +138,7 @@ class TransferManagerImpl(
                 Log.d(this.TAG, "onError: ${error.message}")
                 transferEventListeners.onTransferEvent(TransferEvent.Error(error))
             },
-        )
-            .apply { configure() }
-            .also { engagement ->
-                transferEventListeners.onTransferEvent(
-                    TransferEvent.QrEngagementReady(QrCode(engagement.deviceEngagementUriEncoded)),
-                )
-            }
+        ).apply { configure() }
         hasStarted = true
     }
 
