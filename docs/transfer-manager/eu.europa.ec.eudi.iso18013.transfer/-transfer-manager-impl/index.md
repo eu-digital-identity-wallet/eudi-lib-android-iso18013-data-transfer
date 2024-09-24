@@ -4,7 +4,9 @@
 
 class [TransferManagerImpl](index.md)(
 context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html), val
-responseGenerator: [DeviceResponseGeneratorImpl](../../eu.europa.ec.eudi.iso18013.transfer.response/-device-response-generator-impl/index.md)) : [TransferManager](../-transfer-manager/index.md)
+responseGenerator: [ResponseGenerator](../../eu.europa.ec.eudi.iso18013.transfer.response/-response-generator/index.md)
+&lt;[DeviceRequest](../../eu.europa.ec.eudi.iso18013.transfer.response/-device-request/index.md)
+&gt;) : [TransferManager](../-transfer-manager/index.md)
 
 Transfer Manager class used for performing device engagement and data retrieval.
 
@@ -19,9 +21,9 @@ androidJvm
 
 ## Constructors
 
-|                                                  |                                                                                                                                                                                                                                                                                                              |
-|--------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [TransferManagerImpl](-transfer-manager-impl.md) | [androidJvm]<br>constructor(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html), responseGenerator: [DeviceResponseGeneratorImpl](../../eu.europa.ec.eudi.iso18013.transfer.response/-device-response-generator-impl/index.md))<br>Create empty Transfer manager |
+|                                                  |                                                                                                                                                                                                                                                                                                                                                                                            |
+|--------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [TransferManagerImpl](-transfer-manager-impl.md) | [androidJvm]<br>constructor(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html), responseGenerator: [ResponseGenerator](../../eu.europa.ec.eudi.iso18013.transfer.response/-response-generator/index.md)&lt;[DeviceRequest](../../eu.europa.ec.eudi.iso18013.transfer.response/-device-request/index.md)&gt;)<br>Create empty Transfer manager |
 
 ## Types
 
@@ -31,9 +33,9 @@ androidJvm
 
 ## Properties
 
-| Name                                       | Summary                                                                                                                                                                                                  |
-|--------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [responseGenerator](response-generator.md) | [androidJvm]<br>open override val [responseGenerator](response-generator.md): [DeviceResponseGeneratorImpl](../../eu.europa.ec.eudi.iso18013.transfer.response/-device-response-generator-impl/index.md) |
+| Name                                       | Summary                                                                                                                                                                                                                                                                                |
+|--------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [responseGenerator](response-generator.md) | [androidJvm]<br>open override val [responseGenerator](response-generator.md): [ResponseGenerator](../../eu.europa.ec.eudi.iso18013.transfer.response/-response-generator/index.md)&lt;[DeviceRequest](../../eu.europa.ec.eudi.iso18013.transfer.response/-device-request/index.md)&gt; |
 
 ## Functions
 

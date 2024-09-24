@@ -5,7 +5,9 @@
 [androidJvm]\
 constructor(
 context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html),
-responseGenerator: [DeviceResponseGeneratorImpl](../../eu.europa.ec.eudi.iso18013.transfer.response/-device-response-generator-impl/index.md))
+responseGenerator: [ResponseGenerator](../../eu.europa.ec.eudi.iso18013.transfer.response/-response-generator/index.md)
+&lt;[DeviceRequest](../../eu.europa.ec.eudi.iso18013.transfer.response/-device-request/index.md)
+&gt;)
 
 Create empty Transfer manager
 
