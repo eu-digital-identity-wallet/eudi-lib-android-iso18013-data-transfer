@@ -33,14 +33,14 @@ import java.io.File
 /**
  * Response Generator
  */
-interface ResponseGenerator<in T : Request> {
+interface ResponseGenerator<in RQ : Request, RS : Response> {
     /**
      * Parse the request and extract the requested document data
      *
      * @param request
      * @return [RequestedDocumentData]
      */
-    fun parseRequest(request: T): RequestedDocumentData
+    fun parseRequest(request: RQ): RequestedDocumentData
 
     /**
      * Create a response based on the disclosed documents
@@ -48,7 +48,7 @@ interface ResponseGenerator<in T : Request> {
      * @param disclosedDocuments
      * @return [ResponseResult]
      */
-    fun createResponse(disclosedDocuments: DisclosedDocuments): ResponseResult
+    fun createResponse(disclosedDocuments: DisclosedDocuments): ResponseResult<RS>
 
     /**
      * Set the reader trust store.
@@ -56,7 +56,7 @@ interface ResponseGenerator<in T : Request> {
      *
      * @param readerTrustStore
      */
-    fun setReaderTrustStore(readerTrustStore: ReaderTrustStore): ResponseGenerator<T>
+    fun setReaderTrustStore(readerTrustStore: ReaderTrustStore): ResponseGenerator<RQ, RS>
 
     /**
      * Builder class for instantiating a [ResponseGenerator] implementation

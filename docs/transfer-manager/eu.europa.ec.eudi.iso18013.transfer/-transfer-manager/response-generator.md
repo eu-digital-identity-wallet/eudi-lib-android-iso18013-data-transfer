@@ -3,4 +3,7 @@
 # responseGenerator
 
 [androidJvm]\
-abstract val [responseGenerator](response-generator.md): [ResponseGenerator](../../eu.europa.ec.eudi.iso18013.transfer.response/-response-generator/index.md)&lt;[DeviceRequest](../../eu.europa.ec.eudi.iso18013.transfer.response/-device-request/index.md)&gt;
+abstract
+val [responseGenerator](response-generator.md): [ResponseGenerator](../../eu.europa.ec.eudi.iso18013.transfer.response/-response-generator/index.md)
+&lt;[DeviceRequest](../../eu.europa.ec.eudi.iso18013.transfer.response/-device-request/index.md), [DeviceResponse](../../eu.europa.ec.eudi.iso18013.transfer.response/-device-response/index.md)
+&gt;

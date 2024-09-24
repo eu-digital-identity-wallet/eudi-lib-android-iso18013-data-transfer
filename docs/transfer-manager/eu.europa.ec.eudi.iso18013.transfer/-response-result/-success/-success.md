@@ -3,4 +3,4 @@
 # Success
 
 [androidJvm]\
-constructor(response: [Response](../../../eu.europa.ec.eudi.iso18013.transfer.response/-response/index.md))
+constructor(response: [R](index.md))

@@ -3,4 +3,4 @@
 # response
 
 [androidJvm]\
-val [response](response.md): [Response](../../../eu.europa.ec.eudi.iso18013.transfer.response/-response/index.md)
+val [response](response.md): [R](index.md)

@@ -31,6 +31,7 @@ import eu.europa.ec.eudi.iso18013.transfer.internal.TAG
 import eu.europa.ec.eudi.iso18013.transfer.internal.stopPresentation
 import eu.europa.ec.eudi.iso18013.transfer.internal.transportOptions
 import eu.europa.ec.eudi.iso18013.transfer.response.DeviceRequest
+import eu.europa.ec.eudi.iso18013.transfer.response.DeviceResponse
 import eu.europa.ec.eudi.iso18013.transfer.response.ResponseGenerator
 
 /**
@@ -42,7 +43,7 @@ import eu.europa.ec.eudi.iso18013.transfer.response.ResponseGenerator
  */
 class TransferManagerImpl(
     context: Context,
-    override val responseGenerator: ResponseGenerator<DeviceRequest>
+    override val responseGenerator: ResponseGenerator<DeviceRequest, DeviceResponse>
 ) : TransferManager {
     private val context = context.applicationContext
 
