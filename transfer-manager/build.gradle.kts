@@ -140,9 +140,7 @@ dependencies {
 
 dependencyCheck {
     formats = listOf("XML", "HTML")
-    System.getenv("NVD_API_KEY")?.let {
-        nvd.apiKey = it
-    }
+    nvd.apiKey = System.getenv("NVD_API_KEY") ?: properties["nvdApiKey"]?.toString() ?: ""
 }
 
 // Dokka generation
