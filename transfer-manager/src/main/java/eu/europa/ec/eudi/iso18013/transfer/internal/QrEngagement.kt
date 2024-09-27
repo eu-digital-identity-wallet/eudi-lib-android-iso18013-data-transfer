@@ -25,10 +25,6 @@ import com.android.identity.crypto.EcCurve
 import com.android.identity.crypto.EcPublicKey
 import eu.europa.ec.eudi.iso18013.transfer.DeviceRetrievalMethod
 import eu.europa.ec.eudi.iso18013.transfer.engagement.QrCode
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 /**
  * Qr engagement
@@ -137,18 +133,7 @@ internal class QrEngagement(
             context.mainExecutor(),
         ).setConnectionMethods(retrievalMethods.connectionMethods)
             .build()
-        // TODO Remove delay.
-        //  Delay is simulating previous implementation which
-        //  triggered onQrEngagementReady asynchronously.
-        //  Reference implementation application registers listeners
-        //  after calling configure method. This causes to miss
-        //  the onQrEngagementReady event.
-        //  Reference implementation application should be fixed
-        //  and remove this delay.
-        CoroutineScope(Dispatchers.Default).launch {
-            delay(100)
-            onQrEngagementReady(QrCode(qrEngagement.deviceEngagementUriEncoded))
-        }
+        onQrEngagementReady(QrCode(qrEngagement.deviceEngagementUriEncoded))
     }
 
     /**
