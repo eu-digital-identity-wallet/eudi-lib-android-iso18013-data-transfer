@@ -8,6 +8,6 @@ Interface for response
 
 #### Inheritors
 
-| |
-|---|
-| [DeviceResponse](../-device-response/index.md) |
+|                                                                                                       |
+|-------------------------------------------------------------------------------------------------------|
+| [DeviceResponse](../../eu.europa.ec.eudi.iso18013.transfer.response.device/-device-response/index.md) |

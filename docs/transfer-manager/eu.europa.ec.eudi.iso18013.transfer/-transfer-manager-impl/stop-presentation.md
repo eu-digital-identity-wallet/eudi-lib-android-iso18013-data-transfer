@@ -7,9 +7,8 @@ open override fun [stopPresentation](stop-presentation.md)(
 sendSessionTerminationMessage: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html),
 useTransportSpecificSessionTermination: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html))
 
-Closes the connection and clears the data of the session
-
-Also, sends a termination message if there is a connected mdoc verifier
+Closes the connection and clears the data of the session Also, sends a termination message if there
+is a connected mdoc verifier
 
 #### Parameters
 

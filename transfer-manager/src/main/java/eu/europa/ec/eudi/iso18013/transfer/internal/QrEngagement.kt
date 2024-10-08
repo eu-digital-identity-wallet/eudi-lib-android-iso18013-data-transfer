@@ -17,13 +17,14 @@ package eu.europa.ec.eudi.iso18013.transfer.internal
 
 import android.content.Context
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import com.android.identity.android.mdoc.deviceretrieval.DeviceRetrievalHelper
 import com.android.identity.android.mdoc.engagement.QrEngagementHelper
 import com.android.identity.android.mdoc.transport.DataTransport
 import com.android.identity.crypto.Crypto
 import com.android.identity.crypto.EcCurve
 import com.android.identity.crypto.EcPublicKey
-import eu.europa.ec.eudi.iso18013.transfer.DeviceRetrievalMethod
+import eu.europa.ec.eudi.iso18013.transfer.engagement.DeviceRetrievalMethod
 import eu.europa.ec.eudi.iso18013.transfer.engagement.QrCode
 
 /**
@@ -40,22 +41,35 @@ import eu.europa.ec.eudi.iso18013.transfer.engagement.QrCode
  */
 internal class QrEngagement(
     private val context: Context,
-    private val retrievalMethods: List<DeviceRetrievalMethod>,
-    private val onConnecting: () -> Unit,
-    private val onQrEngagementReady: (qrCode: QrCode) -> Unit,
-    private val onDeviceRetrievalHelperReady: (deviceRetrievalHelper: DeviceRetrievalHelper) -> Unit,
-    private val onNewDeviceRequest: (request: ByteArray) -> Unit,
-    private val onDisconnected: (transportSpecificTermination: Boolean) -> Unit,
-    private val onCommunicationError: (error: Throwable) -> Unit,
+    @JvmSynthetic @get:VisibleForTesting(otherwise = VisibleForTesting.Companion.PRIVATE)
+    val retrievalMethods: List<DeviceRetrievalMethod>,
+    @JvmSynthetic @get:VisibleForTesting(otherwise = VisibleForTesting.Companion.PRIVATE)
+    val onConnecting: () -> Unit,
+    @JvmSynthetic @get:VisibleForTesting(otherwise = VisibleForTesting.Companion.PRIVATE)
+    val onQrEngagementReady: (qrCode: QrCode) -> Unit,
+    @JvmSynthetic @get:VisibleForTesting(otherwise = VisibleForTesting.Companion.PRIVATE)
+    val onDeviceRetrievalHelperReady: (deviceRetrievalHelper: DeviceRetrievalHelper) -> Unit,
+    @JvmSynthetic @get:VisibleForTesting(otherwise = VisibleForTesting.Companion.PRIVATE)
+    val onNewDeviceRequest: (request: ByteArray) -> Unit,
+    @JvmSynthetic @get:VisibleForTesting(otherwise = VisibleForTesting.Companion.PRIVATE)
+    val onDisconnected: (transportSpecificTermination: Boolean) -> Unit,
+    @JvmSynthetic @get:VisibleForTesting(otherwise = VisibleForTesting.Companion.PRIVATE)
+    val onCommunicationError: (error: Throwable) -> Unit,
 ) {
 
-    private var deviceRetrievalHelper: DeviceRetrievalHelper? = null
+    @JvmSynthetic
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal var deviceRetrievalHelper: DeviceRetrievalHelper? = null
 
-    private val eDevicePrivateKey by lazy {
+    @get:JvmSynthetic
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal val eDevicePrivateKey by lazy {
         Crypto.createEcPrivateKey(EcCurve.P256)
     }
 
-    private val qrEngagementListener = object : QrEngagementHelper.Listener {
+    @get:JvmSynthetic
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal val qrEngagementListener = object : QrEngagementHelper.Listener {
 
         override fun onDeviceConnecting() {
             Log.d(this.TAG, "QR Engagement: Device Connecting")
@@ -71,7 +85,7 @@ internal class QrEngagement(
                 return
             }
 
-            Log.d(this.TAG, "OnDeviceConnected via QR: qrEngagement=$qrEngagement")
+            Log.d(this.TAG, "OnDeviceConnected via QR: qrEngagement=$helper")
 
             val builder = DeviceRetrievalHelper.Builder(
                 context,
@@ -81,11 +95,11 @@ internal class QrEngagement(
             )
             builder.useForwardEngagement(
                 transport,
-                qrEngagement.deviceEngagement,
-                qrEngagement.handover,
+                helper.deviceEngagement,
+                helper.handover,
             )
             deviceRetrievalHelper = builder.build()
-            qrEngagement.close()
+            helper.close()
             onDeviceRetrievalHelperReady(requireNotNull(deviceRetrievalHelper))
         }
 
@@ -95,7 +109,9 @@ internal class QrEngagement(
         }
     }
 
-    private val deviceRetrievalHelperListener = object : DeviceRetrievalHelper.Listener {
+    @JvmSynthetic
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal val deviceRetrievalHelperListener = object : DeviceRetrievalHelper.Listener {
         override fun onEReaderKeyReceived(eReaderKey: EcPublicKey) {
             Log.d(this.TAG, "DeviceRetrievalHelper Listener (NFC): OnEReaderKeyReceived")
         }
@@ -116,16 +132,18 @@ internal class QrEngagement(
         }
     }
 
-    private lateinit var qrEngagement: QrEngagementHelper
+    @JvmSynthetic
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal lateinit var helper: QrEngagementHelper
 
     val deviceEngagementUriEncoded: String
-        get() = qrEngagement.deviceEngagementUriEncoded
+        get() = helper.deviceEngagementUriEncoded
 
     /**
      * Configures the QR engagement
      */
     fun configure() {
-        qrEngagement = QrEngagementHelper.Builder(
+        helper = QrEngagementHelper.Builder(
             context,
             eDevicePrivateKey.publicKey,
             retrievalMethods.transportOptions,
@@ -133,7 +151,7 @@ internal class QrEngagement(
             context.mainExecutor(),
         ).setConnectionMethods(retrievalMethods.connectionMethods)
             .build()
-        onQrEngagementReady(QrCode(qrEngagement.deviceEngagementUriEncoded))
+        onQrEngagementReady(QrCode(helper.deviceEngagementUriEncoded))
     }
 
     /**
@@ -141,7 +159,7 @@ internal class QrEngagement(
      */
     fun close() {
         try {
-            qrEngagement.close()
+            helper.close()
         } catch (exception: RuntimeException) {
             Log.e(this.TAG, "Error closing QR engagement", exception)
         }

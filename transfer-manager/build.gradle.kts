@@ -100,24 +100,20 @@ android {
 }
 
 dependencies {
-
-    // Google identity
-    implementation(libs.google.identity) {
+    implementation(libs.appcompat)
+    implementation(libs.eudi.document.manager)
+    api(libs.google.identity) {
+        exclude(group = "org.bouncycastle")
+    }
+    implementation(libs.google.identity.mdoc) {
         exclude(group = "org.bouncycastle")
     }
     implementation(libs.google.identity.android) {
         exclude(group = "org.bouncycastle")
     }
-
-    implementation(libs.google.identity.mdoc) {
-        exclude(group = "org.bouncycastle")
-    }
-
     implementation(libs.kotlinx.datetime)
     implementation(libs.kotlinx.io.core)
     implementation(libs.kotlinx.io.bytestring)
-
-    implementation(libs.biometric.ktx)
 
     // Zxing for qr code
     implementation(libs.zxing.core)
@@ -126,11 +122,12 @@ dependencies {
     implementation(libs.bouncy.castle.prov)
     implementation(libs.bouncy.castle.pkix)
 
-    testImplementation(libs.junit)
+    testImplementation(kotlin("test"))
     testImplementation(libs.mockk)
     testImplementation(libs.json)
     testImplementation(libs.mockito.inline)
     testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.robolectric.robolectric)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

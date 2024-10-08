@@ -19,8 +19,8 @@ import com.android.identity.android.mdoc.transport.DataTransportOptions
 import com.android.identity.mdoc.connectionmethod.ConnectionMethod
 import com.android.identity.mdoc.connectionmethod.ConnectionMethodBle
 import com.android.identity.util.UUID
-import eu.europa.ec.eudi.iso18013.transfer.DeviceRetrievalMethod
-import eu.europa.ec.eudi.iso18013.transfer.retrieval.BleRetrievalMethod
+import eu.europa.ec.eudi.iso18013.transfer.engagement.DeviceRetrievalMethod
+import eu.europa.ec.eudi.iso18013.transfer.engagement.BleRetrievalMethod
 
 internal val DeviceRetrievalMethod.connectionMethod: List<ConnectionMethod>
     get() = when (this) {

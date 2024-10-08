@@ -5,7 +5,15 @@
 [androidJvm]\
 open override fun [startQrEngagement](start-qr-engagement.md)()
 
-Starts the QR Engagement and generates the QR code
+Starts the QR Engagement and generates the QR code Once the QR code is ready, the
+event [TransferEvent.QrEngagementReady](../-transfer-event/-qr-engagement-ready/index.md) will be
+triggered If the transfer has already started, an error event will be triggered with
+an [IllegalStateException](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-illegal-state-exception/index.html)
+containing the message &quot;Transfer has already started.&quot;
 
-Once the QR code is ready, you will receive the
-event [TransferEvent.QrEngagementReady](../-transfer-event/-qr-engagement-ready/index.md)
+#### See also
+
+|                                                                                     |
+|-------------------------------------------------------------------------------------|
+| [TransferEvent.QrEngagementReady](../-transfer-event/-qr-engagement-ready/index.md) |
+| [TransferEvent.Error](../-transfer-event/-error/index.md)                           |

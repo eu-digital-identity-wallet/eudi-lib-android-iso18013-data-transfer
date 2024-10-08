@@ -63,6 +63,7 @@ interface ReaderTrustStore {
          *
          * @param trustedCertificates the trusted certificates
          */
+        @JvmStatic
         fun getDefault(trustedCertificates: List<X509Certificate>): ReaderTrustStore {
             return ReaderTrustStoreImpl(trustedCertificates, DEFAULT)
         }

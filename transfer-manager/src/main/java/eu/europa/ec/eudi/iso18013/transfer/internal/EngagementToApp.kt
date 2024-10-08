@@ -19,6 +19,7 @@ import android.content.Context
 import android.net.Uri
 import android.util.Base64
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import com.android.identity.android.mdoc.deviceretrieval.DeviceRetrievalHelper
 import com.android.identity.android.mdoc.transport.DataTransport
 import com.android.identity.android.mdoc.transport.DataTransportOptions
@@ -87,7 +88,9 @@ internal class EngagementToApp(
     private val onCommunicationError: (error: Throwable) -> Unit,
 ) {
 
-    private val eDevicePrivateKey = Crypto.createEcPrivateKey(EcCurve.P256)
+    @JvmSynthetic
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal val eDevicePrivateKey = Crypto.createEcPrivateKey(EcCurve.P256)
 
     private val presentationListener = object : DeviceRetrievalHelper.Listener {
         override fun onEReaderKeyReceived(eReaderKey: EcPublicKey) {
