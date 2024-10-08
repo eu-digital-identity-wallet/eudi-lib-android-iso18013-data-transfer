@@ -6,12 +6,14 @@
 open override fun [sendResponse](send-response.md)(
 responseBytes: [ByteArray](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html))
 
-Send response
+Sends the response bytes to the connected mdoc verifier To generate the response bytes, use
+the [RequestProcessor.ProcessedRequest.Success.generateResponse](../../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/-processed-request/-success/generate-response.md)
+from the TransferManagerImpl.requestProcessor
 
 #### Parameters
 
 androidJvm
 
-|               |
-|---------------|
-| responseBytes |
+|               |                               |
+|---------------|-------------------------------|
+| responseBytes | the response bytes to be sent |

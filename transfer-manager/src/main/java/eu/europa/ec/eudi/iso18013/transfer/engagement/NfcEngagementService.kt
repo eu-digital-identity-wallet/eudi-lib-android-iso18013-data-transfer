@@ -30,7 +30,7 @@ import com.android.identity.android.mdoc.transport.DataTransport
 import com.android.identity.crypto.Crypto
 import com.android.identity.crypto.EcCurve
 import com.android.identity.crypto.EcPublicKey
-import eu.europa.ec.eudi.iso18013.transfer.DeviceRetrievalMethod
+import eu.europa.ec.eudi.iso18013.transfer.engagement.DeviceRetrievalMethod
 import eu.europa.ec.eudi.iso18013.transfer.TransferManager
 import eu.europa.ec.eudi.iso18013.transfer.internal.TAG
 import eu.europa.ec.eudi.iso18013.transfer.internal.connectionMethods

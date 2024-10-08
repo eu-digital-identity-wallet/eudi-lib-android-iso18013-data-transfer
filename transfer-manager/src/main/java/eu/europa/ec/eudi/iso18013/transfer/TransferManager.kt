@@ -17,19 +17,18 @@ package eu.europa.ec.eudi.iso18013.transfer
 
 import android.content.Context
 import android.content.Intent
+import eu.europa.ec.eudi.iso18013.transfer.engagement.DeviceRetrievalMethod
 import eu.europa.ec.eudi.iso18013.transfer.engagement.NfcEngagementService
-import eu.europa.ec.eudi.iso18013.transfer.response.DeviceRequest
-import eu.europa.ec.eudi.iso18013.transfer.response.DeviceResponse
-import eu.europa.ec.eudi.iso18013.transfer.response.ResponseGenerator
+import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStore
+import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor
+import eu.europa.ec.eudi.wallet.document.DocumentManager
 
 /**
- * Transfer manager
- *
- * @constructor Create empty Transfer manager
+ * Transfer manager interface for managing the transfer of data between the wallet and the reader.
  */
 interface TransferManager : TransferEvent.Listenable {
 
-    val responseGenerator: ResponseGenerator<DeviceRequest, DeviceResponse>
+    val requestProcessor: RequestProcessor
 
     /**
      * Set retrieval methods
@@ -43,34 +42,33 @@ interface TransferManager : TransferEvent.Listenable {
      * Setup the [NfcEngagementService]
      * Note: This method is only for internal use and should not be called by the app
      * @param service
+     * @see NfcEngagementService
      */
     fun setupNfcEngagement(service: NfcEngagementService): TransferManager
 
     /**
      * Starts the QR Engagement and generates the QR code
-     *
-     * Once the QR code is ready, you will receive the event [TransferEvent.QrEngagementReady]
+     * Once the QR code is ready, the event [TransferEvent.QrEngagementReady] will be triggered
      */
     fun startQrEngagement()
 
     /**
      * Starts the engagement to app, according to ISO 18013-7.
-     *
      * @param intent The intent being received
      */
     fun startEngagementToApp(intent: Intent)
 
     /**
-     * Send response
-     *
+     * Sends response bytes to the connected reader
+     * To generate the response bytes, use the [RequestProcessor.ProcessedRequest.Success.generateResponse]
+     * method.
      * @param responseBytes
      */
     fun sendResponse(responseBytes: ByteArray)
 
     /**
      * Closes the connection and clears the data of the session
-     *
-     * Also, sends a termination message if there is a connected mdoc verifier
+     * Also, sends a termination message if there is a connected verifier
      *
      * @param sendSessionTerminationMessage Whether to send session termination message.
      * @param useTransportSpecificSessionTermination Whether to use transport-specific session
@@ -81,44 +79,29 @@ interface TransferManager : TransferEvent.Listenable {
     )
 
     /**
-     * Builder class for instantiating a [TransferManager] implementation
-     *
-     * @constructor
-     *
-     * @param context
+     * Companion object for creating a new instance of [TransferManager]
      */
-    class Builder(context: Context) {
-        private val context = context.applicationContext
-        var responseGenerator: ResponseGenerator<DeviceRequest, DeviceResponse>? = null
-        var retrievalMethods: List<DeviceRetrievalMethod>? = null
-
+    companion object {
         /**
-         * Response generator that will be parse the request and will create the response
+         * Create a new instance of [TransferManager] for the ISO 18013-5 and ISO 18013-7
+         * standards.
          *
-         * @param responseGenerator
-         */
-        fun responseGenerator(responseGenerator: ResponseGenerator<DeviceRequest, DeviceResponse>) =
-            apply { this.responseGenerator = responseGenerator }
-
-        /**
-         * Retrieval methods that will be used to retrieve the device request from the mdoc verifier
-         *
+         * @param context
+         * @param documentManager
+         * @param readerTrustStore
          * @param retrievalMethods
+         * @return a [TransferManagerImpl]
          */
-        fun retrievalMethods(retrievalMethods: List<DeviceRetrievalMethod>) =
-            apply { this.retrievalMethods = retrievalMethods }
-
-        /**
-         * Build a [TransferManager] instance
-         *
-         * @return [TransferManager]
-         */
-        fun build(): TransferManager {
-            return responseGenerator?.let { responseGenerator ->
-                TransferManagerImpl(context, responseGenerator).apply {
-                    retrievalMethods?.let { setRetrievalMethods(it) }
-                }
-            } ?: throw IllegalArgumentException("responseGenerator not set")
+        @JvmStatic
+        fun getDefault(
+            context: Context,
+            documentManager: DocumentManager,
+            readerTrustStore: ReaderTrustStore? = null,
+            retrievalMethods: List<DeviceRetrievalMethod>? = null
+        ): TransferManager = TransferManagerImpl(context) {
+            documentManager(documentManager)
+            readerTrustStore?.let { readerTrustStore(it) }
+            retrievalMethods?.let { retrievalMethods(it) }
         }
     }
 }

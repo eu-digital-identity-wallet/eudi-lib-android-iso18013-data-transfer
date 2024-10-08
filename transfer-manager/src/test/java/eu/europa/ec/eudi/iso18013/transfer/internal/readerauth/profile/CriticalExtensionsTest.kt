@@ -21,18 +21,15 @@ import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadCert
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadTrustCert
 import org.bouncycastle.asn1.x509.Extension.policyMappings
 import org.junit.After
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
 import org.mockito.MockedStatic
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 import java.security.cert.X509Certificate
+import kotlin.test.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
-@RunWith(JUnit4::class)
 class CriticalExtensionsTest {
 
     private lateinit var readerAuthCertificate: X509Certificate

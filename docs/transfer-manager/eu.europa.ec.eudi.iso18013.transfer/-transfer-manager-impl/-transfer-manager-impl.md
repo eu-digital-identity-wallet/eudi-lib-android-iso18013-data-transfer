@@ -3,19 +3,24 @@
 # TransferManagerImpl
 
 [androidJvm]\
+
+@[JvmOverloads](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-overloads/index.html)
+
 constructor(
 context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html),
-responseGenerator: [ResponseGenerator](../../eu.europa.ec.eudi.iso18013.transfer.response/-response-generator/index.md)
-&lt;[DeviceRequest](../../eu.europa.ec.eudi.iso18013.transfer.response/-device-request/index.md), [DeviceResponse](../../eu.europa.ec.eudi.iso18013.transfer.response/-device-response/index.md)
-&gt;)
+requestProcessor: [RequestProcessor](../../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/index.md),
+retrievalMethods: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)
+&lt;[DeviceRetrievalMethod](../../eu.europa.ec.eudi.iso18013.transfer.engagement/-device-retrieval-method/index.md)
+&gt;? = null)
 
-Create empty Transfer manager
+Create a Transfer Manager
 
 #### Parameters
 
 androidJvm
 
-|                   |                                                                              |
-|-------------------|------------------------------------------------------------------------------|
-| context           | application context                                                          |
-| responseGenerator | response generator instance that parses the request and creates the response |
+|                  |                                                                                 |
+|------------------|---------------------------------------------------------------------------------|
+| context          | application context                                                             |
+| requestProcessor | request processor for processing the device request and generating the response |
+| retrievalMethods | list of device retrieval methods to be used for the transfer                    |

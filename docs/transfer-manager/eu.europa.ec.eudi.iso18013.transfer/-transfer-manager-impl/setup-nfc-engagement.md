@@ -6,14 +6,17 @@
 open override fun [setupNfcEngagement](setup-nfc-engagement.md)(
 service: [NfcEngagementService](../../eu.europa.ec.eudi.iso18013.transfer.engagement/-nfc-engagement-service/index.md)): [TransferManagerImpl](index.md)
 
-Setup
-the [NfcEngagementService](../../eu.europa.ec.eudi.iso18013.transfer.engagement/-nfc-engagement-service/index.md)
-Note: This method is only for internal use and should not be called by the app
+Sets up NFC engagement with the provided service Note: This method is only for internal use and
+should not be called by the app
+
+#### Return
+
+instance of [TransferManager](../-transfer-manager/index.md)
 
 #### Parameters
 
 androidJvm
 
-|         |
-|---------|
-| service |
+|         |                            |
+|---------|----------------------------|
+| service | the NFC engagement service |

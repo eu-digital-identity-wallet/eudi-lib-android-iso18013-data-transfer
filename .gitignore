@@ -7,5 +7,6 @@
 /captures
 .externalNativeBuild
 .cxx
+.kotlin
 local.properties
 /transfer-manager/release/

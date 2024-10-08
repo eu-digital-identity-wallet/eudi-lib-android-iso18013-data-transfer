@@ -23,19 +23,16 @@ import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadCert
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadInvalidCert
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadTrustCert
 import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
 import org.mockito.MockedStatic
 import org.mockito.Mockito.mockStatic
 import org.mockito.Mockito.`when`
 import org.mockito.kotlin.any
 import java.security.cert.X509Certificate
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
-@RunWith(JUnit4::class)
 class ReaderTrustStoreImplTest {
 
     private lateinit var readerTrustStore: ReaderTrustStoreImpl

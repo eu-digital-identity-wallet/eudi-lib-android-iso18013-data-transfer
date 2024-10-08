@@ -16,7 +16,9 @@
 package eu.europa.ec.eudi.iso18013.transfer
 
 import eu.europa.ec.eudi.iso18013.transfer.engagement.QrCode
+import eu.europa.ec.eudi.iso18013.transfer.response.RequestedDocuments
 import eu.europa.ec.eudi.iso18013.transfer.response.Request
+import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor
 import java.net.URI
 
 /**
@@ -41,11 +43,11 @@ sealed interface TransferEvent {
 
     /**
      * Request received event. This event is triggered when the request is received.
-     * @property requestedDocumentData the requested document data
-     * @property request the request
+     * @property processedRequest the processed request containing the requested documents
+     * @property request the request containing the raw data received
      */
     data class RequestReceived(
-        val requestedDocumentData: RequestedDocumentData,
+        val processedRequest: RequestProcessor.ProcessedRequest,
         val request: Request
     ) : TransferEvent
 
@@ -55,7 +57,8 @@ sealed interface TransferEvent {
     data object ResponseSent : TransferEvent
 
     /**
-     * Redirect event. This event is triggered when the requires a redirect.
+     * Redirect event. This event is triggered when a redirect is needed.
+     * This event is to be used for implementation for the OpenId4VP protocol.
      * @property redirectUri the redirect URI
      */
     data class Redirect(val redirectUri: URI) : TransferEvent

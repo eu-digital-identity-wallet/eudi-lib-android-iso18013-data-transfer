@@ -2,11 +2,12 @@
 # EUDI ISO 18013-5 document transfer library
 ## Dependency License Report
 
-_2024-09-24 10:21:25 EEST_
+_2024-10-30 11:35:25 EET_
 ## Apache License, Version 2.0
 
-**1** **Group:** `androidx.biometric` **Name:** `biometric-ktx` **Version:** `1.2.0-alpha05` 
-> - **POM Project URL**: [https://developer.android.com/jetpack/androidx/releases/biometric#1.2.0-alpha05](https://developer.android.com/jetpack/androidx/releases/biometric#1.2.0-alpha05)
+**1** **Group:** `androidx.appcompat` **Name:** `appcompat` **Version:** `1.6.1`
+> - **POM Project URL
+    **: [https://developer.android.com/jetpack/androidx/releases/appcompat#1.6.1](https://developer.android.com/jetpack/androidx/releases/appcompat#1.6.1)
 > - **POM License**: Apache License, Version 2.0 - [https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
 **2** **Group:** `com.android.identity` **Name:** `identity-mdoc` **Version:** `202408.1`
@@ -24,11 +25,11 @@ _2024-09-24 10:21:25 EEST_
 > - **Manifest License**: Apache License, Version 2.0 (Not Packaged)
 > - **POM License**: Apache License, Version 2.0 - [https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
-**6** **Group:** `org.jetbrains.kotlin` **Name:** `kotlin-parcelize-runtime` **Version:** `1.9.0`
+**6** **Group:** `org.jetbrains.kotlin` **Name:** `kotlin-stdlib` **Version:** `2.0.10`
 > - **POM Project URL**: [https://kotlinlang.org/](https://kotlinlang.org/)
 > - **POM License**: Apache License, Version 2.0 - [https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
-**7** **Group:** `org.jetbrains.kotlin` **Name:** `kotlin-stdlib-jdk8` **Version:** `1.9.0`
+**7** **Group:** `org.jetbrains.kotlin` **Name:** `kotlin-parcelize-runtime` **Version:** `2.0.10`
 > - **POM Project URL**: [https://kotlinlang.org/](https://kotlinlang.org/)
 > - **POM License**: Apache License, Version 2.0 - [https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0)
 

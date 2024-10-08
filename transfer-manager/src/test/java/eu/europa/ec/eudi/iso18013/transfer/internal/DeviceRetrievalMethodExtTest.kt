@@ -16,12 +16,12 @@
 
 package eu.europa.ec.eudi.iso18013.transfer.internal
 
-import eu.europa.ec.eudi.iso18013.transfer.retrieval.BleRetrievalMethod
+import eu.europa.ec.eudi.iso18013.transfer.engagement.BleRetrievalMethod
 import org.junit.Assert
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
+import kotlin.test.Test
 import com.android.identity.cbor.Cbor as CborUtil
 
 @RunWith(Parameterized::class)

@@ -8,6 +8,10 @@ listener: [TransferEvent.Listener](../-transfer-event/-listener/index.md)): [Tra
 
 Add a transfer event listener
 
+#### Return
+
+instance of [TransferManager](../-transfer-manager/index.md)
+
 #### Parameters
 
 androidJvm
