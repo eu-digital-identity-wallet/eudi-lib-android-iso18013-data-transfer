@@ -18,7 +18,6 @@ package eu.europa.ec.eudi.iso18013.transfer.internal
 import android.content.Context
 import android.os.Build
 import androidx.core.content.ContextCompat
-import eu.europa.ec.eudi.iso18013.transfer.response.DisclosedDocument
 import eu.europa.ec.eudi.iso18013.transfer.response.DisclosedDocuments
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestedDocuments
 import eu.europa.ec.eudi.wallet.document.DocType
