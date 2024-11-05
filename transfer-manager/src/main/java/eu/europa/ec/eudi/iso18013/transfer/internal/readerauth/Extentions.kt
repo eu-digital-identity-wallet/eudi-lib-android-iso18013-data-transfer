@@ -16,6 +16,7 @@
 
 package eu.europa.ec.eudi.iso18013.transfer.internal.readerauth
 
+import androidx.annotation.RequiresPermission
 import com.android.identity.crypto.javaX509Certificates
 import com.android.identity.mdoc.request.DeviceRequestParser
 import eu.europa.ec.eudi.iso18013.transfer.internal.cn

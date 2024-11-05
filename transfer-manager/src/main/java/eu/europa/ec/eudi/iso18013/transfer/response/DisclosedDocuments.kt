@@ -19,8 +19,15 @@ package eu.europa.ec.eudi.iso18013.transfer.response
 /**
  * The list of disclosed documents, the documents and their elements that the holder has disclosed
  * to the verifier.
+ *
+ * @param documents the list of disclosed documents
  */
 class DisclosedDocuments(documents: List<DisclosedDocument> = emptyList()) :
     List<DisclosedDocument> by documents {
+
+    /**
+     * Constructor for vararg DisclosedDocument parameters
+     * @param documents the list of disclosed documents
+     */
     constructor(vararg documents: DisclosedDocument) : this(documents.toList())
 }

@@ -3,9 +3,10 @@
 # sendResponse
 
 [androidJvm]\
-abstract fun [sendResponse](send-response.md)(responseBytes: [ByteArray](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html))
+abstract fun [sendResponse](send-response.md)(
+response: [Response](../../eu.europa.ec.eudi.iso18013.transfer.response/-response/index.md))
 
-Sends response bytes to the connected reader To generate the response bytes, use
+Sends response bytes to the connected reader To generate the response, use
 the [RequestProcessor.ProcessedRequest.Success.generateResponse](../../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/-processed-request/-success/generate-response.md)
 method.
 
@@ -13,6 +14,6 @@ method.
 
 androidJvm
 
-| |
-|---|
-| responseBytes |
+|          |                         |
+|----------|-------------------------|
+| response | The response to be sent |

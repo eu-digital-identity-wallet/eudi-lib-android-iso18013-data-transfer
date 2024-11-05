@@ -23,7 +23,9 @@ import com.android.identity.util.Constants.SESSION_DATA_STATUS_SESSION_TERMINATI
 import eu.europa.ec.eudi.iso18013.transfer.engagement.DeviceRetrievalMethod
 import eu.europa.ec.eudi.iso18013.transfer.engagement.NfcEngagementService
 import eu.europa.ec.eudi.iso18013.transfer.internal.QrEngagement
+import eu.europa.ec.eudi.iso18013.transfer.response.Response
 import eu.europa.ec.eudi.iso18013.transfer.response.device.DeviceRequest
+import eu.europa.ec.eudi.iso18013.transfer.response.device.DeviceResponse
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -31,6 +33,7 @@ import io.mockk.mockk
 import io.mockk.mockkConstructor
 import io.mockk.spyk
 import io.mockk.verify
+import org.junit.Assert.assertThrows
 import org.mockito.MockedStatic
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -310,7 +313,7 @@ class TransferManagerImplTest {
         val mockDeviceRetrievalHelper: DeviceRetrievalHelper = mockk(relaxed = true)
         manager.deviceRetrievalHelper = mockDeviceRetrievalHelper
 
-        manager.sendResponse(ByteArray(0))
+        manager.sendResponse(DeviceResponse(deviceResponseBytes = ByteArray(0)))
 
         verify(exactly = 1) { listener.onTransferEvent(any<TransferEvent.ResponseSent>()) }
         verify(exactly = 1) {
@@ -322,11 +325,22 @@ class TransferManagerImplTest {
     }
 
     @Test
+    fun `sendResponse throws when response is not a DeviceResponse instance`() {
+        val manager = TransferManagerImpl(
+            context = Context,
+            requestProcessor = mockk(),
+        )
+        assertThrows(IllegalArgumentException::class.java) {
+            manager.sendResponse(object : Response {})
+        }
+    }
+
+    @Test
     fun `events are triggered from qrEngagement`() {
         val listener = mockk<TransferEvent.Listener>(relaxed = true)
         mockkConstructor(QrEngagement::class)
         every { anyConstructed<QrEngagement>().configure() } just Runs
-        val manager = eu.europa.ec.eudi.iso18013.transfer.TransferManagerImpl(
+        val manager = TransferManagerImpl(
             context = Context,
             requestProcessor = mockk(relaxed = true),
         )

@@ -34,8 +34,10 @@ import eu.europa.ec.eudi.iso18013.transfer.internal.stopPresentation
 import eu.europa.ec.eudi.iso18013.transfer.internal.transportOptions
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStore
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor
+import eu.europa.ec.eudi.iso18013.transfer.response.Response
 import eu.europa.ec.eudi.iso18013.transfer.response.device.DeviceRequest
 import eu.europa.ec.eudi.iso18013.transfer.response.device.DeviceRequestProcessor
+import eu.europa.ec.eudi.iso18013.transfer.response.device.DeviceResponse
 import eu.europa.ec.eudi.wallet.document.DocumentManager
 
 /**
@@ -308,13 +310,15 @@ class TransferManagerImpl @JvmOverloads constructor(
 
     /**
      * Sends the response bytes to the connected mdoc verifier
-     * To generate the response bytes, use the [RequestProcessor.ProcessedRequest.Success.generateResponse]
-     * from the TransferManagerImpl.requestProcessor
-     * @param responseBytes the response bytes to be sent
+     * To generate the response, use the [eu.europa.ec.eudi.iso18013.transfer.response.device.ProcessedDeviceRequest.generateResponse]
+     * that is provided by the [eu.europa.ec.eudi.iso18013.transfer.TransferEvent.RequestReceived] event.
+     * @param response the response to send
+     * @throws IllegalArgumentException if the response is not a [DeviceResponse]
      */
-    override fun sendResponse(responseBytes: ByteArray) {
+    override fun sendResponse(response: Response) {
+        require(response is DeviceResponse) { "Response must be a DeviceResponse" }
         deviceRetrievalHelper?.sendDeviceResponse(
-            responseBytes,
+            response.deviceResponseBytes,
             Constants.SESSION_DATA_STATUS_SESSION_TERMINATION
         )
         transferEventListeners.onTransferEvent(TransferEvent.ResponseSent)
