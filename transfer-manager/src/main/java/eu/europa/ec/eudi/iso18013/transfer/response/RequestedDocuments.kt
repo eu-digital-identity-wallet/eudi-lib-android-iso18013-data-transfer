@@ -18,6 +18,15 @@ package eu.europa.ec.eudi.iso18013.transfer.response
 
 /**
  * Wrapper class that contains the requested documents
+ *
+ * @param documents the list of requested documents
  */
-class RequestedDocuments internal constructor(documents: List<RequestedDocument>) :
-    List<RequestedDocument> by documents
+class RequestedDocuments(documents: List<RequestedDocument>) :
+    List<RequestedDocument> by documents {
+
+    /**
+     * Constructor that takes a vararg of [RequestedDocument] and converts it to a list
+     * @param documents the list of requested documents
+     */
+    constructor(vararg documents: RequestedDocument) : this(documents.toList())
+}

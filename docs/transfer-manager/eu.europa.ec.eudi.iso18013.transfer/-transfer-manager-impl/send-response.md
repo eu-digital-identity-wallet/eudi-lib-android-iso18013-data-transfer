@@ -4,16 +4,24 @@
 
 [androidJvm]\
 open override fun [sendResponse](send-response.md)(
-responseBytes: [ByteArray](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html))
+response: [Response](../../eu.europa.ec.eudi.iso18013.transfer.response/-response/index.md))
 
-Sends the response bytes to the connected mdoc verifier To generate the response bytes, use
-the [RequestProcessor.ProcessedRequest.Success.generateResponse](../../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/-processed-request/-success/generate-response.md)
-from the TransferManagerImpl.requestProcessor
+Sends the response bytes to the connected mdoc verifier To generate the response, use
+the [eu.europa.ec.eudi.iso18013.transfer.response.device.ProcessedDeviceRequest.generateResponse](../../eu.europa.ec.eudi.iso18013.transfer.response.device/-processed-device-request/generate-response.md)
+that is provided by
+the [eu.europa.ec.eudi.iso18013.transfer.TransferEvent.RequestReceived](../-transfer-event/-request-received/index.md)
+event.
 
 #### Parameters
 
 androidJvm
 
-|               |                               |
-|---------------|-------------------------------|
-| responseBytes | the response bytes to be sent |
+|          |                      |
+|----------|----------------------|
+| response | the response to send |
+
+#### Throws
+
+|                                                                                                                        |                                                                                                                                |
+|------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|
+| [IllegalArgumentException](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-illegal-argument-exception/index.html) | if the response is not a [DeviceResponse](../../eu.europa.ec.eudi.iso18013.transfer.response.device/-device-response/index.md) |

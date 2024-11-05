@@ -54,6 +54,7 @@ fun createDocumentManager(keyLockPassphrase: String?): DocumentManager {
     val storageEngine = EphemeralStorageEngine()
     return SampleDocumentManagerImpl(
         DocumentManagerImpl(
+            identifier = "DocumentManager",
             storageEngine = storageEngine,
             secureArea = SoftwareSecureArea(storageEngine)
         )

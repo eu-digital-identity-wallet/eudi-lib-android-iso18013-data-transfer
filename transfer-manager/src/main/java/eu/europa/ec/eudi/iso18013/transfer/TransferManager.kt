@@ -21,6 +21,7 @@ import eu.europa.ec.eudi.iso18013.transfer.engagement.DeviceRetrievalMethod
 import eu.europa.ec.eudi.iso18013.transfer.engagement.NfcEngagementService
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStore
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor
+import eu.europa.ec.eudi.iso18013.transfer.response.Response
 import eu.europa.ec.eudi.wallet.document.DocumentManager
 
 /**
@@ -60,11 +61,11 @@ interface TransferManager : TransferEvent.Listenable {
 
     /**
      * Sends response bytes to the connected reader
-     * To generate the response bytes, use the [RequestProcessor.ProcessedRequest.Success.generateResponse]
+     * To generate the response, use the [RequestProcessor.ProcessedRequest.Success.generateResponse]
      * method.
-     * @param responseBytes
+     * @param response The response to be sent
      */
-    fun sendResponse(responseBytes: ByteArray)
+    fun sendResponse(response: Response)
 
     /**
      * Closes the connection and clears the data of the session

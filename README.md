@@ -205,7 +205,7 @@ transferManager.addTransferEventListener { event ->
                 signatureAlgorithm = Algorithm.ES256
             ).getOrThrow() as DeviceResponse
 
-            transferManager.sendResponse(response.deviceResponseBytes)
+            transferManager.sendResponse(response)
 
         } catch (e: Throwable) {
             // An error occurred
@@ -384,7 +384,7 @@ requested document's keys, that are needed to sign the response. In this case, e
 `DisclosedDocument` must contain the `keyUnlockData` property that defines the key unlocking.
 
 Finally, the response is sent back to the verifier with the
-`TransferManager.sendResponse(ByteArray)`
+`TransferManager.sendResponse(Response)`
 
 The following example demonstrates how to handle the request and send the response.
 
@@ -420,7 +420,7 @@ transferManager.addTransferEventListener { event ->
                 signatureAlgorithm = Algorithm.ES256
             ).getOrThrow() as DeviceResponse
 
-            transferManager.sendResponse(response.deviceResponseBytes)
+            transferManager.sendResponse(response)
 
         } catch (e: Throwable) {
             // An error occurred

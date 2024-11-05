@@ -21,11 +21,15 @@ import eu.europa.ec.eudi.iso18013.transfer.internal.getValidIssuedMsoMdocDocumen
 import eu.europa.ec.eudi.iso18013.transfer.internal.readerauth.performReaderAuthentication
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStore
 import eu.europa.ec.eudi.iso18013.transfer.response.DocItem
+import eu.europa.ec.eudi.iso18013.transfer.response.ReaderAuth
 import eu.europa.ec.eudi.iso18013.transfer.response.Request
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestedDocument
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestedDocuments
+import eu.europa.ec.eudi.wallet.document.DocType
 import eu.europa.ec.eudi.wallet.document.DocumentManager
+import eu.europa.ec.eudi.wallet.document.ElementIdentifier
+import eu.europa.ec.eudi.wallet.document.NameSpace
 
 /**
  * Implementation of [RequestProcessor] for [DeviceRequest] for the ISO 18013-5 standard.
@@ -36,6 +40,14 @@ class DeviceRequestProcessor(
     private val documentManager: DocumentManager,
     val readerTrustStore: ReaderTrustStore? = null
 ) : RequestProcessor {
+
+    /**
+     * The helper class to process the [RequestedMdocDocument] and return the [RequestedDocuments].
+     */
+    private val helper: Helper by lazy {
+        Helper(documentManager)
+    }
+
     /**
      * Process the [DeviceRequest] and return the [ProcessedDeviceRequest] or a [RequestProcessor.ProcessedRequest.Failure].
      * @param request the [DeviceRequest] to process
@@ -48,28 +60,8 @@ class DeviceRequestProcessor(
                 DeviceRequestParser(request.deviceRequestBytes, request.sessionTranscriptBytes)
                     .parse()
                     .docRequests
-                    .flatMap { docRequest ->
-                        val docItems = docRequest.namespaces.flatMap { nameSpace ->
-                            docRequest.getEntryNames(nameSpace).map { elementIdentifier ->
-                                DocItem(
-                                    namespace = nameSpace,
-                                    elementIdentifier = elementIdentifier,
-                                )
-                            }
-                        }
-                        documentManager.getValidIssuedMsoMdocDocuments(docRequest.docType).map {
-                            RequestedDocument(
-                                documentId = it.id,
-                                requestedItems = docItems.associateWith {
-                                    docRequest.getIntentToRetain(it.namespace, it.elementIdentifier)
-                                },
-                                readerAuth = readerTrustStore?.performReaderAuthentication(
-                                    docRequest
-                                ),
-                            )
-                        }
-                    }
-                    .let { RequestedDocuments(it) }
+                    .map { docRequest -> docRequest.toRequestedMdocDocuments() }
+                    .let { helper.getRequestedDocuments(it) }
             return ProcessedDeviceRequest(
                 documentManager = documentManager,
                 requestedDocuments = requestedDocuments,
@@ -78,5 +70,76 @@ class DeviceRequestProcessor(
         } catch (e: Throwable) {
             return RequestProcessor.ProcessedRequest.Failure(e)
         }
+    }
+
+    /**
+     * Helper class to process the [RequestedMdocDocument] and return the [RequestedDocuments].
+     * @property documentManager the document manager to retrieve the requested documents
+     */
+    class Helper(
+        private val documentManager: DocumentManager,
+    ) {
+        /**
+         * Get the [RequestedDocuments] from the [RequestedMdocDocument].
+         * @param requestedMdocDocuments the [RequestedMdocDocument] to process
+         * @return the [RequestedDocuments]
+         */
+        fun getRequestedDocuments(
+            requestedMdocDocuments: List<RequestedMdocDocument>
+        ): RequestedDocuments {
+            return requestedMdocDocuments.flatMap { requestedDocument ->
+                val docItems =
+                    requestedDocument.requested.flatMap { (nameSpace, elementIdentifiers) ->
+                        elementIdentifiers.map { (elementIdentifier, intentToRetain) ->
+                            DocItem(
+                                namespace = nameSpace,
+                                elementIdentifier = elementIdentifier,
+                            ) to intentToRetain
+                        }
+                    }.toMap()
+
+                documentManager.getValidIssuedMsoMdocDocuments(requestedDocument.docType).map {
+                    RequestedDocument(
+                        documentId = it.id,
+                        requestedItems = docItems,
+                        readerAuth = requestedDocument.readerAuthentication.invoke(),
+                    )
+                }
+            }.let { RequestedDocuments(it) }
+        }
+    }
+
+    /**
+     * Parsed requested document.
+     * @property docType the document type
+     * @property requested the requested elements
+     * @property readerAuthentication the reader authentication
+     */
+    data class RequestedMdocDocument(
+        val docType: DocType,
+        val requested: Map<NameSpace, Map<ElementIdentifier, Boolean>>,
+        val readerAuthentication: () -> ReaderAuth?
+    )
+
+    /**
+     * Convert the [DeviceRequestParser.DocRequest] to [RequestedMdocDocument].
+     * @return the [RequestedMdocDocument]
+     */
+    private fun DeviceRequestParser.DocRequest.toRequestedMdocDocuments(): RequestedMdocDocument {
+        return RequestedMdocDocument(
+            docType = docType,
+            requested = namespaces.associate { nameSpace ->
+                nameSpace to getEntryNames(nameSpace)
+                    .associate { elementIdentifier ->
+                        elementIdentifier to getIntentToRetain(
+                            nameSpace,
+                            elementIdentifier
+                        )
+                    }
+            },
+            readerAuthentication = {
+                readerTrustStore?.performReaderAuthentication(this)
+            },
+        )
     }
 }
