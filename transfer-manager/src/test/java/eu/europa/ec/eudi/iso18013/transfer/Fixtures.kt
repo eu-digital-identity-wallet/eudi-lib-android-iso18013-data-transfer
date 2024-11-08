@@ -18,18 +18,18 @@ package eu.europa.ec.eudi.iso18013.transfer
 
 import android.content.Context
 import com.android.identity.securearea.PassphraseConstraints
+import com.android.identity.securearea.SecureAreaRepository
 import com.android.identity.securearea.software.SoftwareCreateKeySettings
 import com.android.identity.securearea.software.SoftwareSecureArea
 import com.android.identity.storage.EphemeralStorageEngine
 import eu.europa.ec.eudi.iso18013.transfer.response.device.DeviceRequest
 import eu.europa.ec.eudi.wallet.document.DocumentManager
 import eu.europa.ec.eudi.wallet.document.DocumentManagerImpl
+import eu.europa.ec.eudi.wallet.document.SecureAreaCreateDocumentSettings
 import eu.europa.ec.eudi.wallet.document.getResourceAsText
 import eu.europa.ec.eudi.wallet.document.sample.SampleDocumentManagerImpl
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkStatic
-import io.mockk.slot
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
@@ -56,20 +56,25 @@ fun createDocumentManager(keyLockPassphrase: String?): DocumentManager {
         DocumentManagerImpl(
             identifier = "DocumentManager",
             storageEngine = storageEngine,
-            secureArea = SoftwareSecureArea(storageEngine)
+            secureAreaRepository = SecureAreaRepository().apply {
+                addImplementation(SecureArea)
+            }
         )
     ).apply {
         loadMdocSampleDocuments(
             sampleData = Base64.decode(getResourceAsText("sample_documents.txt")),
-            createKeySettings = keyLockPassphrase?.let {
-                SoftwareCreateKeySettings.Builder()
-                    .setPassphraseRequired(
-                        true,
-                        keyLockPassphrase,
-                        PassphraseConstraints.PIN_FOUR_DIGITS
-                    )
-                    .build()
-            } ?: SoftwareCreateKeySettings.Builder().build(),
+            createSettings = SecureAreaCreateDocumentSettings(
+                secureAreaIdentifier = SecureArea.identifier,
+                keySettings = keyLockPassphrase?.let {
+                    SoftwareCreateKeySettings.Builder()
+                        .setPassphraseRequired(
+                            true,
+                            keyLockPassphrase,
+                            PassphraseConstraints.PIN_FOUR_DIGITS
+                        )
+                        .build()
+                } ?: SoftwareCreateKeySettings.Builder().build(),
+            ),
             documentNamesMap = mapOf(
                 "eu.europa.ec.eudi.pid.1" to "EU PID",
                 "org.iso.18013.5.1.mDL" to "mDL"
