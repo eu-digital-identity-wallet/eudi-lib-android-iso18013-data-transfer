@@ -8,7 +8,8 @@ context: [Context](https://developer.android.com/reference/kotlin/android/conten
 requestProcessor: [RequestProcessor](../../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/index.md),
 retrievalMethods: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)
 &lt;[DeviceRetrievalMethod](../../eu.europa.ec.eudi.iso18013.transfer.engagement/-device-retrieval-method/index.md)
-&gt;? = null) : [TransferManager](../-transfer-manager/index.md)
+&gt;? =
+null) : [TransferManager](../-transfer-manager/index.md), [ReaderTrustStoreAware](../../eu.europa.ec.eudi.iso18013.transfer.readerauth/-reader-trust-store-aware/index.md)
 
 Transfer Manager class used for performing device engagement and data retrieval for ISO 18013-5 and
 ISO 18013-7 standards.
@@ -38,10 +39,11 @@ androidJvm
 
 ## Properties
 
-| Name                                     | Summary                                                                                                                                                                                                                                                                                                           |
-|------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [requestProcessor](request-processor.md) | [androidJvm]<br>open override val [requestProcessor](request-processor.md): [RequestProcessor](../../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/index.md)                                                                                                                                    |
-| [retrievalMethods](retrieval-methods.md) | [androidJvm]<br>var [retrievalMethods](retrieval-methods.md): [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)&lt;[DeviceRetrievalMethod](../../eu.europa.ec.eudi.iso18013.transfer.engagement/-device-retrieval-method/index.md)&gt;<br>List of device retrieval methods |
+| Name                                      | Summary                                                                                                                                                                                                                                                                                                           |
+|-------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [readerTrustStore](reader-trust-store.md) | [androidJvm]<br>open override var [readerTrustStore](reader-trust-store.md): [ReaderTrustStore](../../eu.europa.ec.eudi.iso18013.transfer.readerauth/-reader-trust-store/index.md)?<br>the reader trust store                                                                                                     |
+| [requestProcessor](request-processor.md)  | [androidJvm]<br>open override val [requestProcessor](request-processor.md): [RequestProcessor](../../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/index.md)                                                                                                                                    |
+| [retrievalMethods](retrieval-methods.md)  | [androidJvm]<br>var [retrievalMethods](retrieval-methods.md): [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)&lt;[DeviceRetrievalMethod](../../eu.europa.ec.eudi.iso18013.transfer.engagement/-device-retrieval-method/index.md)&gt;<br>List of device retrieval methods |
 
 ## Functions
 

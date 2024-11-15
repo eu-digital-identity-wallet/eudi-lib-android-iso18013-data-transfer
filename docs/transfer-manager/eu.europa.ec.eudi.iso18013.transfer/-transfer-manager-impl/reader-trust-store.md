@@ -1,4 +1,4 @@
-//[transfer-manager](../../../index.md)/[eu.europa.ec.eudi.iso18013.transfer.response.device](../index.md)/[DeviceRequestProcessor](index.md)/[readerTrustStore](reader-trust-store.md)
+//[transfer-manager](../../../index.md)/[eu.europa.ec.eudi.iso18013.transfer](../index.md)/[TransferManagerImpl](index.md)/[readerTrustStore](reader-trust-store.md)
 
 # readerTrustStore
 

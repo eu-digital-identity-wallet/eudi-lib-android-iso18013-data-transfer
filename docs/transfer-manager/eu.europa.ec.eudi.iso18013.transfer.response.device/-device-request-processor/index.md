@@ -3,9 +3,9 @@
 # DeviceRequestProcessor
 
 [androidJvm]\
-class [DeviceRequestProcessor](index.md)(documentManager: DocumentManager, val
+class [DeviceRequestProcessor](index.md)(documentManager: DocumentManager, var
 readerTrustStore: [ReaderTrustStore](../../eu.europa.ec.eudi.iso18013.transfer.readerauth/-reader-trust-store/index.md)? =
-null) : [RequestProcessor](../../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/index.md)
+null) : [RequestProcessor](../../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/index.md), [ReaderTrustStoreAware](../../eu.europa.ec.eudi.iso18013.transfer.readerauth/-reader-trust-store-aware/index.md)
 
 Implementation
 of [RequestProcessor](../../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/index.md)
@@ -26,9 +26,9 @@ for [DeviceRequest](../-device-request/index.md) for the ISO 18013-5 standard.
 
 ## Properties
 
-| Name                                      | Summary                                                                                                                                                                                                                                 |
-|-------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [readerTrustStore](reader-trust-store.md) | [androidJvm]<br>val [readerTrustStore](reader-trust-store.md): [ReaderTrustStore](../../eu.europa.ec.eudi.iso18013.transfer.readerauth/-reader-trust-store/index.md)? = null<br>the reader trust store to perform reader authentication |
+| Name                                      | Summary                                                                                                                                                                                                                                        |
+|-------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [readerTrustStore](reader-trust-store.md) | [androidJvm]<br>open override var [readerTrustStore](reader-trust-store.md): [ReaderTrustStore](../../eu.europa.ec.eudi.iso18013.transfer.readerauth/-reader-trust-store/index.md)?<br>the reader trust store to perform reader authentication |
 
 ## Functions
 

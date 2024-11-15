@@ -20,6 +20,7 @@ import com.android.identity.mdoc.request.DeviceRequestParser
 import eu.europa.ec.eudi.iso18013.transfer.internal.getValidIssuedMsoMdocDocuments
 import eu.europa.ec.eudi.iso18013.transfer.internal.readerauth.performReaderAuthentication
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStore
+import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStoreAware
 import eu.europa.ec.eudi.iso18013.transfer.response.DocItem
 import eu.europa.ec.eudi.iso18013.transfer.response.ReaderAuth
 import eu.europa.ec.eudi.iso18013.transfer.response.Request
@@ -38,8 +39,8 @@ import eu.europa.ec.eudi.wallet.document.NameSpace
  */
 class DeviceRequestProcessor(
     private val documentManager: DocumentManager,
-    val readerTrustStore: ReaderTrustStore? = null
-) : RequestProcessor {
+    override var readerTrustStore: ReaderTrustStore? = null
+) : RequestProcessor, ReaderTrustStoreAware {
 
     /**
      * The helper class to process the [RequestedMdocDocument] and return the [RequestedDocuments].

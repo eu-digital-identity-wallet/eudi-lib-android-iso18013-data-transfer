@@ -3,7 +3,8 @@
 # getOrThrow
 
 [androidJvm]\
-open fun [getOrThrow](get-or-throw.md)(): [RequestProcessor.ProcessedRequest](index.md)
+open
+fun [getOrThrow](get-or-throw.md)(): [RequestProcessor.ProcessedRequest.Success](-success/index.md)
 
 Returns the processed request or throws the error
 
