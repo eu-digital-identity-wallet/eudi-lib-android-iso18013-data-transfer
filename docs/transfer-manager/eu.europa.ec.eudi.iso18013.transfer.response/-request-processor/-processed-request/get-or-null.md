@@ -3,7 +3,8 @@
 # getOrNull
 
 [androidJvm]\
-open fun [getOrNull](get-or-null.md)(): [RequestProcessor.ProcessedRequest](index.md)?
+open
+fun [getOrNull](get-or-null.md)(): [RequestProcessor.ProcessedRequest.Success](-success/index.md)?
 
 Returns the processed request or null
 

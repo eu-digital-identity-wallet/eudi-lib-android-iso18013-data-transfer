@@ -33,6 +33,7 @@ import eu.europa.ec.eudi.iso18013.transfer.internal.TAG
 import eu.europa.ec.eudi.iso18013.transfer.internal.stopPresentation
 import eu.europa.ec.eudi.iso18013.transfer.internal.transportOptions
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStore
+import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStoreAware
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor
 import eu.europa.ec.eudi.iso18013.transfer.response.Response
 import eu.europa.ec.eudi.iso18013.transfer.response.device.DeviceRequest
@@ -55,8 +56,14 @@ class TransferManagerImpl @JvmOverloads constructor(
     context: Context,
     override val requestProcessor: RequestProcessor,
     retrievalMethods: List<DeviceRetrievalMethod>? = null,
-) : TransferManager {
+) : TransferManager, ReaderTrustStoreAware {
     private val context = context.applicationContext
+
+    override var readerTrustStore: ReaderTrustStore?
+        get() = (requestProcessor as? ReaderTrustStoreAware)?.readerTrustStore
+        set(value) {
+            (readerTrustStore as? ReaderTrustStoreAware)?.readerTrustStore = value
+        }
 
     /**
      * Device retrieval helper instance

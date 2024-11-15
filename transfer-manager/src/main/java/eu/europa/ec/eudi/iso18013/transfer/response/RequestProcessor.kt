@@ -53,7 +53,7 @@ fun interface RequestProcessor {
              */
             abstract fun generateResponse(
                 disclosedDocuments: DisclosedDocuments,
-                signatureAlgorithm: Algorithm?,
+                signatureAlgorithm: Algorithm? = null,
             ): ResponseResult
         }
 
@@ -68,7 +68,7 @@ fun interface RequestProcessor {
          * @throws Throwable the error
          * @return the processed request
          */
-        fun getOrThrow(): ProcessedRequest {
+        fun getOrThrow(): Success {
             return when (this) {
                 is Success -> this
                 is Failure -> throw error
@@ -79,7 +79,7 @@ fun interface RequestProcessor {
          * Returns the processed request or null
          * @return the processed request or null
          */
-        fun getOrNull(): ProcessedRequest? {
+        fun getOrNull(): Success? {
             return when (this) {
                 is Success -> this
                 is Failure -> null
