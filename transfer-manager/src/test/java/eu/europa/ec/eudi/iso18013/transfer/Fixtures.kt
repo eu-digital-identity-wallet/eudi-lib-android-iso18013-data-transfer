@@ -23,9 +23,9 @@ import com.android.identity.securearea.software.SoftwareCreateKeySettings
 import com.android.identity.securearea.software.SoftwareSecureArea
 import com.android.identity.storage.EphemeralStorageEngine
 import eu.europa.ec.eudi.iso18013.transfer.response.device.DeviceRequest
+import eu.europa.ec.eudi.wallet.document.CreateDocumentSettings
 import eu.europa.ec.eudi.wallet.document.DocumentManager
 import eu.europa.ec.eudi.wallet.document.DocumentManagerImpl
-import eu.europa.ec.eudi.wallet.document.SecureAreaCreateDocumentSettings
 import eu.europa.ec.eudi.wallet.document.getResourceAsText
 import eu.europa.ec.eudi.wallet.document.sample.SampleDocumentManagerImpl
 import io.mockk.every
@@ -63,9 +63,9 @@ fun createDocumentManager(keyLockPassphrase: String?): DocumentManager {
     ).apply {
         loadMdocSampleDocuments(
             sampleData = Base64.decode(getResourceAsText("sample_documents.txt")),
-            createSettings = SecureAreaCreateDocumentSettings(
+            createSettings = CreateDocumentSettings(
                 secureAreaIdentifier = SecureArea.identifier,
-                keySettings = keyLockPassphrase?.let {
+                createKeySettings = keyLockPassphrase?.let {
                     SoftwareCreateKeySettings.Builder()
                         .setPassphraseRequired(
                             true,
