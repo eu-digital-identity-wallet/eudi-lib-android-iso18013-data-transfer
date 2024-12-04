@@ -25,12 +25,12 @@ import eu.europa.ec.eudi.iso18013.transfer.DocumentManagerWithoutKeyLock
 import eu.europa.ec.eudi.iso18013.transfer.KeyLockPassphrase
 import eu.europa.ec.eudi.iso18013.transfer.response.DisclosedDocument
 import eu.europa.ec.eudi.iso18013.transfer.response.DisclosedDocuments
-import eu.europa.ec.eudi.iso18013.transfer.response.DocItem
 import eu.europa.ec.eudi.iso18013.transfer.response.Request
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor.ProcessedRequest.Failure
 import eu.europa.ec.eudi.iso18013.transfer.response.ResponseResult
 import eu.europa.ec.eudi.iso18013.transfer.toDocItems
 import eu.europa.ec.eudi.wallet.document.IssuedDocument
+import eu.europa.ec.eudi.wallet.document.format.MsoMdocData
 import eu.europa.ec.eudi.wallet.document.format.MsoMdocFormat
 import io.mockk.mockk
 import org.junit.Test
@@ -54,11 +54,11 @@ class DeviceRequestProcessorTest {
         assertEquals(expectedDocument.id, processedRequest.requestedDocuments[0].documentId)
         assertEquals(
             setOf(
-                Pair(DocItem("org.iso.18013.5.1", "given_name"), true),
-                Pair(DocItem("org.iso.18013.5.1", "birth_date"), true),
-                Pair(DocItem("org.iso.18013.5.1", "issue_date"), true),
-                Pair(DocItem("org.iso.18013.5.1", "portrait"), false),
-                Pair(DocItem("org.iso.18013.5.1.Utopia", "UtopiaID"), true),
+                Pair(MsoMdocItem("org.iso.18013.5.1", "given_name"), true),
+                Pair(MsoMdocItem("org.iso.18013.5.1", "birth_date"), true),
+                Pair(MsoMdocItem("org.iso.18013.5.1", "issue_date"), true),
+                Pair(MsoMdocItem("org.iso.18013.5.1", "portrait"), false),
+                Pair(MsoMdocItem("org.iso.18013.5.1.Utopia", "UtopiaID"), true),
             ),
             processedRequest.requestedDocuments[0].requestedItems.entries.map { it.toPair() }
                 .toSet()
@@ -85,12 +85,14 @@ class DeviceRequestProcessorTest {
             .first()
         val processedRequest = requestProcessor.process(DeviceRequest)
         assertIs<ProcessedDeviceRequest>(processedRequest)
+        val documentData = expectedDocument.data
+        assertIs<MsoMdocData>(documentData)
 
         val responseResult = processedRequest.generateResponse(
             disclosedDocuments = DisclosedDocuments(
                 DisclosedDocument(
-                    documentId = expectedDocument.id,
-                    disclosedItems = expectedDocument.nameSpaces.toDocItems(),
+                    document = expectedDocument,
+                    disclosedItems = documentData.nameSpaces.toDocItems(),
                 )
             ),
             signatureAlgorithm = Algorithm.ES256,
@@ -111,12 +113,14 @@ class DeviceRequestProcessorTest {
             .first()
         val processedRequest = requestProcessor.process(DeviceRequest)
         assertIs<ProcessedDeviceRequest>(processedRequest)
+        val documentData = expectedDocument.data
+        assertIs<MsoMdocData>(documentData)
 
         val responseResult = processedRequest.generateResponse(
             disclosedDocuments = DisclosedDocuments(
                 DisclosedDocument(
-                    documentId = expectedDocument.id,
-                    disclosedItems = expectedDocument.nameSpaces.toDocItems(),
+                    document = expectedDocument,
+                    disclosedItems = documentData.nameSpaces.toDocItems(),
                 )
             ),
             signatureAlgorithm = Algorithm.ES256,
@@ -137,12 +141,14 @@ class DeviceRequestProcessorTest {
             .first()
         val processedRequest = requestProcessor.process(DeviceRequest)
         assertIs<ProcessedDeviceRequest>(processedRequest)
+        val documentData = expectedDocument.data
+        assertIs<MsoMdocData>(documentData)
 
         val responseResult = processedRequest.generateResponse(
             disclosedDocuments = DisclosedDocuments(
                 DisclosedDocument(
-                    documentId = expectedDocument.id,
-                    disclosedItems = expectedDocument.nameSpaces.toDocItems(),
+                    document = expectedDocument,
+                    disclosedItems = documentData.nameSpaces.toDocItems(),
                     keyUnlockData = SoftwareKeyUnlockData(KeyLockPassphrase)
                 )
             ),

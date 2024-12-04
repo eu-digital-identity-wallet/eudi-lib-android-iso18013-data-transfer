@@ -14,26 +14,18 @@
  * limitations under the License.
  */
 
-package eu.europa.ec.eudi.iso18013.transfer.response
+package eu.europa.ec.eudi.iso18013.transfer.response.device
+
+import eu.europa.ec.eudi.iso18013.transfer.response.DocItem
 
 /**
- * Doc item represents a data element
+ * Represents a [DocItem] for mso_mdoc document items.
+ * Includes the namespace and element identifier of the document item.
  *
- * @property elementIdentifier the data element identifier e.g. family_name, given_name
+ * @property namespace The namespace of the element.
+ * @property elementIdentifier The element identifier of the MsoMdocItem.
  */
-open class DocItem(
-    open val elementIdentifier: String
-) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is DocItem) return false
-
-        if (elementIdentifier != other.elementIdentifier) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return elementIdentifier.hashCode()
-    }
-}
+data class MsoMdocItem(
+    val namespace: String,
+    override val elementIdentifier: String,
+) : DocItem(elementIdentifier)
