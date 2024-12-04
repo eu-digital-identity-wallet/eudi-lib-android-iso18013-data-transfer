@@ -17,9 +17,9 @@
 package eu.europa.ec.eudi.iso18013.transfer
 
 
-import eu.europa.ec.eudi.iso18013.transfer.response.DocItem
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor
 import eu.europa.ec.eudi.iso18013.transfer.response.ResponseResult
+import eu.europa.ec.eudi.iso18013.transfer.response.device.MsoMdocItem
 import io.mockk.mockk
 import kotlin.test.*
 
@@ -28,9 +28,9 @@ class ExtensionsTest {
     @Test
     fun docItemsAsMapShouldGroupByNamespace() {
         val docItems = listOf(
-            DocItem(namespace = "namespace1", elementIdentifier = "element1"),
-            DocItem(namespace = "namespace1", elementIdentifier = "element2"),
-            DocItem(namespace = "namespace2", elementIdentifier = "element3")
+            MsoMdocItem(namespace = "namespace1", elementIdentifier = "element1"),
+            MsoMdocItem(namespace = "namespace1", elementIdentifier = "element2"),
+            MsoMdocItem(namespace = "namespace2", elementIdentifier = "element3")
         )
 
         val result = docItems.asMap()
@@ -52,7 +52,7 @@ class ExtensionsTest {
         assertEquals(3, result.size)
         assertTrue(
             result.contains(
-                DocItem(
+                MsoMdocItem(
                     namespace = "namespace1",
                     elementIdentifier = "element1"
                 )
@@ -60,7 +60,7 @@ class ExtensionsTest {
         )
         assertTrue(
             result.contains(
-                DocItem(
+                MsoMdocItem(
                     namespace = "namespace1",
                     elementIdentifier = "element2"
                 )
@@ -68,7 +68,7 @@ class ExtensionsTest {
         )
         assertTrue(
             result.contains(
-                DocItem(
+                MsoMdocItem(
                     namespace = "namespace2",
                     elementIdentifier = "element3"
                 )

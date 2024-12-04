@@ -20,6 +20,7 @@ package eu.europa.ec.eudi.iso18013.transfer
 import eu.europa.ec.eudi.iso18013.transfer.response.DocItem
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor
 import eu.europa.ec.eudi.iso18013.transfer.response.ResponseResult
+import eu.europa.ec.eudi.iso18013.transfer.response.device.MsoMdocItem
 import eu.europa.ec.eudi.wallet.document.ElementIdentifier
 import eu.europa.ec.eudi.wallet.document.NameSpace
 
@@ -30,6 +31,7 @@ import eu.europa.ec.eudi.wallet.document.NameSpace
  */
 @JvmName("docItemsToNameSpaces")
 fun List<DocItem>.asMap(): Map<NameSpace, List<ElementIdentifier>> = this
+    .filterIsInstance<MsoMdocItem>()
     .groupBy { (nameSpace, _) -> nameSpace }
     .mapValues { (_, docItems) -> docItems.map { it.elementIdentifier } }
 
@@ -42,7 +44,7 @@ fun List<DocItem>.asMap(): Map<NameSpace, List<ElementIdentifier>> = this
 fun Map<NameSpace, List<ElementIdentifier>>.toDocItems(): List<DocItem> =
     this.flatMap { (nameSpace, elementIdentifiers) ->
         elementIdentifiers.map { elementIdentifier ->
-            DocItem(
+            MsoMdocItem(
                 namespace = nameSpace,
                 elementIdentifier = elementIdentifier
             )

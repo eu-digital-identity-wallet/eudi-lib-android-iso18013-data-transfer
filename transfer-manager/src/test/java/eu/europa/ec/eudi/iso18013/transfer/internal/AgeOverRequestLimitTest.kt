@@ -17,7 +17,7 @@
 package eu.europa.ec.eudi.iso18013.transfer.internal
 
 import eu.europa.ec.eudi.iso18013.transfer.response.DisclosedDocument
-import eu.europa.ec.eudi.iso18013.transfer.response.DocItem
+import eu.europa.ec.eudi.iso18013.transfer.response.device.MsoMdocItem
 import eu.europa.ec.eudi.wallet.document.IssuedDocument
 import eu.europa.ec.eudi.wallet.document.format.MsoMdocFormat
 import io.mockk.every
@@ -43,9 +43,9 @@ class AgeOverRequestLimitTest {
     @Test
     fun `should return the issued document if the request contains 1 age_over_nn item`() {
         val disclosedDocument = DisclosedDocument(
-            documentId = "document_id",
+            document = issuedDocument,
             disclosedItems = listOf(
-                DocItem(namespace = "org.iso.18013.5.1", elementIdentifier = "age_over_18")
+                MsoMdocItem(namespace = "org.iso.18013.5.1", elementIdentifier = "age_over_18")
             )
         )
         val document = issuedDocument.assertAgeOverRequestLimitForIso18013(disclosedDocument)
@@ -55,10 +55,10 @@ class AgeOverRequestLimitTest {
     @Test
     fun `should return the issued document if the request contains 2 age_over_nn item2`() {
         val disclosedDocument = DisclosedDocument(
-            documentId = "document_id",
+            document = issuedDocument,
             disclosedItems = listOf(
-                DocItem(namespace = "org.iso.18013.5.1", elementIdentifier = "age_over_18"),
-                DocItem(namespace = "org.iso.18013.5.1", elementIdentifier = "age_over_21")
+                MsoMdocItem(namespace = "org.iso.18013.5.1", elementIdentifier = "age_over_18"),
+                MsoMdocItem(namespace = "org.iso.18013.5.1", elementIdentifier = "age_over_21")
             )
         )
         val document = issuedDocument.assertAgeOverRequestLimitForIso18013(disclosedDocument)
@@ -68,11 +68,11 @@ class AgeOverRequestLimitTest {
     @Test
     fun `should throw the issued document if the request contains more than 2 age_over_nn items`() {
         val disclosedDocument = DisclosedDocument(
-            documentId = "document_id",
+            document = issuedDocument,
             disclosedItems = listOf(
-                DocItem(namespace = "org.iso.18013.5.1", elementIdentifier = "age_over_18"),
-                DocItem(namespace = "org.iso.18013.5.1", elementIdentifier = "age_over_21"),
-                DocItem(namespace = "org.iso.18013.5.1", elementIdentifier = "age_over_65")
+                MsoMdocItem(namespace = "org.iso.18013.5.1", elementIdentifier = "age_over_18"),
+                MsoMdocItem(namespace = "org.iso.18013.5.1", elementIdentifier = "age_over_21"),
+                MsoMdocItem(namespace = "org.iso.18013.5.1", elementIdentifier = "age_over_65")
             )
         )
         val throwable = assertThrows(IllegalArgumentException::class.java) {

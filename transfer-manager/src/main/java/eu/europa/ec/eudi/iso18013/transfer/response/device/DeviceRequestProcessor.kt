@@ -92,7 +92,7 @@ class DeviceRequestProcessor(
                 val docItems =
                     requestedDocument.requested.flatMap { (nameSpace, elementIdentifiers) ->
                         elementIdentifiers.map { (elementIdentifier, intentToRetain) ->
-                            DocItem(
+                            MsoMdocItem(
                                 namespace = nameSpace,
                                 elementIdentifier = elementIdentifier,
                             ) to intentToRetain
@@ -101,7 +101,7 @@ class DeviceRequestProcessor(
 
                 documentManager.getValidIssuedMsoMdocDocuments(requestedDocument.docType).map {
                     RequestedDocument(
-                        documentId = it.id,
+                        document = it,
                         requestedItems = docItems,
                         readerAuth = requestedDocument.readerAuthentication.invoke(),
                     )

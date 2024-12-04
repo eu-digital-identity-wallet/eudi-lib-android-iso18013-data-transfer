@@ -17,6 +17,7 @@
 package eu.europa.ec.eudi.iso18013.transfer.internal
 
 import eu.europa.ec.eudi.iso18013.transfer.response.DisclosedDocument
+import eu.europa.ec.eudi.iso18013.transfer.response.device.MsoMdocItem
 import eu.europa.ec.eudi.wallet.document.IssuedDocument
 import eu.europa.ec.eudi.wallet.document.format.MsoMdocFormat
 
@@ -27,9 +28,12 @@ import eu.europa.ec.eudi.wallet.document.format.MsoMdocFormat
 internal fun IssuedDocument.assertAgeOverRequestLimitForIso18013(disclosedDocument: DisclosedDocument): IssuedDocument =
     apply {
         val docType = (format as MsoMdocFormat).docType
-        if (id == disclosedDocument.documentId && docType == "org.iso.18013.5.1.mDL" && disclosedDocument.disclosedItems.filter { docItem ->
-                docItem.elementIdentifier.startsWith("age_over_") && docItem.namespace == "org.iso.18013.5.1"
-            }.size > 2) {
+        if (id == disclosedDocument.documentId && docType == "org.iso.18013.5.1.mDL" && disclosedDocument.disclosedItems
+                .filter { it is MsoMdocItem }
+                .filter { docItem ->
+                    docItem.elementIdentifier.startsWith("age_over_") && (docItem as? MsoMdocItem)?.namespace == "org.iso.18013.5.1"
+                }.size > 2
+        ) {
             throw IllegalArgumentException("Device Response is not allowed to have more than two age_over_NN elements")
 
         }

@@ -26,6 +26,7 @@ import com.android.identity.securearea.KeyUnlockData
 import eu.europa.ec.eudi.wallet.document.ElementIdentifier
 import eu.europa.ec.eudi.wallet.document.IssuedDocument
 import eu.europa.ec.eudi.wallet.document.NameSpace
+import eu.europa.ec.eudi.wallet.document.format.MsoMdocData
 import eu.europa.ec.eudi.wallet.document.format.MsoMdocFormat
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toJavaInstant
@@ -57,9 +58,10 @@ internal object DocumentResponseGenerator {
         require(document.format is MsoMdocFormat) { "Document format is not MsoMdocFormat" }
         require(!document.isKeyInvalidated) { "Document key is invalidated" }
         require(document.isValidAt(Clock.System.now().toJavaInstant())) { "Document is not valid" }
+        val documentData = document.data as MsoMdocData
         val docType = (document.format as MsoMdocFormat).docType
         val dataElements =
-            (elements ?: document.nameSpaces).flatMap { (nameSpace, elementIdentifiers) ->
+            (elements ?: documentData.nameSpaces).flatMap { (nameSpace, elementIdentifiers) ->
                 elementIdentifiers.map { elementIdentifier ->
                     DocumentRequest.DataElement(nameSpace, elementIdentifier, false)
                 }
@@ -68,7 +70,7 @@ internal object DocumentResponseGenerator {
 
         val staticAuthData = StaticAuthDataParser(document.issuerProvidedData).parse()
         val mergedIssuerNamespaces = MdocUtil.mergeIssuerNamesSpaces(
-            request, document.nameSpacedData, staticAuthData
+            request, documentData.nameSpacedData, staticAuthData
         )
         return DocumentGenerator(docType, staticAuthData.issuerAuth, transcript)
             .setIssuerNamespaces(mergedIssuerNamespaces)
