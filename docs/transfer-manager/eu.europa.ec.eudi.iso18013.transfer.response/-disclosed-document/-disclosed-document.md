@@ -22,6 +22,6 @@ androidJvm
 | keyUnlockData     | the key unlock data                                                                         |
 
 [androidJvm]\
-constructor(document: IssuedDocument,
+constructor(documentId: DocumentId,
 disclosedItems: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)
 &lt;[DocItem](../-doc-item/index.md)&gt;, keyUnlockData: KeyUnlockData? = null)

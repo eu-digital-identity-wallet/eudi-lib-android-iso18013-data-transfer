@@ -91,7 +91,7 @@ class DeviceRequestProcessorTest {
         val responseResult = processedRequest.generateResponse(
             disclosedDocuments = DisclosedDocuments(
                 DisclosedDocument(
-                    document = expectedDocument,
+                    documentId = expectedDocument.id,
                     disclosedItems = documentData.nameSpaces.toDocItems(),
                 )
             ),
@@ -119,7 +119,7 @@ class DeviceRequestProcessorTest {
         val responseResult = processedRequest.generateResponse(
             disclosedDocuments = DisclosedDocuments(
                 DisclosedDocument(
-                    document = expectedDocument,
+                    documentId = expectedDocument.id,
                     disclosedItems = documentData.nameSpaces.toDocItems(),
                 )
             ),
@@ -147,7 +147,7 @@ class DeviceRequestProcessorTest {
         val responseResult = processedRequest.generateResponse(
             disclosedDocuments = DisclosedDocuments(
                 DisclosedDocument(
-                    document = expectedDocument,
+                    documentId = expectedDocument.id,
                     disclosedItems = documentData.nameSpaces.toDocItems(),
                     keyUnlockData = SoftwareKeyUnlockData(KeyLockPassphrase)
                 )

@@ -18,22 +18,17 @@ package eu.europa.ec.eudi.iso18013.transfer.response
 
 import eu.europa.ec.eudi.iso18013.transfer.IntentToRetain
 import eu.europa.ec.eudi.wallet.document.DocumentId
-import eu.europa.ec.eudi.wallet.document.IssuedDocument
 
 /**
  * Represents a request received by a verifier and contains the requested documents and elements
  *
- * @property document the requested document after resolving the request
  * @property documentId the unique id of the document
  * @property requestedItems the list of requested items
  * @property readerAuth the result of the reader authentication
  */
 
 data class RequestedDocument(
-    val document: IssuedDocument,
+    val documentId: DocumentId,
     val requestedItems: Map<out DocItem, IntentToRetain>,
     val readerAuth: ReaderAuth?
-) {
-    val documentId: DocumentId
-        get() = document.id
-}
+)
