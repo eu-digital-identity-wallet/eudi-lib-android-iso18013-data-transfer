@@ -100,7 +100,7 @@ class DeviceRequestProcessor(
 
                 documentManager.getValidIssuedMsoMdocDocuments(requestedDocument.docType).map {
                     RequestedDocument(
-                        document = it,
+                        documentId = it.id,
                         requestedItems = docItems,
                         readerAuth = requestedDocument.readerAuthentication.invoke(),
                     )

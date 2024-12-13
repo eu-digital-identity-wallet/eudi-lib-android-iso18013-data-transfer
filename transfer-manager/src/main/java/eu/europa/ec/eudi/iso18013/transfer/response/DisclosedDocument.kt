@@ -18,24 +18,19 @@ package eu.europa.ec.eudi.iso18013.transfer.response
 
 import com.android.identity.securearea.KeyUnlockData
 import eu.europa.ec.eudi.wallet.document.DocumentId
-import eu.europa.ec.eudi.wallet.document.IssuedDocument
 
 /**
  * Represents a response that contains the document data that will be sent to an mdoc verifier
  *
- * @property document the document that will be disclosed
  * @property documentId the unique id of the document
  * @property disclosedItems a [List] that contains the document items [DocItem], i.e the namespaces and the data elements that will be sent in the device response after selective disclosure
  * @property keyUnlockData the key unlock data that will be used to unlock document's key for signing the response
  */
 data class DisclosedDocument(
-    val document: IssuedDocument,
+    val documentId: DocumentId,
     val disclosedItems: List<DocItem>,
     val keyUnlockData: KeyUnlockData? = null,
 ) {
-    val documentId: DocumentId
-        get() = document.id
-
     /**
      * Alternative constructor that takes a [RequestedDocument] and a [List] of [DocItem] to create a [DisclosedDocument]
      * @param requestedDocument the requested document
@@ -47,7 +42,7 @@ data class DisclosedDocument(
         disclosedItems: List<DocItem>? = null,
         keyUnlockData: KeyUnlockData? = null
     ) : this(
-        requestedDocument.document,
+        requestedDocument.documentId,
         disclosedItems ?: requestedDocument.requestedItems.keys.toList(),
         keyUnlockData
     )

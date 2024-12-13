@@ -43,7 +43,7 @@ class AgeOverRequestLimitTest {
     @Test
     fun `should return the issued document if the request contains 1 age_over_nn item`() {
         val disclosedDocument = DisclosedDocument(
-            document = issuedDocument,
+            documentId = issuedDocument.id,
             disclosedItems = listOf(
                 MsoMdocItem(namespace = "org.iso.18013.5.1", elementIdentifier = "age_over_18")
             )
@@ -55,7 +55,7 @@ class AgeOverRequestLimitTest {
     @Test
     fun `should return the issued document if the request contains 2 age_over_nn item2`() {
         val disclosedDocument = DisclosedDocument(
-            document = issuedDocument,
+            documentId = issuedDocument.id,
             disclosedItems = listOf(
                 MsoMdocItem(namespace = "org.iso.18013.5.1", elementIdentifier = "age_over_18"),
                 MsoMdocItem(namespace = "org.iso.18013.5.1", elementIdentifier = "age_over_21")
@@ -68,7 +68,7 @@ class AgeOverRequestLimitTest {
     @Test
     fun `should throw the issued document if the request contains more than 2 age_over_nn items`() {
         val disclosedDocument = DisclosedDocument(
-            document = issuedDocument,
+            documentId = issuedDocument.id,
             disclosedItems = listOf(
                 MsoMdocItem(namespace = "org.iso.18013.5.1", elementIdentifier = "age_over_18"),
                 MsoMdocItem(namespace = "org.iso.18013.5.1", elementIdentifier = "age_over_21"),

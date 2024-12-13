@@ -39,9 +39,8 @@ class DisclosedDocumentTest {
 
     @Test
     fun constructorShouldInitializePropertiesCorrectly() {
-        val disclosedDocument = DisclosedDocument(document, disclosedItems, keyUnlockData)
+        val disclosedDocument = DisclosedDocument(document.id, disclosedItems, keyUnlockData)
 
-        assertEquals(document, disclosedDocument.document)
         assertEquals(document.id, disclosedDocument.documentId)
         assertEquals(disclosedItems, disclosedDocument.disclosedItems)
         assertEquals(keyUnlockData, disclosedDocument.keyUnlockData)
@@ -49,9 +48,8 @@ class DisclosedDocumentTest {
 
     @Test
     fun constructorShouldHandleNullKeyUnlockData() {
-        val disclosedDocument = DisclosedDocument(document, disclosedItems, null)
+        val disclosedDocument = DisclosedDocument(document.id, disclosedItems, null)
 
-        assertEquals(document, disclosedDocument.document)
         assertEquals(document.id, disclosedDocument.documentId)
         assertEquals(disclosedItems, disclosedDocument.disclosedItems)
         assertNull(disclosedDocument.keyUnlockData)
@@ -60,7 +58,7 @@ class DisclosedDocumentTest {
     @Test
     fun alternativeConstructorShouldInitializePropertiesCorrectly() {
         val requestedDocument = mockk<RequestedDocument>()
-        every { requestedDocument.document } returns document
+        every { requestedDocument.documentId } returns document.id
         every { requestedDocument.documentId } answers { callOriginal() }
         every { requestedDocument.requestedItems } returns mapOf(
             DocItem(elementIdentifier = "element") to true
@@ -68,7 +66,6 @@ class DisclosedDocumentTest {
 
         val disclosedDocument = DisclosedDocument(requestedDocument, disclosedItems, keyUnlockData)
 
-        assertEquals(document, disclosedDocument.document)
         assertEquals(document.id, disclosedDocument.documentId)
         assertEquals(disclosedItems, disclosedDocument.disclosedItems)
         assertEquals(keyUnlockData, disclosedDocument.keyUnlockData)
@@ -77,14 +74,13 @@ class DisclosedDocumentTest {
     @Test
     fun alternativeConstructorShouldHandleNullDisclosedItems() {
         val requestedDocument = mockk<RequestedDocument>()
-        every { requestedDocument.document } returns document
+        every { requestedDocument.documentId } returns document.id
         every { requestedDocument.requestedItems } returns mapOf(
             DocItem(elementIdentifier = "element") to false
         )
 
         val disclosedDocument = DisclosedDocument(requestedDocument, null, keyUnlockData)
 
-        assertEquals(document, disclosedDocument.document)
         assertEquals(document.id, disclosedDocument.documentId)
         assertEquals(listOf(DocItem("element")), disclosedDocument.disclosedItems)
         assertEquals(keyUnlockData, disclosedDocument.keyUnlockData)
@@ -93,14 +89,13 @@ class DisclosedDocumentTest {
     @Test
     fun alternativeConstructorShouldHandleNullKeyUnlockData() {
         val requestedDocument = mockk<RequestedDocument>()
-        every { requestedDocument.document } returns document
+        every { requestedDocument.documentId } returns document.id
         every { requestedDocument.requestedItems } returns mapOf(
             DocItem(elementIdentifier = "element") to false
         )
 
         val disclosedDocument = DisclosedDocument(requestedDocument, disclosedItems, null)
 
-        assertEquals(document, disclosedDocument.document)
         assertEquals(document.id, disclosedDocument.documentId)
         assertEquals(disclosedItems, disclosedDocument.disclosedItems)
         assertNull(disclosedDocument.keyUnlockData)
