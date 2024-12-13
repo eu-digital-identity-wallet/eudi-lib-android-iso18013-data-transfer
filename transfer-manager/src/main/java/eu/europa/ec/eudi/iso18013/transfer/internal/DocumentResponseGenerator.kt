@@ -27,7 +27,6 @@ import eu.europa.ec.eudi.wallet.document.ElementIdentifier
 import eu.europa.ec.eudi.wallet.document.IssuedDocument
 import eu.europa.ec.eudi.wallet.document.NameSpace
 import eu.europa.ec.eudi.wallet.document.format.MsoMdocData
-import eu.europa.ec.eudi.wallet.document.format.MsoMdocFormat
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toJavaInstant
 
@@ -55,11 +54,11 @@ internal object DocumentResponseGenerator {
         keyUnlockData: KeyUnlockData? = null,
         signatureAlgorithm: Algorithm = Algorithm.ES256
     ): ByteArray {
-        require(document.format is MsoMdocFormat) { "Document format is not MsoMdocFormat" }
+        require(document.data is MsoMdocData) { "Document format is not MsoMdocFormat" }
         require(!document.isKeyInvalidated) { "Document key is invalidated" }
         require(document.isValidAt(Clock.System.now().toJavaInstant())) { "Document is not valid" }
         val documentData = document.data as MsoMdocData
-        val docType = (document.format as MsoMdocFormat).docType
+        val docType = documentData.format.docType
         val dataElements =
             (elements ?: documentData.nameSpaces).flatMap { (nameSpace, elementIdentifiers) ->
                 elementIdentifiers.map { elementIdentifier ->
