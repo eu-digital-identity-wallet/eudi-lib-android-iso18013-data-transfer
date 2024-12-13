@@ -21,7 +21,6 @@ import eu.europa.ec.eudi.iso18013.transfer.internal.getValidIssuedMsoMdocDocumen
 import eu.europa.ec.eudi.iso18013.transfer.internal.readerauth.performReaderAuthentication
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStore
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStoreAware
-import eu.europa.ec.eudi.iso18013.transfer.response.DocItem
 import eu.europa.ec.eudi.iso18013.transfer.response.ReaderAuth
 import eu.europa.ec.eudi.iso18013.transfer.response.Request
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor
