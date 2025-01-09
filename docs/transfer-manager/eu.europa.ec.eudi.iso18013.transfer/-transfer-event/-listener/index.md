@@ -9,6 +9,6 @@ Interface for transfer event listener
 
 ## Functions
 
-| Name                                    | Summary                                                                                                                                 |
-|-----------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| Name | Summary |
+|---|---|
 | [onTransferEvent](on-transfer-event.md) | [androidJvm]<br>abstract fun [onTransferEvent](on-transfer-event.md)(event: [TransferEvent](../index.md))<br>On transfer event callback |

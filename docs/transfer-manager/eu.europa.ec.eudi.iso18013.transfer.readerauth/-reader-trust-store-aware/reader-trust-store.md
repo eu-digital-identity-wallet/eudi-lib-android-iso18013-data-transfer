@@ -3,5 +3,4 @@
 # readerTrustStore
 
 [androidJvm]\
-abstract
-var [readerTrustStore](reader-trust-store.md): [ReaderTrustStore](../-reader-trust-store/index.md)?
+abstract var [readerTrustStore](reader-trust-store.md): [ReaderTrustStore](../-reader-trust-store/index.md)?

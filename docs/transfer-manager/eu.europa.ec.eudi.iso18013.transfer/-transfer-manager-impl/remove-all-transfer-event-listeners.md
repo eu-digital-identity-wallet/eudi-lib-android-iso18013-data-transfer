@@ -3,8 +3,7 @@
 # removeAllTransferEventListeners
 
 [androidJvm]\
-open override
-fun [removeAllTransferEventListeners](remove-all-transfer-event-listeners.md)(): [TransferManagerImpl](index.md)
+open override fun [removeAllTransferEventListeners](remove-all-transfer-event-listeners.md)(): [TransferManagerImpl](index.md)
 
 Remove all transfer event listeners
 

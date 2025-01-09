@@ -8,6 +8,6 @@ Interface for request
 
 #### Inheritors
 
-|                                                                                                     |
-|-----------------------------------------------------------------------------------------------------|
+| |
+|---|
 | [DeviceRequest](../../eu.europa.ec.eudi.iso18013.transfer.response.device/-device-request/index.md) |

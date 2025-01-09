@@ -5,8 +5,7 @@
 [androidJvm]\
 data class [Redirect](index.md)(val redirectUri: [URI](https://developer.android.com/reference/kotlin/java/net/URI.html)) : [TransferEvent](../index.md)
 
-Redirect event. This event is triggered when a redirect is needed. This event is to be used for
-implementation for the OpenId4VP protocol.
+Redirect event. This event is triggered when a redirect is needed. This event is to be used for implementation for the OpenId4VP protocol.
 
 ## Constructors
 
@@ -16,6 +15,6 @@ implementation for the OpenId4VP protocol.
 
 ## Properties
 
-| Name                           | Summary                                                                                                                                         |
-|--------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| Name | Summary |
+|---|---|
 | [redirectUri](redirect-uri.md) | [androidJvm]<br>val [redirectUri](redirect-uri.md): [URI](https://developer.android.com/reference/kotlin/java/net/URI.html)<br>the redirect URI |

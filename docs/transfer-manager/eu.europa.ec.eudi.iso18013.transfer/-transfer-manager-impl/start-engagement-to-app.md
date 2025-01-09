@@ -3,8 +3,7 @@
 # startEngagementToApp
 
 [androidJvm]\
-open override fun [startEngagementToApp](start-engagement-to-app.md)(
-intent: [Intent](https://developer.android.com/reference/kotlin/android/content/Intent.html))
+open override fun [startEngagementToApp](start-engagement-to-app.md)(intent: [Intent](https://developer.android.com/reference/kotlin/android/content/Intent.html))
 
 Starts the engagement to app, according to ISO 18013-7.
 
@@ -12,12 +11,12 @@ Starts the engagement to app, according to ISO 18013-7.
 
 androidJvm
 
-|        |                                                                                                                                                                                                                                                                                           |
-|--------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| | |
+|---|---|
 | intent | The intent being received If the transfer has already started, an error event will be triggered with an [IllegalStateException](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-illegal-state-exception/index.html) containing the message &quot;Transfer has already started.&quot; |
 
 #### See also
 
-|                                                           |
-|-----------------------------------------------------------|
+| |
+|---|
 | [TransferEvent.Error](../-transfer-event/-error/index.md) |

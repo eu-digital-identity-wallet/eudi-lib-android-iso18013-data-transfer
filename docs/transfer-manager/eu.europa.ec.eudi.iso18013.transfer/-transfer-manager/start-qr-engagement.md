@@ -5,6 +5,4 @@
 [androidJvm]\
 abstract fun [startQrEngagement](start-qr-engagement.md)()
 
-Starts the QR Engagement and generates the QR code Once the QR code is ready, the
-event [TransferEvent.QrEngagementReady](../-transfer-event/-qr-engagement-ready/index.md) will be
-triggered
+Starts the QR Engagement and generates the QR code Once the QR code is ready, the event [TransferEvent.QrEngagementReady](../-transfer-event/-qr-engagement-ready/index.md) will be triggered

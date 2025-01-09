@@ -8,6 +8,6 @@ Device Retrieval Method
 
 #### Inheritors
 
-|                                                         |
-|---------------------------------------------------------|
+| |
+|---|
 | [BleRetrievalMethod](../-ble-retrieval-method/index.md) |

@@ -8,6 +8,6 @@ Retrieval Method
 
 #### Inheritors
 
-|                                                               |
-|---------------------------------------------------------------|
+| |
+|---|
 | [DeviceRetrievalMethod](../-device-retrieval-method/index.md) |

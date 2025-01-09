@@ -3,6 +3,4 @@
 # DeviceRequestProcessor
 
 [androidJvm]\
-constructor(documentManager: DocumentManager,
-readerTrustStore: [ReaderTrustStore](../../eu.europa.ec.eudi.iso18013.transfer.readerauth/-reader-trust-store/index.md)? =
-null)
+constructor(documentManager: DocumentManager, readerTrustStore: [ReaderTrustStore](../../eu.europa.ec.eudi.iso18013.transfer.readerauth/-reader-trust-store/index.md)? = null)

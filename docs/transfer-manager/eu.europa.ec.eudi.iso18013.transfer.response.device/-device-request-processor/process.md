@@ -3,22 +3,18 @@
 # process
 
 [androidJvm]\
-open override fun [process](process.md)(
-request: [Request](../../eu.europa.ec.eudi.iso18013.transfer.response/-request/index.md)): [RequestProcessor.ProcessedRequest](../../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/-processed-request/index.md)
+open override fun [process](process.md)(request: [Request](../../eu.europa.ec.eudi.iso18013.transfer.response/-request/index.md)): [RequestProcessor.ProcessedRequest](../../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/-processed-request/index.md)
 
-Process the [DeviceRequest](../-device-request/index.md) and return
-the [ProcessedDeviceRequest](../-processed-device-request/index.md) or
-a [RequestProcessor.ProcessedRequest.Failure](../../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/-processed-request/-failure/index.md).
+Process the [DeviceRequest](../-device-request/index.md) and return the [ProcessedDeviceRequest](../-processed-device-request/index.md) or a [RequestProcessor.ProcessedRequest.Failure](../../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/-processed-request/-failure/index.md).
 
 #### Return
 
-the [ProcessedDeviceRequest](../-processed-device-request/index.md) or
-a [RequestProcessor.ProcessedRequest.Failure](../../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/-processed-request/-failure/index.md)
+the [ProcessedDeviceRequest](../-processed-device-request/index.md) or a [RequestProcessor.ProcessedRequest.Failure](../../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/-processed-request/-failure/index.md)
 
 #### Parameters
 
 androidJvm
 
-|         |                                                             |
-|---------|-------------------------------------------------------------|
+| | |
+|---|---|
 | request | the [DeviceRequest](../-device-request/index.md) to process |
