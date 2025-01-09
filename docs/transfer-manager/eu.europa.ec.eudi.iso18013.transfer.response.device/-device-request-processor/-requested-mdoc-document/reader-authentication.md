@@ -3,5 +3,4 @@
 # readerAuthentication
 
 [androidJvm]\
-val [readerAuthentication](reader-authentication.md): ()
--&gt; [ReaderAuth](../../../eu.europa.ec.eudi.iso18013.transfer.response/-reader-auth/index.md)?
+val [readerAuthentication](reader-authentication.md): () -&gt; [ReaderAuth](../../../eu.europa.ec.eudi.iso18013.transfer.response/-reader-auth/index.md)?

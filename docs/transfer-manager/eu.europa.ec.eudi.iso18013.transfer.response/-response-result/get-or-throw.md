@@ -13,6 +13,6 @@ the response
 
 #### Throws
 
-|                                                                                        |               |
-|----------------------------------------------------------------------------------------|---------------|
+| | |
+|---|---|
 | [Throwable](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html) | the throwable |

@@ -11,19 +11,17 @@ Constructor for vararg DisclosedDocument parameters
 
 androidJvm
 
-|           |                                 |
-|-----------|---------------------------------|
+| | |
+|---|---|
 | documents | the list of disclosed documents |
 
 [androidJvm]\
-constructor(
-documents: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)
-&lt;[DisclosedDocument](../-disclosed-document/index.md)&gt; = emptyList())
+constructor(documents: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)&lt;[DisclosedDocument](../-disclosed-document/index.md)&gt; = emptyList())
 
 #### Parameters
 
 androidJvm
 
-|           |                                 |
-|-----------|---------------------------------|
+| | |
+|---|---|
 | documents | the list of disclosed documents |

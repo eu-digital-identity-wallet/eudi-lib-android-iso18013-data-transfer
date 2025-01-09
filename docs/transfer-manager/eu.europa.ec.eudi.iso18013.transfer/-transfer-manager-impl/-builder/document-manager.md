@@ -3,8 +3,7 @@
 # documentManager
 
 [androidJvm]\
-fun [documentManager](document-manager.md)(documentManager:
-DocumentManager): [TransferManagerImpl.Builder](index.md)
+fun [documentManager](document-manager.md)(documentManager: DocumentManager): [TransferManagerImpl.Builder](index.md)
 
 Document manager instance that will be used to retrieve the requested documents
 
@@ -12,8 +11,8 @@ Document manager instance that will be used to retrieve the requested documents
 
 androidJvm
 
-|                 |
-|-----------------|
+| |
+|---|
 | documentManager |
 
 [androidJvm]\

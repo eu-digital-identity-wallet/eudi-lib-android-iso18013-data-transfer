@@ -3,5 +3,4 @@
 # DocItem
 
 [androidJvm]\
-constructor(
-elementIdentifier: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html))
+constructor(elementIdentifier: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html))

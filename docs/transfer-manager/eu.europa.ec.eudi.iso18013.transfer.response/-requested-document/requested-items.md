@@ -3,6 +3,4 @@
 # requestedItems
 
 [androidJvm]\
-val [requestedItems](requested-items.md): [Map](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html)
-&lt;out [DocItem](../-doc-item/index.md), [IntentToRetain](../../eu.europa.ec.eudi.iso18013.transfer/-intent-to-retain/index.md)
-&gt;
+val [requestedItems](requested-items.md): [Map](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html)&lt;out [DocItem](../-doc-item/index.md), [IntentToRetain](../../eu.europa.ec.eudi.iso18013.transfer/-intent-to-retain/index.md)&gt;

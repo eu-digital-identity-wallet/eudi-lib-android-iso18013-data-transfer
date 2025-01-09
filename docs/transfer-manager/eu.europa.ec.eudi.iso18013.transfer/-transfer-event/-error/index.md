@@ -15,6 +15,6 @@ Error event. This event is triggered when an error occurs.
 
 ## Properties
 
-| Name              | Summary                                                                                                                                    |
-|-------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| Name | Summary |
+|---|---|
 | [error](error.md) | [androidJvm]<br>val [error](error.md): [Throwable](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html)<br>the error |
