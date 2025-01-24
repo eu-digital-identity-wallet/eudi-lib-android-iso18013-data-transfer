@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 European Commission
+ * Copyright (c) 2024-2025 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package eu.europa.ec.eudi.iso18013.transfer.readerauth
 
-import eu.europa.ec.eudi.iso18013.transfer.internal.readerauth.ReaderTrustStoreImpl
 import io.mockk.mockk
 import kotlin.test.Test
 import kotlin.test.assertIs

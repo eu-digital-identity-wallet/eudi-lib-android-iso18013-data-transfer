@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package eu.europa.ec.eudi.wallet.document
+package eu.europa.ec.eudi.iso18013.transfer
 
 import java.io.File
 

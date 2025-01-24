@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 European Commission
+ * Copyright (c) 2023-2025 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,7 @@
  */
 package eu.europa.ec.eudi.iso18013.transfer.readerauth
 
-import eu.europa.ec.eudi.iso18013.transfer.internal.readerauth.ReaderTrustStoreImpl
-import eu.europa.ec.eudi.iso18013.transfer.internal.readerauth.profile.ProfileValidation.Companion.DEFAULT
+import eu.europa.ec.eudi.iso18013.transfer.readerauth.profile.ProfileValidation.Companion.DEFAULT
 import java.security.cert.X509Certificate
 
 /**
