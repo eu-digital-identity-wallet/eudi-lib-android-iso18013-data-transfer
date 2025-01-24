@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 European Commission
+ * Copyright (c) 2023-2025 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,29 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.europa.ec.eudi.iso18013.transfer.internal.readerauth.profile
+package eu.europa.ec.eudi.iso18013.transfer.readerauth.profile
 
 import android.util.Log
 import eu.europa.ec.eudi.iso18013.transfer.internal.TAG
-import org.bouncycastle.asn1.DEROctetString
-import org.bouncycastle.asn1.x509.Extension
-import org.bouncycastle.asn1.x509.KeyUsage
 import java.security.cert.X509Certificate
 
-internal class KeyUsage : ProfileValidation {
+private const val READER_AUTH_OID = "1.0.18013.5.1.6"
+
+class KeyExtended : ProfileValidation {
 
     override fun validate(
-        readerAuthCertificate: X509Certificate,
+        chain: List<X509Certificate>,
         trustCA: X509Certificate,
     ): Boolean {
-        val byteArray = readerAuthCertificate.getExtensionValue(Extension.keyUsage.id) ?: run {
-            return false
-        }
-
-        return KeyUsage.getInstance(
-            DEROctetString.getInstance(byteArray).octets,
-        ).hasUsages(KeyUsage.digitalSignature).also {
-            Log.d(this.TAG, "checkKeyUsageExtension: $it")
-        }
+        require(chain.isNotEmpty())
+        return chain.first().extendedKeyUsage?.contains(READER_AUTH_OID).also {
+            Log.d(this.TAG, "KeyExtendedKeyUsage: $it")
+        } ?: false
     }
 }
