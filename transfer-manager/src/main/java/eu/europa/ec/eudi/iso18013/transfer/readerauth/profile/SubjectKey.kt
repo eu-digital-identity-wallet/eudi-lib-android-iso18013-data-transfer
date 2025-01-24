@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 European Commission
+ * Copyright (c) 2023-2025 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.europa.ec.eudi.iso18013.transfer.internal.readerauth.profile
+package eu.europa.ec.eudi.iso18013.transfer.readerauth.profile
 
 import android.util.Log
 import eu.europa.ec.eudi.iso18013.transfer.internal.TAG
@@ -26,12 +26,14 @@ import java.security.MessageDigest
 import java.security.cert.X509Certificate
 import java.util.Arrays
 
-internal class SubjectKey : ProfileValidation {
+class SubjectKey : ProfileValidation {
 
     override fun validate(
-        readerAuthCertificate: X509Certificate,
+        chain: List<X509Certificate>,
         trustCA: X509Certificate,
     ): Boolean {
+        require(chain.isNotEmpty())
+        val readerAuthCertificate = chain.first()
         val byteArray =
             readerAuthCertificate.getExtensionValue(Extension.subjectKeyIdentifier.id) ?: run {
                 return false

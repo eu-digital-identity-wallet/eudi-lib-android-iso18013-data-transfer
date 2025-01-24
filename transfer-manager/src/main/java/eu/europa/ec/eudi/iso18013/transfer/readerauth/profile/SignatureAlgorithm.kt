@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 European Commission
+ * Copyright (c) 2023-2025 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,34 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.europa.ec.eudi.iso18013.transfer.internal.readerauth.profile
+package eu.europa.ec.eudi.iso18013.transfer.readerauth.profile
 
 import android.util.Log
 import eu.europa.ec.eudi.iso18013.transfer.internal.TAG
+import org.bouncycastle.asn1.x9.X9ObjectIdentifiers
 import java.security.cert.X509Certificate
-import java.util.concurrent.TimeUnit
 
-internal class Period : ProfileValidation {
-
-    companion object {
-        internal const val MAX_VALIDITY_PERIOD_DAYS = 1187
-    }
+class SignatureAlgorithm : ProfileValidation {
 
     override fun validate(
-        readerAuthCertificate: X509Certificate,
+        chain: List<X509Certificate>,
         trustCA: X509Certificate,
     ): Boolean {
-        val expireDate = readerAuthCertificate.notAfter
-        val fromDate = readerAuthCertificate.notBefore
-        val diff = expireDate.time - fromDate.time
+        require(chain.isNotEmpty())
+        val readerAuthCertificate = chain.first()
+        val result =
+            readerAuthCertificate.sigAlgOID == X9ObjectIdentifiers.ecdsa_with_SHA256.id ||
+                readerAuthCertificate.sigAlgOID == X9ObjectIdentifiers.ecdsa_with_SHA384.id ||
+                readerAuthCertificate.sigAlgOID == X9ObjectIdentifiers.ecdsa_with_SHA512.id
+        Log.d(this.TAG, "SignatureAlgorithm: $result")
 
-        return (
-                TimeUnit.DAYS.convert(
-                    diff,
-                    TimeUnit.MILLISECONDS,
-                ) <= MAX_VALIDITY_PERIOD_DAYS
-                ).also {
-                Log.d(this.TAG, "ValidityPeriod: $it")
-            }
+        return result
     }
 }
