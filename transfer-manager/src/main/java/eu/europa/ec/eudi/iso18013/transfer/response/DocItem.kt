@@ -19,21 +19,5 @@ package eu.europa.ec.eudi.iso18013.transfer.response
 /**
  * Doc item represents a data element
  *
- * @property elementIdentifier the data element identifier e.g. family_name, given_name
  */
-open class DocItem(
-    open val elementIdentifier: String
-) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is DocItem) return false
-
-        if (elementIdentifier != other.elementIdentifier) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return elementIdentifier.hashCode()
-    }
-}
+interface DocItem
