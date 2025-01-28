@@ -27,5 +27,5 @@ import eu.europa.ec.eudi.iso18013.transfer.response.DocItem
  */
 data class MsoMdocItem(
     val namespace: String,
-    override val elementIdentifier: String,
-) : DocItem(elementIdentifier)
+    val elementIdentifier: String,
+) : DocItem

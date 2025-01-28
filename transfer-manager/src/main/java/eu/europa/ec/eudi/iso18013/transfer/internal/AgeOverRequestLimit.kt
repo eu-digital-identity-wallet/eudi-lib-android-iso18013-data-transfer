@@ -29,9 +29,9 @@ internal fun IssuedDocument.assertAgeOverRequestLimitForIso18013(disclosedDocume
     apply {
         val docType = (format as MsoMdocFormat).docType
         if (id == disclosedDocument.documentId && docType == "org.iso.18013.5.1.mDL" && disclosedDocument.disclosedItems
-                .filter { it is MsoMdocItem }
+                .filterIsInstance<MsoMdocItem>()
                 .filter { docItem ->
-                    docItem.elementIdentifier.startsWith("age_over_") && (docItem as? MsoMdocItem)?.namespace == "org.iso.18013.5.1"
+                    docItem.elementIdentifier.startsWith("age_over_") && docItem.namespace == "org.iso.18013.5.1"
                 }.size > 2
         ) {
             throw IllegalArgumentException("Device Response is not allowed to have more than two age_over_NN elements")

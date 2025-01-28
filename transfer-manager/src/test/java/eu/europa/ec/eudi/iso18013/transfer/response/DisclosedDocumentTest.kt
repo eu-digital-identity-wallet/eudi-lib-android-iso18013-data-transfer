@@ -17,6 +17,7 @@
 package eu.europa.ec.eudi.iso18013.transfer.response
 
 import com.android.identity.securearea.KeyUnlockData
+import eu.europa.ec.eudi.iso18013.transfer.response.device.MsoMdocItem
 import eu.europa.ec.eudi.wallet.document.IssuedDocument
 import io.mockk.every
 import io.mockk.mockk
@@ -33,7 +34,7 @@ class DisclosedDocumentTest {
         document = mockk {
             every { id } returns "testDocumentId"
         }
-        disclosedItems = listOf(DocItem(elementIdentifier = "element"))
+        disclosedItems = listOf(MsoMdocItem(elementIdentifier = "element", namespace = "namespace"))
         keyUnlockData = mockk()
     }
 
@@ -61,7 +62,7 @@ class DisclosedDocumentTest {
         every { requestedDocument.documentId } returns document.id
         every { requestedDocument.documentId } answers { callOriginal() }
         every { requestedDocument.requestedItems } returns mapOf(
-            DocItem(elementIdentifier = "element") to true
+            MsoMdocItem(elementIdentifier = "element", namespace = "namespace") to true
         )
 
         val disclosedDocument = DisclosedDocument(requestedDocument, disclosedItems, keyUnlockData)
@@ -76,13 +77,13 @@ class DisclosedDocumentTest {
         val requestedDocument = mockk<RequestedDocument>()
         every { requestedDocument.documentId } returns document.id
         every { requestedDocument.requestedItems } returns mapOf(
-            DocItem(elementIdentifier = "element") to false
+            MsoMdocItem(elementIdentifier = "element", namespace = "namespace") to false
         )
 
         val disclosedDocument = DisclosedDocument(requestedDocument, null, keyUnlockData)
 
         assertEquals(document.id, disclosedDocument.documentId)
-        assertEquals(listOf(DocItem("element")), disclosedDocument.disclosedItems)
+        assertEquals(listOf(MsoMdocItem(elementIdentifier = "element", namespace = "namespace")), disclosedDocument.disclosedItems)
         assertEquals(keyUnlockData, disclosedDocument.keyUnlockData)
     }
 
@@ -91,7 +92,7 @@ class DisclosedDocumentTest {
         val requestedDocument = mockk<RequestedDocument>()
         every { requestedDocument.documentId } returns document.id
         every { requestedDocument.requestedItems } returns mapOf(
-            DocItem(elementIdentifier = "element") to false
+            MsoMdocItem(elementIdentifier = "element", namespace = "namespace") to false
         )
 
         val disclosedDocument = DisclosedDocument(requestedDocument, disclosedItems, null)
