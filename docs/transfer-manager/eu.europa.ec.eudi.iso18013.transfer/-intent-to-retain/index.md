@@ -3,4 +3,4 @@
 # IntentToRetain
 
 [androidJvm]\
-typealias [IntentToRetain](index.md) = [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)
+typealias [IntentToRetain](index.md) = [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html)

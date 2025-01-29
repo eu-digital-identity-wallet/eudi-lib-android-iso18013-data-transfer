@@ -3,4 +3,4 @@
 # Error
 
 [androidJvm]\
-constructor(error: [Throwable](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html))
+constructor(error: [Throwable](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-throwable/index.html))

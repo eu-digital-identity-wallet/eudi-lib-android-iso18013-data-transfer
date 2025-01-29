@@ -3,6 +3,6 @@
 # QrCode
 
 [androidJvm]\
-constructor(content: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html))
+constructor(content: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html))
 
 Creates a QR code with the given content

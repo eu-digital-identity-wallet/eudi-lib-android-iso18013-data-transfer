@@ -3,4 +3,4 @@
 # onDeactivated
 
 [androidJvm]\
-open override fun [onDeactivated](on-deactivated.md)(reason: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html))
+open override fun [onDeactivated](on-deactivated.md)(reason: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html))

@@ -3,4 +3,4 @@
 # clearBleCache
 
 [androidJvm]\
-val [clearBleCache](clear-ble-cache.md): [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)
+val [clearBleCache](clear-ble-cache.md): [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html)
