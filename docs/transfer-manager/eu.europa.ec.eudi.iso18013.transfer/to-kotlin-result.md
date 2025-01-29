@@ -3,9 +3,9 @@
 # toKotlinResult
 
 [androidJvm]\
-fun [RequestProcessor.ProcessedRequest](../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/-processed-request/index.md).[toKotlinResult](to-kotlin-result.md)(): [Result](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-result/index.html)&lt;[RequestProcessor.ProcessedRequest.Success](../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/-processed-request/-success/index.md)&gt;
+fun [RequestProcessor.ProcessedRequest](../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/-processed-request/index.md).[toKotlinResult](to-kotlin-result.md)(): [Result](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-result/index.html)&lt;[RequestProcessor.ProcessedRequest.Success](../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/-processed-request/-success/index.md)&gt;
 
-Converts a [RequestProcessor.ProcessedRequest](../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/-processed-request/index.md) to a [Result](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-result/index.html) of [RequestProcessor.ProcessedRequest.Success](../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/-processed-request/-success/index.md)
+Converts a [RequestProcessor.ProcessedRequest](../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/-processed-request/index.md) to a [Result](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-result/index.html) of [RequestProcessor.ProcessedRequest.Success](../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/-processed-request/-success/index.md)
 
 #### Receiver
 
@@ -13,12 +13,12 @@ the [RequestProcessor.ProcessedRequest](../eu.europa.ec.eudi.iso18013.transfer.r
 
 #### Return
 
-the [Result](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-result/index.html) of [RequestProcessor.ProcessedRequest.Success](../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/-processed-request/-success/index.md)
+the [Result](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-result/index.html) of [RequestProcessor.ProcessedRequest.Success](../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/-processed-request/-success/index.md)
 
 [androidJvm]\
-fun [ResponseResult](../eu.europa.ec.eudi.iso18013.transfer.response/-response-result/index.md).[toKotlinResult](to-kotlin-result.md)(): [Result](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-result/index.html)&lt;[ResponseResult.Success](../eu.europa.ec.eudi.iso18013.transfer.response/-response-result/-success/index.md)&gt;
+fun [ResponseResult](../eu.europa.ec.eudi.iso18013.transfer.response/-response-result/index.md).[toKotlinResult](to-kotlin-result.md)(): [Result](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-result/index.html)&lt;[ResponseResult.Success](../eu.europa.ec.eudi.iso18013.transfer.response/-response-result/-success/index.md)&gt;
 
-Converts a [ResponseResult](../eu.europa.ec.eudi.iso18013.transfer.response/-response-result/index.md) to a [Result](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-result/index.html) of [ResponseResult.Success](../eu.europa.ec.eudi.iso18013.transfer.response/-response-result/-success/index.md)
+Converts a [ResponseResult](../eu.europa.ec.eudi.iso18013.transfer.response/-response-result/index.md) to a [Result](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-result/index.html) of [ResponseResult.Success](../eu.europa.ec.eudi.iso18013.transfer.response/-response-result/-success/index.md)
 
 #### Receiver
 
@@ -26,4 +26,4 @@ the [ResponseResult](../eu.europa.ec.eudi.iso18013.transfer.response/-response-r
 
 #### Return
 
-the [Result](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-result/index.html) of [ResponseResult.Success](../eu.europa.ec.eudi.iso18013.transfer.response/-response-result/-success/index.md)
+the [Result](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-result/index.html) of [ResponseResult.Success](../eu.europa.ec.eudi.iso18013.transfer.response/-response-result/-success/index.md)

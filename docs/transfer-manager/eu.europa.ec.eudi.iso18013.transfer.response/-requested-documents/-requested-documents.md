@@ -16,7 +16,7 @@ androidJvm
 | documents | the list of requested documents |
 
 [androidJvm]\
-constructor(documents: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)&lt;[RequestedDocument](../-requested-document/index.md)&gt;)
+constructor(documents: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html)&lt;[RequestedDocument](../-requested-document/index.md)&gt;)
 
 #### Parameters
 

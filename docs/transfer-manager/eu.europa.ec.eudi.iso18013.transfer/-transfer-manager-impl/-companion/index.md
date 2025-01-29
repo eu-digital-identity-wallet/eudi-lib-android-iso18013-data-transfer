@@ -11,4 +11,4 @@ Companion object for creating a new instance of [TransferManager](../../-transfe
 
 | Name | Summary |
 |---|---|
-| [invoke](invoke.md) | [androidJvm]<br>operator fun [invoke](invoke.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html), builder: [TransferManagerImpl.Builder](../-builder/index.md).() -&gt; [Unit](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)): [TransferManagerImpl](../index.md)<br>Create a new instance of [TransferManager](../../-transfer-manager/index.md) |
+| [invoke](invoke.md) | [androidJvm]<br>operator fun [invoke](invoke.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html), builder: [TransferManagerImpl.Builder](../-builder/index.md).() -&gt; [Unit](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html)): [TransferManagerImpl](../index.md)<br>Create a new instance of [TransferManager](../../-transfer-manager/index.md) |

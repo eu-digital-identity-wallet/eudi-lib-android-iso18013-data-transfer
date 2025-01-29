@@ -3,4 +3,4 @@
 # readerCertificatedIsTrusted
 
 [androidJvm]\
-val [readerCertificatedIsTrusted](reader-certificated-is-trusted.md): [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)
+val [readerCertificatedIsTrusted](reader-certificated-is-trusted.md): [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html)

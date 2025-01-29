@@ -3,9 +3,9 @@
 # DisclosedDocument
 
 [androidJvm]\
-constructor(requestedDocument: [RequestedDocument](../-requested-document/index.md), disclosedItems: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)&lt;[DocItem](../-doc-item/index.md)&gt;? = null, keyUnlockData: KeyUnlockData? = null)
+constructor(requestedDocument: [RequestedDocument](../-requested-document/index.md), disclosedItems: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html)&lt;[DocItem](../-doc-item/index.md)&gt;? = null, keyUnlockData: KeyUnlockData? = null)
 
-Alternative constructor that takes a [RequestedDocument](../-requested-document/index.md) and a [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html) of [DocItem](../-doc-item/index.md) to create a [DisclosedDocument](index.md)
+Alternative constructor that takes a [RequestedDocument](../-requested-document/index.md) and a [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html) of [DocItem](../-doc-item/index.md) to create a [DisclosedDocument](index.md)
 
 #### Parameters
 
@@ -18,4 +18,4 @@ androidJvm
 | keyUnlockData | the key unlock data |
 
 [androidJvm]\
-constructor(documentId: DocumentId, disclosedItems: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)&lt;[DocItem](../-doc-item/index.md)&gt;, keyUnlockData: KeyUnlockData? = null)
+constructor(documentId: DocumentId, disclosedItems: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html)&lt;[DocItem](../-doc-item/index.md)&gt;, keyUnlockData: KeyUnlockData? = null)
