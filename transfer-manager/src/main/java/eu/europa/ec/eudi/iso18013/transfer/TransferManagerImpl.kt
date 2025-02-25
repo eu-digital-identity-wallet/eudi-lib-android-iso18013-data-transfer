@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 European Commission
+ * Copyright (c) 2024-2025 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ class TransferManagerImpl @JvmOverloads constructor(
     override var readerTrustStore: ReaderTrustStore?
         get() = (requestProcessor as? ReaderTrustStoreAware)?.readerTrustStore
         set(value) {
-            (readerTrustStore as? ReaderTrustStoreAware)?.readerTrustStore = value
+            (requestProcessor as? ReaderTrustStoreAware)?.readerTrustStore = value
         }
 
     /**

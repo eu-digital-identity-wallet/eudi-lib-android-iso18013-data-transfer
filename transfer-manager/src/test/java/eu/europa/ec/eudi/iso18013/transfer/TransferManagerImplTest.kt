@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 European Commission
+ * Copyright (c) 2024-2025 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,10 @@ import com.android.identity.util.Constants.SESSION_DATA_STATUS_SESSION_TERMINATI
 import eu.europa.ec.eudi.iso18013.transfer.engagement.DeviceRetrievalMethod
 import eu.europa.ec.eudi.iso18013.transfer.engagement.NfcEngagementService
 import eu.europa.ec.eudi.iso18013.transfer.internal.QrEngagement
+import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStore
+import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStoreAware
+import eu.europa.ec.eudi.iso18013.transfer.response.Request
+import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor
 import eu.europa.ec.eudi.iso18013.transfer.response.Response
 import eu.europa.ec.eudi.iso18013.transfer.response.device.DeviceRequest
 import eu.europa.ec.eudi.iso18013.transfer.response.device.DeviceResponse
@@ -64,7 +68,7 @@ class TransferManagerImplTest {
             mockk(), mockk()
         )
 
-        val manager = eu.europa.ec.eudi.iso18013.transfer.TransferManagerImpl(
+        val manager = TransferManagerImpl(
             context = Context,
             requestProcessor = mockk(),
             retrievalMethods = retrievalMethods
@@ -74,7 +78,7 @@ class TransferManagerImplTest {
 
     @Test
     fun `setRetrievalMethods should set the retrieval methods`() {
-        val manager = eu.europa.ec.eudi.iso18013.transfer.TransferManagerImpl(
+        val manager = TransferManagerImpl(
             context = Context,
             requestProcessor = mockk(),
         )
@@ -91,7 +95,7 @@ class TransferManagerImplTest {
     @Test
     fun `addTransferEventListener should add the listener`() {
         // Given
-        val manager = eu.europa.ec.eudi.iso18013.transfer.TransferManagerImpl(
+        val manager = TransferManagerImpl(
             context = Context,
             requestProcessor = mockk(),
         )
@@ -106,7 +110,7 @@ class TransferManagerImplTest {
 
     @Test
     fun `removeTransferEventListener should remove the listener`() {
-        val manager = eu.europa.ec.eudi.iso18013.transfer.TransferManagerImpl(
+        val manager = TransferManagerImpl(
             context = Context,
             requestProcessor = mockk(),
         )
@@ -120,7 +124,7 @@ class TransferManagerImplTest {
 
     @Test
     fun `removeAllTransferEventListeners should remove all listeners`() {
-        val manager = eu.europa.ec.eudi.iso18013.transfer.TransferManagerImpl(
+        val manager = TransferManagerImpl(
             context = Context,
             requestProcessor = mockk(),
         )
@@ -142,7 +146,7 @@ class TransferManagerImplTest {
         val retrievalMethods: List<DeviceRetrievalMethod> = listOf(
             mockk(), mockk()
         )
-        val manager = eu.europa.ec.eudi.iso18013.transfer.TransferManagerImpl(
+        val manager = TransferManagerImpl(
             context = Context,
             requestProcessor = mockk() {
                 every { process(any<DeviceRequest>()) } returns mockk(relaxed = true)
@@ -201,7 +205,7 @@ class TransferManagerImplTest {
     fun `stopPresentation should call DeviceRetrievalHelper sendDeviceResponse with SESSION_TERMINATION and disconnect`() {
         val mockDeviceRetrievalHelper: DeviceRetrievalHelper = mockk(relaxed = true)
         val manager = spyk(
-            eu.europa.ec.eudi.iso18013.transfer.TransferManagerImpl(
+            TransferManagerImpl(
                 context = Context,
                 requestProcessor = mockk(),
             )
@@ -226,7 +230,7 @@ class TransferManagerImplTest {
     fun `stopPresentation should call DeviceRetrievalHelper sendTransportSpecificTermination and disconnect`() {
         val mockDeviceRetrievalHelper: DeviceRetrievalHelper = mockk(relaxed = true)
         val manager = spyk(
-            eu.europa.ec.eudi.iso18013.transfer.TransferManagerImpl(
+            TransferManagerImpl(
                 context = Context,
                 requestProcessor = mockk(),
             )
@@ -249,7 +253,7 @@ class TransferManagerImplTest {
     fun `stopPresentation should call DeviceRetrievalHelper disconnect`() {
         val mockDeviceRetrievalHelper: DeviceRetrievalHelper = mockk(relaxed = true)
         val manager = spyk(
-            eu.europa.ec.eudi.iso18013.transfer.TransferManagerImpl(
+            TransferManagerImpl(
                 context = Context,
                 requestProcessor = mockk(),
             )
@@ -271,7 +275,7 @@ class TransferManagerImplTest {
     fun `startQrEngagement fails when already started`() {
         mockkConstructor(QrEngagement::class)
         every { anyConstructed<QrEngagement>().configure() } just Runs
-        val manager = eu.europa.ec.eudi.iso18013.transfer.TransferManagerImpl(
+        val manager = TransferManagerImpl(
             context = Context,
             requestProcessor = mockk(),
         )
@@ -289,7 +293,7 @@ class TransferManagerImplTest {
         val intent = mockk<Intent>()
         mockkConstructor(QrEngagement::class)
         every { anyConstructed<QrEngagement>().configure() } just Runs
-        val manager = eu.europa.ec.eudi.iso18013.transfer.TransferManagerImpl(
+        val manager = TransferManagerImpl(
             context = Context,
             requestProcessor = mockk(),
         )
@@ -303,7 +307,7 @@ class TransferManagerImplTest {
 
     @Test
     fun `sendResponse triggers onResponseSent event and class deviceRetrievalHelper send with SessionTermination`() {
-        val manager = eu.europa.ec.eudi.iso18013.transfer.TransferManagerImpl(
+        val manager = TransferManagerImpl(
             context = Context,
             requestProcessor = mockk(),
         )
@@ -364,5 +368,28 @@ class TransferManagerImplTest {
 
         manager.qrEngagement!!.onCommunicationError(Throwable())
         verify { listener.onTransferEvent(any<TransferEvent.Error>()) }
+    }
+
+    @Test
+    fun `setting and getting readerTrustStore delegates to requestProcessor if the latter is ReaderTrustStoreAware`() {
+
+        val processor: RequestProcessor = object : RequestProcessor, ReaderTrustStoreAware {
+            override fun process(request: Request): RequestProcessor.ProcessedRequest {
+                return mockk()
+            }
+
+            override var readerTrustStore: ReaderTrustStore? = null
+        }
+
+        val manager = TransferManagerImpl(
+            context = Context,
+            requestProcessor = processor
+        )
+
+        val readerTrustStore: ReaderTrustStore = mockk()
+
+        manager.readerTrustStore = readerTrustStore
+
+        assertSame(readerTrustStore, manager.readerTrustStore)
     }
 }
