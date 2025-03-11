@@ -317,7 +317,13 @@ class TransferManagerImplTest {
         val mockDeviceRetrievalHelper: DeviceRetrievalHelper = mockk(relaxed = true)
         manager.deviceRetrievalHelper = mockDeviceRetrievalHelper
 
-        manager.sendResponse(DeviceResponse(deviceResponseBytes = ByteArray(0)))
+        manager.sendResponse(
+            DeviceResponse(
+                deviceResponseBytes = ByteArray(0),
+                sessionTranscriptBytes = byteArrayOf(),
+                documentIds = listOf()
+            )
+        )
 
         verify(exactly = 1) { listener.onTransferEvent(any<TransferEvent.ResponseSent>()) }
         verify(exactly = 1) {
