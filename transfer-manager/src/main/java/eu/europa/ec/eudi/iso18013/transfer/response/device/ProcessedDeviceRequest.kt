@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 European Commission
+ * Copyright (c) 2024-2025 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import eu.europa.ec.eudi.iso18013.transfer.response.DisclosedDocuments
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestedDocuments
 import eu.europa.ec.eudi.iso18013.transfer.response.ResponseResult
+import eu.europa.ec.eudi.wallet.document.DocumentId
 import eu.europa.ec.eudi.wallet.document.DocumentManager
 
 /**
@@ -56,13 +57,14 @@ class ProcessedDeviceRequest(
         signatureAlgorithm: Algorithm?
     ): ResponseResult {
         try {
+            val documentIds = mutableListOf<DocumentId>()
             val deviceResponse = DeviceResponseGenerator(Constants.DEVICE_RESPONSE_STATUS_OK)
             disclosedDocuments
                 .let {
                     if (includeOnlyRequested) it.filterWithRequestedDocuments(requestedDocuments)
                     else it
                 }
-                .forEach { disclosedDocument ->
+                .forEachIndexed { index, disclosedDocument ->
                     val documentResponse = documentManager
                         .getValidIssuedMsoMdocDocumentById(disclosedDocument.documentId)
                         .assertAgeOverRequestLimitForIso18013(disclosedDocument)
@@ -74,8 +76,15 @@ class ProcessedDeviceRequest(
                         )
                         .getOrThrow()
                     deviceResponse.addDocument(documentResponse)
+                    documentIds.add(disclosedDocument.documentId)
                 }
-            return ResponseResult.Success(DeviceResponse(deviceResponse.generate()))
+            return ResponseResult.Success(
+                DeviceResponse(
+                    deviceResponseBytes = deviceResponse.generate(),
+                    sessionTranscriptBytes = sessionTranscript,
+                    documentIds = documentIds
+                )
+            )
         } catch (e: Exception) {
             return ResponseResult.Failure(e)
         }
