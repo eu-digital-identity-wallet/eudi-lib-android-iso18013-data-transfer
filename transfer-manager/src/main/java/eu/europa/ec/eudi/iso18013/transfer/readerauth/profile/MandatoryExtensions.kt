@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 European Commission
+ * Copyright (c) 2023-2025 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,25 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.europa.ec.eudi.iso18013.transfer.internal.readerauth.profile
+package eu.europa.ec.eudi.iso18013.transfer.readerauth.profile
 
 import android.util.Log
 import eu.europa.ec.eudi.iso18013.transfer.internal.TAG
 import org.bouncycastle.asn1.x509.Extension
 import java.security.cert.X509Certificate
 
-internal class MandatoryExtensions : ProfileValidation {
+class MandatoryExtensions : ProfileValidation {
 
     override fun validate(
-        readerAuthCertificate: X509Certificate,
+        chain: List<X509Certificate>,
         trustCA: X509Certificate,
     ): Boolean {
-        val result =
-            readerAuthCertificate.getExtensionValue(Extension.authorityKeyIdentifier.id) != null &&
-                readerAuthCertificate.getExtensionValue(Extension.subjectKeyIdentifier.id) != null &&
-                readerAuthCertificate.keyUsage != null && readerAuthCertificate.keyUsage.isNotEmpty() &&
-                readerAuthCertificate.extendedKeyUsage != null && readerAuthCertificate.extendedKeyUsage.isNotEmpty() &&
-                readerAuthCertificate.getExtensionValue(Extension.cRLDistributionPoints.id) != null
+        require(chain.isNotEmpty())
+        val readerAuthCertificate = chain.first()
+
+        val authorityKey =
+            readerAuthCertificate.getExtensionValue(Extension.authorityKeyIdentifier.id)
+        val subjectKeyIdentifier =
+            readerAuthCertificate.getExtensionValue(Extension.subjectKeyIdentifier.id)
+        val keyUsage = readerAuthCertificate.keyUsage
+        val extendedKeyUsage = readerAuthCertificate.extendedKeyUsage
+
+        val result = arrayOf(
+            authorityKey != null,
+            subjectKeyIdentifier != null,
+            keyUsage?.isNotEmpty() == true,
+            extendedKeyUsage.isNullOrEmpty().not(),
+        ).all { it }
 
         Log.d(this.TAG, "MandatoryExtensions: $result")
 

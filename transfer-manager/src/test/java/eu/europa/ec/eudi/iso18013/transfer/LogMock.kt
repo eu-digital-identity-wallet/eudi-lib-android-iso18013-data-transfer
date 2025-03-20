@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 European Commission
+ * Copyright (c) 2024-2025 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,7 @@ class PrintToConsoleAnswer : Answer<Int> {
         val msg = invocation.getArgument<String>(1)
         val throwable = invocation.arguments.getOrNull(2) as? Throwable
         println("Mocked Log - Method: $methodName, TAG: $tag, Message: $msg, Throwable: $throwable")
+        throwable?.printStackTrace()
         return 0 // Return value for Log methods
     }
 }

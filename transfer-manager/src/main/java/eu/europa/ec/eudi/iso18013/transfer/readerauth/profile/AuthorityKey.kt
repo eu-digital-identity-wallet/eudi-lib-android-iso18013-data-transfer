@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 European Commission
+ * Copyright (c) 2023-2025 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.europa.ec.eudi.iso18013.transfer.internal.readerauth.profile
+package eu.europa.ec.eudi.iso18013.transfer.readerauth.profile
 
 import android.util.Log
 import eu.europa.ec.eudi.iso18013.transfer.internal.TAG
@@ -22,33 +22,34 @@ import org.bouncycastle.asn1.x509.AuthorityKeyIdentifier
 import org.bouncycastle.asn1.x509.Extension
 import org.bouncycastle.asn1.x509.SubjectKeyIdentifier
 import java.security.cert.X509Certificate
-import java.util.Arrays
 
-internal class AuthorityKey : ProfileValidation {
+class AuthorityKey : ProfileValidation {
 
     override fun validate(
-        readerAuthCertificate: X509Certificate,
+        chain: List<X509Certificate>,
         trustCA: X509Certificate,
     ): Boolean {
+        require(chain.isNotEmpty())
         try {
             val authorityKeyIdentifier: AuthorityKeyIdentifier =
                 AuthorityKeyIdentifier.getInstance(
                     DEROctetString.getInstance(
-                        readerAuthCertificate.getExtensionValue(Extension.authorityKeyIdentifier.id),
+                        chain.first().getExtensionValue(Extension.authorityKeyIdentifier.id),
                     ).octets,
                 )
+
+            val ca = if (chain.size > 1) {
+                chain[1]
+            } else trustCA
 
             val subjectKeyIdentifier: SubjectKeyIdentifier =
                 SubjectKeyIdentifier.getInstance(
                     DEROctetString.getInstance(
-                        trustCA.getExtensionValue(Extension.subjectKeyIdentifier.id),
+                        ca.getExtensionValue(Extension.subjectKeyIdentifier.id),
                     ).octets,
                 )
 
-            return Arrays.equals(
-                authorityKeyIdentifier.keyIdentifier,
-                subjectKeyIdentifier.keyIdentifier,
-            )
+            return authorityKeyIdentifier.keyIdentifier.contentEquals(subjectKeyIdentifier.keyIdentifier)
                 .also {
                     Log.d(this.TAG, "AuthorityKeyIdentifier: $it")
                 }

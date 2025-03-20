@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 European Commission
+ * Copyright (c) 2023-2025 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.europa.ec.eudi.iso18013.transfer.internal.readerauth.profile
+package eu.europa.ec.eudi.iso18013.transfer.readerauth.profile
 
 import android.util.Log
 import eu.europa.ec.eudi.iso18013.transfer.mockAndroidLog
@@ -28,9 +28,9 @@ import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class MandatoryExtensionsTest {
+class KeyExtendedTest {
 
-    private lateinit var readerAuthCertificate: X509Certificate
+    private lateinit var readerAuthCertificate: List<X509Certificate>
     private lateinit var trustCA: X509Certificate
 
     private lateinit var validation: ProfileValidation
@@ -39,9 +39,9 @@ class MandatoryExtensionsTest {
 
     @Before
     fun setup() {
-        readerAuthCertificate = loadCert()
+        readerAuthCertificate = listOf(loadCert())
         trustCA = loadTrustCert()
-        validation = MandatoryExtensions()
+        validation = KeyExtended()
 
         mockLog = mockAndroidLog()
     }
@@ -57,7 +57,7 @@ class MandatoryExtensionsTest {
 
     @Test
     fun testVerify_Invalid() {
-        val invalidCert = loadInvalidCert()
+        val invalidCert = listOf(loadInvalidCert())
 
         // Call the method under test
         val result = validation.validate(invalidCert, trustCA)
