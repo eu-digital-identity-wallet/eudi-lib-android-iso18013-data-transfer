@@ -26,7 +26,6 @@ import eu.europa.ec.eudi.iso18013.transfer.response.device.DeviceRequest
 import eu.europa.ec.eudi.wallet.document.CreateDocumentSettings
 import eu.europa.ec.eudi.wallet.document.DocumentManager
 import eu.europa.ec.eudi.wallet.document.DocumentManagerImpl
-import eu.europa.ec.eudi.wallet.document.getResourceAsText
 import eu.europa.ec.eudi.wallet.document.sample.SampleDocumentManagerImpl
 import io.mockk.every
 import io.mockk.mockk

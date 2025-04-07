@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 European Commission
+ * Copyright (c) 2023-2025 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.europa.ec.eudi.iso18013.transfer.internal.readerauth.profile
+package eu.europa.ec.eudi.iso18013.transfer.readerauth.profile
 
 import android.util.Log
 import eu.europa.ec.eudi.iso18013.transfer.mockAndroidLog
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadCert
-import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadInvalidCert
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadTrustCert
 import org.junit.After
 import org.junit.Before
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.MockedStatic
+import org.mockito.Mockito
 import java.security.cert.X509Certificate
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class ProfileValidationImplTest {
+class SubjectKeyTest {
 
-    private lateinit var readerAuthCertificate: X509Certificate
+    private lateinit var readerAuthCertificate: List<X509Certificate>
     private lateinit var trustCA: X509Certificate
 
     private lateinit var validation: ProfileValidation
@@ -39,9 +40,9 @@ class ProfileValidationImplTest {
 
     @Before
     fun setup() {
-        readerAuthCertificate = loadCert()
+        readerAuthCertificate = listOf(loadCert())
         trustCA = loadTrustCert()
-        validation = ProfileValidation.DEFAULT
+        validation = SubjectKey()
 
         mockLog = mockAndroidLog()
     }
@@ -57,10 +58,13 @@ class ProfileValidationImplTest {
 
     @Test
     fun testVerify_Invalid() {
-        val invalidCert = loadInvalidCert()
+        val mockCert = Mockito.mock(X509Certificate::class.java)
+
+        Mockito.`when`(mockCert.getExtensionValue(anyString()))
+            .thenReturn(null)
 
         // Call the method under test
-        val result = validation.validate(invalidCert, trustCA)
+        val result = validation.validate(listOf(mockCert), trustCA)
 
         // Assert the result
         assertFalse(result)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 European Commission
+ * Copyright (c) 2023-2025 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,33 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.europa.ec.eudi.iso18013.transfer.internal.readerauth.profile
+package eu.europa.ec.eudi.iso18013.transfer.readerauth.profile
 
 import android.util.Log
 import eu.europa.ec.eudi.iso18013.transfer.internal.TAG
+import org.bouncycastle.asn1.DEROctetString
 import org.bouncycastle.asn1.x509.Extension
+import org.bouncycastle.asn1.x509.KeyUsage
 import java.security.cert.X509Certificate
 
-internal class CriticalExtensions : ProfileValidation {
+class KeyUsage : ProfileValidation {
 
     override fun validate(
-        readerAuthCertificate: X509Certificate,
+        chain: List<X509Certificate>,
         trustCA: X509Certificate,
     ): Boolean {
-        val nonAllowedExtensions = listOf(
-            Extension.policyMappings.id,
-            Extension.nameConstraints.id,
-            Extension.policyConstraints.id,
-            Extension.inhibitAnyPolicy.id,
-            Extension.freshestCRL.id,
-        )
-        for (ext in readerAuthCertificate.criticalExtensionOIDs) {
-            if (nonAllowedExtensions.contains(ext)) {
-                Log.d(this.TAG, "CriticalExtensions invalid contains: $ext")
-                return false
-            }
+        require(chain.isNotEmpty())
+        val byteArray = chain.first().getExtensionValue(Extension.keyUsage.id) ?: run {
+            return false
         }
-        Log.d(this.TAG, "CriticalExtensions: valid")
-        return true
+
+        return KeyUsage.getInstance(
+            DEROctetString.getInstance(byteArray).octets,
+        ).hasUsages(KeyUsage.digitalSignature).also {
+            Log.d(this.TAG, "checkKeyUsageExtension: $it")
+        }
     }
 }
