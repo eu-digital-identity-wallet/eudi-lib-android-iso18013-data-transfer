@@ -1,17 +1,17 @@
 /*
- * Copyright (c) 2023-2024 European Commission
+ *  Copyright (c) 2023-2025 European Commission
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 package eu.europa.ec.eudi.iso18013.transfer.readerauth
 
@@ -19,14 +19,7 @@ import org.bouncycastle.asn1.ASN1EncodableVector
 import org.bouncycastle.asn1.ASN1ObjectIdentifier
 import org.bouncycastle.asn1.DERSequence
 import org.bouncycastle.asn1.x500.X500Name
-import org.bouncycastle.asn1.x509.CRLDistPoint
-import org.bouncycastle.asn1.x509.DistributionPoint
-import org.bouncycastle.asn1.x509.DistributionPointName
-import org.bouncycastle.asn1.x509.ExtendedKeyUsage
-import org.bouncycastle.asn1.x509.Extension
-import org.bouncycastle.asn1.x509.GeneralName
-import org.bouncycastle.asn1.x509.GeneralNames
-import org.bouncycastle.asn1.x509.KeyUsage
+import org.bouncycastle.asn1.x509.*
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter
 import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder
@@ -38,7 +31,7 @@ import java.security.SecureRandom
 import java.security.cert.X509Certificate
 import java.security.spec.ECGenParameterSpec
 import java.time.Instant
-import java.util.Date
+import java.util.*
 
 private const val signatureAlgorithm: String = "SHA256withECDSA"
 private val extUtils = JcaX509ExtensionUtils()
@@ -62,10 +55,27 @@ val trustedCertificate: X509Certificate by lazy {
         subject,
         trustedKeyPair.public
     ).apply {
+        // Add required extensions for a CA certificate
+        addExtension(
+            Extension.basicConstraints,
+            true,  // Make this a critical extension
+            BasicConstraints(true)  // isCA=true
+        )
+        addExtension(
+            Extension.keyUsage,
+            true,  // Make this a critical extension
+            KeyUsage(KeyUsage.keyCertSign or KeyUsage.cRLSign)  // Key can be used to sign certificates and CRLs
+        )
         addExtension(
             Extension.subjectKeyIdentifier,
             false,
             extUtils.createSubjectKeyIdentifier(trustedKeyPair.public)
+        )
+        // Self-signed CA also has the same subject and authority key identifiers
+        addExtension(
+            Extension.authorityKeyIdentifier,
+            false,
+            extUtils.createAuthorityKeyIdentifier(trustedKeyPair.public)
         )
     }
     val signer = JcaContentSignerBuilder(signatureAlgorithm).build(trustedKeyPair.private)
@@ -77,7 +87,7 @@ val validCertificate: X509Certificate by lazy {
         initialize(ECGenParameterSpec("secp256r1"))
     }.generateKeyPair()
     val serialNumber = BigInteger(64, SecureRandom())
-    val issuer = X500Name(trustedCertificate.issuerX500Principal.name)
+    val issuer = X500Name(trustedCertificate.subjectX500Principal.name)
     val subject = X500Name("CN=ValidCertificate")
     val notBefore = Date()
     val notAfter = Date(notBefore.time + 30 * 86400000L)
@@ -89,6 +99,13 @@ val validCertificate: X509Certificate by lazy {
         subject,
         keyPair.public
     ).apply {
+        // Basic constraints for leaf certificate (not a CA)
+        addExtension(
+            Extension.basicConstraints,
+            true,
+            BasicConstraints(false)  // isCA=false
+        )
+        
         addExtension(
             Extension.subjectKeyIdentifier,
             false,
@@ -99,20 +116,34 @@ val validCertificate: X509Certificate by lazy {
             false,
             extUtils.createAuthorityKeyIdentifier(trustedCertificate)
         )
-        addExtension(Extension.keyUsage, false, KeyUsage(KeyUsage.digitalSignature))
-        addExtension(Extension.extendedKeyUsage, false, ExtendedKeyUsage.getInstance(
-            ASN1EncodableVector().apply {
-                add(ASN1ObjectIdentifier("1.0.18013.5.1.6"))
-            }.let { DERSequence(it) }
-        ))
-        addExtension(Extension.cRLDistributionPoints,
+        addExtension(
+            Extension.keyUsage,
+            true,
+            KeyUsage(KeyUsage.digitalSignature)
+        )
+        addExtension(
+            Extension.extendedKeyUsage,
             false,
-            GeneralNames(GeneralName(GeneralName.uniformResourceIdentifier, "https://example.com"))
-                .let {
-                    DistributionPoint(DistributionPointName(it), null, null)
-                }.let {
-                    CRLDistPoint(arrayOf(it))
-                })
+            ExtendedKeyUsage.getInstance(
+                ASN1EncodableVector().apply {
+                    add(ASN1ObjectIdentifier("1.0.18013.5.1.6"))
+                }.let { DERSequence(it) }
+            )
+        )
+
+        // Add CRL Distribution Points
+        val crlDp = GeneralName(
+            GeneralName.uniformResourceIdentifier,
+            "https://example.com/crl.pem"
+        )
+        val generalNames = GeneralNames(crlDp)
+        val distPointName = DistributionPointName(generalNames)
+        val distPoint = DistributionPoint(distPointName, null, null)
+        addExtension(
+            Extension.cRLDistributionPoints,
+            false,
+            CRLDistPoint(arrayOf(distPoint))
+        )
     }
     val signer = JcaContentSignerBuilder(signatureAlgorithm).build(trustedKeyPair.private)
     JcaX509CertificateConverter().getCertificate(builder.build(signer))
@@ -138,9 +169,24 @@ private val untrustedRoot: X509Certificate
             untrustedKeyPair.public
         ).apply {
             addExtension(
+                Extension.basicConstraints,
+                true,
+                BasicConstraints(true)  // isCA=true
+            )
+            addExtension(
+                Extension.keyUsage,
+                true,
+                KeyUsage(KeyUsage.keyCertSign or KeyUsage.cRLSign)
+            )
+            addExtension(
                 Extension.subjectKeyIdentifier,
                 false,
                 extUtils.createSubjectKeyIdentifier(untrustedKeyPair.public)
+            )
+            addExtension(
+                Extension.authorityKeyIdentifier,
+                false,
+                extUtils.createAuthorityKeyIdentifier(untrustedKeyPair.public)
             )
         }
         val signer = JcaContentSignerBuilder("SHA256WithRSAEncryption").build(untrustedKeyPair.private)
@@ -167,10 +213,7 @@ val invalidCertificate: X509Certificate by lazy {
     )
     val signer = JcaContentSignerBuilder("SHA256WithRSAEncryption").build(untrustedKeyPair.private)
     JcaX509CertificateConverter().getCertificate(builder.build(signer))
-
-
 }
-
 
 fun loadCert(): X509Certificate = validCertificate
 
