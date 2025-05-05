@@ -2,12 +2,17 @@
 
 # ReaderTrustStore
 
-[androidJvm]\
 interface [ReaderTrustStore](index.md)
 
 Interface that defines a trust manager, used to check the validity of a document signer and the associated certificate chain.
 
 Note that each document type should have a different trust manager; this trust manager is selected by OID in the DS certificate. These trust managers should have a specific TrustStore for each certificate and may implement specific checks required for the document type.
+
+#### Inheritors
+
+|                                                              |
+|--------------------------------------------------------------|
+| [ReaderTrustStoreImpl](../-reader-trust-store-impl/index.md) |
 
 ## Types
 

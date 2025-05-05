@@ -7,8 +7,7 @@ data class [DeviceResponse](index.md)(val
 deviceResponseBytes: [DeviceResponseBytes](../../eu.europa.ec.eudi.iso18013.transfer/-device-response-bytes/index.md),
 val
 sessionTranscriptBytes: [ByteArray](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-byte-array/index.html),
-val
-documentIds: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html)
+val documentIds: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html)
 &lt;DocumentId&gt;) : [Response](../../eu.europa.ec.eudi.iso18013.transfer.response/-response/index.md)
 
 Represents a Device Response according to ISO 18013-5 standard.
