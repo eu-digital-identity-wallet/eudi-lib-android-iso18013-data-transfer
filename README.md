@@ -107,15 +107,6 @@ method.
 The following example demonstrates how to create a new instance of the `TransferManager`
 
 ```kotlin
-import android.content.Context
-import eu.europa.ec.eudi.iso18013.transfer.TransferManager
-import eu.europa.ec.eudi.iso18013.transfer.TransferManagerImpl
-import eu.europa.ec.eudi.iso18013.transfer.engagement.BleRetrievalMethod
-import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStore
-import eu.europa.ec.eudi.iso18013.transfer.response.Request
-import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor
-import eu.europa.ec.eudi.wallet.document.DocumentManager
-
 val documentManager: DocumentManager =
     TODO("The document manager to retrieve the requested documents")
 
@@ -429,6 +420,116 @@ transferManager.addTransferEventListener { event ->
 
         else -> {
             // ... rest of the events
+        }
+    }
+}
+```
+
+### Reader authentication
+
+Reader authentication is a critical security component that verifies the authenticity and trustworthiness of the verifier (reader) device before sharing any personal data. It ensures that only legitimate and authorized entities can request and receive sensitive document information.
+
+The library performs three key verification steps:
+
+1. **Certificate Path Validation**: Validates the complete certificate chain from the reader's certificate up to a trusted root certificate, ensuring a chain of trust is established.
+
+2. **Certificate Profile Validation**: Examines multiple attributes and constraints defined in the certificate to ensure it meets predefined security criteria, including:
+   - Key Usage validation
+   - Extended Key Usage validation
+   - Validity period verification
+   - Critical extensions check
+   - Mandatory extensions verification
+   - Authority Key Identifier validation
+   - Subject Key Identifier validation
+   - Common Name verification
+   - Signature algorithm verification
+
+3. **Certificate Revocation List (CRL) Validation**: The library automatically checks if the leaf certificate (reader's certificate) has been revoked by downloading and validating against the CRL distribution points specified in the certificate.
+
+#### Default Implementation
+
+By default, the library provides a standard implementation of the `ReaderTrustStore` interface through `ReaderTrustStoreImpl`, which performs all the validations mentioned above:
+
+```kotlin
+// Create a default ReaderTrustStore with your trusted certificates
+val readerTrustStore = ReaderTrustStore.getDefault(
+    trustedCertificates = listOf(
+        // List your trusted root certificates here
+        trustedRootCertificate1,
+        trustedRootCertificate2
+    )
+)
+
+// Assign the trust store to the TransferManager
+transferManager = TransferManager.getDefault(
+    context = context,
+    documentManager = documentManager,
+    retrievalMethods = retrievalMethods,
+    readerTrustStore = readerTrustStore
+)
+```
+
+#### Custom Implementation
+
+For advanced use cases, you can create your own custom implementation of the `ReaderTrustStore` interface:
+
+```kotlin
+class CustomReaderTrustStore(
+    private val trustedCertificates: List<X509Certificate>
+) : ReaderTrustStore {
+
+    override fun createCertificationTrustPath(chain: List<X509Certificate>): List<X509Certificate>? {
+        // Your custom implementation for creating trust path
+        // Return the certification path or null if no path can be created
+    }
+
+    override fun validateCertificationTrustPath(chainToDocumentSigner: List<X509Certificate>): Boolean {
+        // Your custom validation logic
+        // Return true if the certification path is valid, false otherwise
+    }
+}
+
+// Use your custom implementation
+val customTrustStore = CustomReaderTrustStore(trustedCertificates)
+transferManager.readerTrustStore = customTrustStore
+```
+
+You can also implement custom profile validations by implementing the `ProfileValidation` interface and providing it to the `ReaderTrustStoreImpl`:
+
+```kotlin
+class CustomProfileValidation : ProfileValidation {
+    override fun validate(chain: List<X509Certificate>, trustCA: X509Certificate): Boolean {
+        // Your custom validation logic
+        return true
+    }
+}
+
+// Create a ReaderTrustStoreImpl with custom profile validation
+val customValidation = CustomProfileValidation()
+val readerTrustStore = ReaderTrustStoreImpl(
+    trustedCertificates = trustedCertificates,
+    profileValidation = customValidation
+)
+```
+
+The reader authentication results are accessible through the `ReaderAuth` object received in the `RequestReceived` event, allowing you to make decisions based on the authentication status:
+
+```kotlin
+is TransferEvent.RequestReceived -> {
+    val processedRequest = event.processedRequest.getOrThrow() as ProcessedDeviceRequest
+    
+    // Access reader authentication information
+    val readerAuth = processedRequest.readerAuth
+    if (readerAuth != null) {
+        val isVerified = readerAuth.isVerified
+        val readerCommonName = readerAuth.readerCommonName
+        val isTrusted = readerAuth.readerCertificatedIsTrusted
+        
+        // Make decisions based on authentication status
+        if (isVerified && isTrusted) {
+            // Proceed with the trusted reader
+        } else {
+            // Handle untrusted reader scenario
         }
     }
 }
