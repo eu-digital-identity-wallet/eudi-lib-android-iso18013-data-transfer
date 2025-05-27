@@ -16,8 +16,8 @@
 package eu.europa.ec.eudi.iso18013.transfer.internal
 
 import com.android.identity.android.mdoc.transport.DataTransportOptions
-import eu.europa.ec.eudi.iso18013.transfer.engagement.DeviceRetrievalMethod
 import eu.europa.ec.eudi.iso18013.transfer.engagement.BleRetrievalMethod
+import eu.europa.ec.eudi.iso18013.transfer.engagement.DeviceRetrievalMethod
 import org.multipaz.mdoc.connectionmethod.MdocConnectionMethod
 import org.multipaz.mdoc.connectionmethod.MdocConnectionMethodBle
 import org.multipaz.util.UUID

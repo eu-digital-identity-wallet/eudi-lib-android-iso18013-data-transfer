@@ -16,7 +16,6 @@
 package eu.europa.ec.eudi.iso18013.transfer
 
 import eu.europa.ec.eudi.iso18013.transfer.engagement.QrCode
-import eu.europa.ec.eudi.iso18013.transfer.response.RequestedDocuments
 import eu.europa.ec.eudi.iso18013.transfer.response.Request
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor
 import java.net.URI

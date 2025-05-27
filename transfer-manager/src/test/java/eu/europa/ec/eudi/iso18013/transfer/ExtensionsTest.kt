@@ -21,7 +21,9 @@ import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor
 import eu.europa.ec.eudi.iso18013.transfer.response.ResponseResult
 import eu.europa.ec.eudi.iso18013.transfer.response.device.MsoMdocItem
 import io.mockk.mockk
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class ExtensionsTest {
 
