@@ -21,7 +21,10 @@ import eu.europa.ec.eudi.wallet.document.IssuedDocument
 import io.mockk.every
 import io.mockk.mockk
 import org.multipaz.securearea.KeyUnlockData
-import kotlin.test.*
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class DisclosedDocumentTest {
 

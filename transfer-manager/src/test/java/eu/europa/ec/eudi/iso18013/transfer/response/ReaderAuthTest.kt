@@ -18,7 +18,10 @@ package eu.europa.ec.eudi.iso18013.transfer.response
 
 import io.mockk.mockk
 import java.security.cert.X509Certificate
-import kotlin.test.*
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class ReaderAuthTest {
 

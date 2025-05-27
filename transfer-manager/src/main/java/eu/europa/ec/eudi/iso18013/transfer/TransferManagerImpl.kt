@@ -22,9 +22,6 @@ import android.net.Uri
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.android.identity.android.mdoc.deviceretrieval.DeviceRetrievalHelper
-import org.multipaz.mdoc.origininfo.OriginInfo
-import org.multipaz.mdoc.origininfo.OriginInfoDomain
-import org.multipaz.util.Constants
 import eu.europa.ec.eudi.iso18013.transfer.engagement.DeviceRetrievalMethod
 import eu.europa.ec.eudi.iso18013.transfer.engagement.NfcEngagementService
 import eu.europa.ec.eudi.iso18013.transfer.internal.EngagementToApp
@@ -40,6 +37,9 @@ import eu.europa.ec.eudi.iso18013.transfer.response.device.DeviceRequest
 import eu.europa.ec.eudi.iso18013.transfer.response.device.DeviceRequestProcessor
 import eu.europa.ec.eudi.iso18013.transfer.response.device.DeviceResponse
 import eu.europa.ec.eudi.wallet.document.DocumentManager
+import org.multipaz.mdoc.origininfo.OriginInfo
+import org.multipaz.mdoc.origininfo.OriginInfoDomain
+import org.multipaz.util.Constants
 
 /**
  * Transfer Manager class used for performing device engagement and data retrieval

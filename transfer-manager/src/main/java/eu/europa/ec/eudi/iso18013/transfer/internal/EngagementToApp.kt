@@ -19,6 +19,7 @@ import android.content.Context
 import android.util.Base64
 import android.util.Log
 import androidx.annotation.VisibleForTesting
+import androidx.core.net.toUri
 import com.android.identity.android.mdoc.deviceretrieval.DeviceRetrievalHelper
 import com.android.identity.android.mdoc.transport.DataTransport
 import com.android.identity.android.mdoc.transport.DataTransportOptions
@@ -27,7 +28,6 @@ import org.multipaz.crypto.EcCurve
 import org.multipaz.crypto.EcPublicKey
 import org.multipaz.mdoc.engagement.EngagementParser
 import org.multipaz.mdoc.origininfo.OriginInfo
-import androidx.core.net.toUri
 
 /**
  * Set up Engagement-to-app engagement transmission technology according to the ISO 18013-7

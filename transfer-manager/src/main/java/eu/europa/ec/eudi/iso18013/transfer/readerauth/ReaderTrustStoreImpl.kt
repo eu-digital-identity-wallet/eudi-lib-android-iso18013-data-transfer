@@ -23,8 +23,17 @@ import eu.europa.ec.eudi.iso18013.transfer.readerauth.profile.ProfileValidation
 import org.bouncycastle.asn1.x500.X500Name
 import java.security.InvalidAlgorithmParameterException
 import java.security.NoSuchAlgorithmException
-import java.security.cert.*
-import java.util.*
+import java.security.cert.CertPathValidator
+import java.security.cert.CertPathValidatorException
+import java.security.cert.CertStore
+import java.security.cert.CertificateException
+import java.security.cert.CertificateFactory
+import java.security.cert.CollectionCertStoreParameters
+import java.security.cert.PKIXCertPathValidatorResult
+import java.security.cert.PKIXParameters
+import java.security.cert.TrustAnchor
+import java.security.cert.X509Certificate
+import java.util.Date
 
 class ReaderTrustStoreImpl(
     private val trustedCertificates: List<X509Certificate>,

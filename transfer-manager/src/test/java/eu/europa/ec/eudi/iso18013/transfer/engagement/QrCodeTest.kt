@@ -16,7 +16,6 @@
 
 package eu.europa.ec.eudi.iso18013.transfer.engagement
 
-import eu.europa.ec.eudi.iso18013.transfer.Context
 import eu.europa.ec.eudi.iso18013.transfer.internal.QrCodeUtils
 import io.mockk.mockkObject
 import io.mockk.unmockkAll
