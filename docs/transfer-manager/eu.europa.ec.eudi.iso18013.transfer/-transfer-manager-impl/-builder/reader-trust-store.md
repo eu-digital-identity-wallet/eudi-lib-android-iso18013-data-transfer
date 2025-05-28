@@ -3,7 +3,7 @@
 # readerTrustStore
 
 [androidJvm]\
-fun [readerTrustStore](reader-trust-store.md)(readerTrustStore: [ReaderTrustStore](../../../eu.europa.ec.eudi.iso18013.transfer.readerauth/-reader-trust-store/index.md)): [TransferManagerImpl.Builder](index.md)
+fun [readerTrustStore](reader-trust-store.md)(readerTrustStore: [ReaderTrustStore](../../../eu.europa.ec.eudi.iso18013.transfer.readerauth/-reader-trust-store/index.md)): &lt;Error class: unknown class&gt;
 
 Reader trust store instance that will be used to verify the reader's certificate
 

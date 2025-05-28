@@ -10,8 +10,8 @@ Note that each document type should have a different trust manager; this trust m
 
 #### Inheritors
 
-|                                                              |
-|--------------------------------------------------------------|
+| |
+|---|
 | [ReaderTrustStoreImpl](../-reader-trust-store-impl/index.md) |
 
 ## Types

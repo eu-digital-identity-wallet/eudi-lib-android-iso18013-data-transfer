@@ -13,7 +13,7 @@ androidJvm
 
 | | |
 |---|---|
-| intent | The intent being received If the transfer has already started, an error event will be triggered with an [IllegalStateException](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-illegal-state-exception/index.html) containing the message &quot;Transfer has already started.&quot; |
+| intent | The intent being received If the transfer has already started, an error event will be triggered with an [IllegalStateException](https://developer.android.com/reference/kotlin/java/lang/IllegalStateException.html) containing the message &quot;Transfer has already started.&quot; |
 
 #### See also
 

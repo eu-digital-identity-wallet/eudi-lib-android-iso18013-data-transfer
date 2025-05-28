@@ -3,7 +3,7 @@
 # documentManager
 
 [androidJvm]\
-fun [documentManager](document-manager.md)(documentManager: DocumentManager): [TransferManagerImpl.Builder](index.md)
+fun [documentManager](document-manager.md)(documentManager: DocumentManager): &lt;Error class: unknown class&gt;
 
 Document manager instance that will be used to retrieve the requested documents
 
