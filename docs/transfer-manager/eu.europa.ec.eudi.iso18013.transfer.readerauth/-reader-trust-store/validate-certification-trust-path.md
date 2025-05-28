@@ -17,6 +17,6 @@ false if no trusted certificate could be found for the certificate chain or if t
 
 androidJvm
 
-|                       |                                                                              |
-|-----------------------|------------------------------------------------------------------------------|
+| | |
+|---|---|
 | chainToDocumentSigner | the document signer, intermediate certificates and optional root certificate |

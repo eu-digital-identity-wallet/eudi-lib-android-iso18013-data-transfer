@@ -3,6 +3,4 @@
 # ProfileValidationImpl
 
 [androidJvm]\
-constructor(
-profileValidations: [Collection](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-collection/index.html)
-&lt;[ProfileValidation](../-profile-validation/index.md)&gt;)
+constructor(profileValidations: [Collection](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-collection/index.html)&lt;[ProfileValidation](../-profile-validation/index.md)&gt;)
