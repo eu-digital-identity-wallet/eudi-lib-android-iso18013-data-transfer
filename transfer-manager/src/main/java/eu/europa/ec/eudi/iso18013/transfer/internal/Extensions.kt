@@ -25,8 +25,6 @@ import eu.europa.ec.eudi.wallet.document.DocumentId
 import eu.europa.ec.eudi.wallet.document.DocumentManager
 import eu.europa.ec.eudi.wallet.document.IssuedDocument
 import eu.europa.ec.eudi.wallet.document.format.MsoMdocFormat
-import kotlinx.datetime.Clock
-import kotlinx.datetime.toJavaInstant
 import java.security.cert.X509Certificate
 import java.util.concurrent.Executor
 
@@ -62,20 +60,19 @@ internal val List<X509Certificate>.cn: String
         ?.trim()
         ?: ""
 
-internal fun DocumentManager.getValidIssuedMsoMdocDocuments(docType: DocType): List<IssuedDocument> {
+internal suspend fun DocumentManager.getValidIssuedMsoMdocDocuments(docType: DocType): List<IssuedDocument> {
     return getDocuments()
         .filter { it.format is MsoMdocFormat && (it.format as MsoMdocFormat).docType == docType }
-        .filter { !it.isKeyInvalidated }
         .filterIsInstance<IssuedDocument>()
-        .filter { it.isValidAt(Clock.System.now().toJavaInstant()) }
+        .filter { it.findCredential() != null } // Filter out documents without credentials
 }
 
-internal fun DocumentManager.getValidIssuedMsoMdocDocumentById(documentId: DocumentId): IssuedDocument {
-    return (getDocumentById(documentId)
-        ?.takeIf { it is IssuedDocument }
+internal suspend fun DocumentManager.getValidIssuedMsoMdocDocumentById(documentId: DocumentId): IssuedDocument {
+    return getDocumentById(documentId)
         ?.takeIf { it.format is MsoMdocFormat }
-        ?.takeIf { !it.isKeyInvalidated } as? IssuedDocument)
-        ?.takeIf { it.isValidAt(Clock.System.now().toJavaInstant()) }
+        ?.takeIf { it is IssuedDocument }
+        ?.let { it as IssuedDocument }
+        ?.takeIf { it.findCredential() != null }
         ?: throw IllegalArgumentException("Invalid document")
 }
 
@@ -84,7 +81,8 @@ internal fun DocumentManager.getValidIssuedMsoMdocDocumentById(documentId: Docum
  */
 internal fun DisclosedDocuments.filterWithRequestedDocuments(requestedDocuments: RequestedDocuments): DisclosedDocuments {
 
-    return DisclosedDocuments(this
+    return DisclosedDocuments(
+        this
         .mapNotNull { disclosedDocument ->
             requestedDocuments.firstOrNull { it.documentId == disclosedDocument.documentId }
                 ?.let { requestedDocument ->

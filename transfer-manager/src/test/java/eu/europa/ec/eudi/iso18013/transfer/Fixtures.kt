@@ -58,18 +58,19 @@ fun createDocumentManager(keyLockPassphrase: String?): DocumentManager {
         DocumentManagerImpl(
             identifier = "DocumentManager",
             storage = Storage,
-            secureAreaRepository = SecureAreaRep
+            secureAreaRepository = SecureAreaRep,
+            ktorHttpClientFactory = null,
         )
     ).apply {
         loadMdocSampleDocuments(
             sampleData = Base64.decode(getResourceAsText("sample_documents.txt")),
             createSettings = CreateDocumentSettings(
                 secureAreaIdentifier = SecureArea.identifier,
-                createKeySettings = keyLockPassphrase?.let {
+                createKeySettings = keyLockPassphrase?.let { p ->
                     SoftwareCreateKeySettings.Builder()
                         .setPassphraseRequired(
                             true,
-                            keyLockPassphrase,
+                            p,
                             PassphraseConstraints.PIN_FOUR_DIGITS
                         )
                         .build()

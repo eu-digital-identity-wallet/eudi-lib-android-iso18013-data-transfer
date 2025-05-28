@@ -29,6 +29,7 @@ import eu.europa.ec.eudi.wallet.document.DocType
 import eu.europa.ec.eudi.wallet.document.DocumentManager
 import eu.europa.ec.eudi.wallet.document.ElementIdentifier
 import eu.europa.ec.eudi.wallet.document.NameSpace
+import kotlinx.coroutines.runBlocking
 import org.multipaz.mdoc.request.DeviceRequestParser
 
 /**
@@ -56,12 +57,13 @@ class DeviceRequestProcessor(
     override fun process(request: Request): RequestProcessor.ProcessedRequest {
         try {
             require(request is DeviceRequest) { "Request must be a DeviceRequest" }
-            val requestedDocuments =
+            val requestedDocuments = runBlocking {
                 DeviceRequestParser(request.deviceRequestBytes, request.sessionTranscriptBytes)
                     .parse()
                     .docRequests
                     .map { docRequest -> docRequest.toRequestedMdocDocuments() }
                     .let { helper.getRequestedDocuments(it) }
+            }
             return ProcessedDeviceRequest(
                 documentManager = documentManager,
                 requestedDocuments = requestedDocuments,
@@ -84,7 +86,7 @@ class DeviceRequestProcessor(
          * @param requestedMdocDocuments the [RequestedMdocDocument] to process
          * @return the [RequestedDocuments]
          */
-        fun getRequestedDocuments(
+        suspend fun getRequestedDocuments(
             requestedMdocDocuments: List<RequestedMdocDocument>
         ): RequestedDocuments {
             return requestedMdocDocuments.flatMap { requestedDocument ->

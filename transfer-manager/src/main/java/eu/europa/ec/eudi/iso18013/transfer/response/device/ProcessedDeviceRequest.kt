@@ -27,6 +27,7 @@ import eu.europa.ec.eudi.iso18013.transfer.response.RequestedDocuments
 import eu.europa.ec.eudi.iso18013.transfer.response.ResponseResult
 import eu.europa.ec.eudi.wallet.document.DocumentId
 import eu.europa.ec.eudi.wallet.document.DocumentManager
+import kotlinx.coroutines.runBlocking
 import org.multipaz.crypto.Algorithm
 import org.multipaz.mdoc.response.DeviceResponseGenerator
 import org.multipaz.util.Constants
@@ -65,9 +66,9 @@ class ProcessedDeviceRequest(
                     else it
                 }
                 .forEachIndexed { index, disclosedDocument ->
-                    val documentResponse = documentManager
-                        .getValidIssuedMsoMdocDocumentById(disclosedDocument.documentId)
-                        .assertAgeOverRequestLimitForIso18013(disclosedDocument)
+                    val documentResponse = runBlocking {
+                        documentManager.getValidIssuedMsoMdocDocumentById(disclosedDocument.documentId)
+                    }.assertAgeOverRequestLimitForIso18013(disclosedDocument)
                         .generateDocumentResponse(
                             transcript = sessionTranscript,
                             elements = disclosedDocument.disclosedItems.asMap(),
