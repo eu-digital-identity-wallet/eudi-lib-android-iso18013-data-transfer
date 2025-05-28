@@ -21,8 +21,6 @@ import eu.europa.ec.eudi.wallet.document.IssuedDocument
 import eu.europa.ec.eudi.wallet.document.NameSpace
 import eu.europa.ec.eudi.wallet.document.format.MsoMdocData
 import kotlinx.coroutines.runBlocking
-import kotlinx.datetime.Clock
-import kotlinx.datetime.toJavaInstant
 import org.multipaz.document.DocumentRequest
 import org.multipaz.document.NameSpacedData
 import org.multipaz.mdoc.mso.StaticAuthDataParser
@@ -52,33 +50,33 @@ internal object DocumentResponseGenerator {
         elements: Map<NameSpace, List<ElementIdentifier>>? = null,
         keyUnlockData: KeyUnlockData? = null
     ): ByteArray {
-        require(document.data is MsoMdocData) { "Document format is not MsoMdocFormat" }
-        require(!document.isKeyInvalidated) { "Document key is invalidated" }
-        require(document.isValidAt(Clock.System.now().toJavaInstant())) { "Document is not valid" }
-        val documentData = document.data as MsoMdocData
-        val docType = documentData.format.docType
-        val dataElements =
-            (elements ?: documentData.nameSpaces).flatMap { (nameSpace, elementIdentifiers) ->
-                elementIdentifiers.map { elementIdentifier ->
-                    DocumentRequest.DataElement(nameSpace, elementIdentifier, false)
-                }
-            }
-        val request = DocumentRequest(dataElements)
-
-        val staticAuthData = StaticAuthDataParser(document.issuerProvidedData).parse()
-        val mergedIssuerNamespaces = MdocUtil.mergeIssuerNamesSpaces(
-            request, documentData.nameSpacedData, staticAuthData
-        )
         return runBlocking {
-            DocumentGenerator(docType, staticAuthData.issuerAuth, transcript)
-                .setIssuerNamespaces(mergedIssuerNamespaces)
-                .setDeviceNamespacesSignature(
-                    dataElements = NameSpacedData.Builder().build(),
-                    secureArea = document.secureArea,
-                    keyAlias = document.keyAlias,
-                    keyUnlockData = keyUnlockData
+            document.consumingCredential {
+                val documentData = document.data
+                require(documentData is MsoMdocData) { "Document format is not MsoMdocFormat" }
+                val docType = documentData.format.docType
+                val dataElements = (elements ?: documentData.nameSpaces)
+                    .flatMap { (nameSpace, elementIdentifiers) ->
+                        elementIdentifiers.map { elementIdentifier ->
+                            DocumentRequest.DataElement(nameSpace, elementIdentifier, false)
+                        }
+                    }
+                val request = DocumentRequest(dataElements)
+
+                val staticAuthData = StaticAuthDataParser(issuerProvidedData).parse()
+                val mergedIssuerNamespaces = MdocUtil.mergeIssuerNamesSpaces(
+                    request, documentData.nameSpacedData, staticAuthData
                 )
-                .generate()
+                DocumentGenerator(docType, staticAuthData.issuerAuth, transcript)
+                    .setIssuerNamespaces(mergedIssuerNamespaces)
+                    .setDeviceNamespacesSignature(
+                        dataElements = NameSpacedData.Builder().build(),
+                        secureArea = secureArea,
+                        keyAlias = alias,
+                        keyUnlockData = keyUnlockData
+                    )
+                    .generate()
+            }.getOrThrow()
         }
     }
 
