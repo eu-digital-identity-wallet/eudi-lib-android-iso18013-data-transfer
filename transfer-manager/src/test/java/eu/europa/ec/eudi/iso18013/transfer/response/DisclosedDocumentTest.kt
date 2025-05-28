@@ -16,11 +16,11 @@
 
 package eu.europa.ec.eudi.iso18013.transfer.response
 
-import com.android.identity.securearea.KeyUnlockData
 import eu.europa.ec.eudi.iso18013.transfer.response.device.MsoMdocItem
 import eu.europa.ec.eudi.wallet.document.IssuedDocument
 import io.mockk.every
 import io.mockk.mockk
+import org.multipaz.securearea.KeyUnlockData
 import kotlin.test.*
 
 class DisclosedDocumentTest {

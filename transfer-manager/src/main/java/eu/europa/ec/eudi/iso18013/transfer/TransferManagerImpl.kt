@@ -22,9 +22,9 @@ import android.net.Uri
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.android.identity.android.mdoc.deviceretrieval.DeviceRetrievalHelper
-import com.android.identity.mdoc.origininfo.OriginInfo
-import com.android.identity.mdoc.origininfo.OriginInfoDomain
-import com.android.identity.util.Constants
+import org.multipaz.mdoc.origininfo.OriginInfo
+import org.multipaz.mdoc.origininfo.OriginInfoDomain
+import org.multipaz.util.Constants
 import eu.europa.ec.eudi.iso18013.transfer.engagement.DeviceRetrievalMethod
 import eu.europa.ec.eudi.iso18013.transfer.engagement.NfcEngagementService
 import eu.europa.ec.eudi.iso18013.transfer.internal.EngagementToApp

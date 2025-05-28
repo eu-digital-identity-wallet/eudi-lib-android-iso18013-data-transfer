@@ -16,21 +16,21 @@
 package eu.europa.ec.eudi.iso18013.transfer.internal
 
 import com.android.identity.android.mdoc.transport.DataTransportOptions
-import com.android.identity.mdoc.connectionmethod.ConnectionMethod
-import com.android.identity.mdoc.connectionmethod.ConnectionMethodBle
-import com.android.identity.util.UUID
 import eu.europa.ec.eudi.iso18013.transfer.engagement.DeviceRetrievalMethod
 import eu.europa.ec.eudi.iso18013.transfer.engagement.BleRetrievalMethod
+import org.multipaz.mdoc.connectionmethod.MdocConnectionMethod
+import org.multipaz.mdoc.connectionmethod.MdocConnectionMethodBle
+import org.multipaz.util.UUID
 
-internal val DeviceRetrievalMethod.connectionMethod: List<ConnectionMethod>
+internal val DeviceRetrievalMethod.connectionMethod: List<MdocConnectionMethod>
     get() = when (this) {
         is BleRetrievalMethod -> {
             if (!peripheralServerMode && !centralClientMode) emptyList()
             else {
-                mutableListOf<ConnectionMethod>().apply {
+                mutableListOf<MdocConnectionMethod>().apply {
                     val randomUUID = UUID.randomUUID()
                     add(
-                        ConnectionMethodBle(
+                        MdocConnectionMethodBle(
                             peripheralServerMode,
                             centralClientMode,
                             if (peripheralServerMode) randomUUID else null,
@@ -51,5 +51,5 @@ internal val List<DeviceRetrievalMethod>.transportOptions: DataTransportOptions
         }
     }.build()
 
-internal val List<DeviceRetrievalMethod>.connectionMethods: List<ConnectionMethod>
+internal val List<DeviceRetrievalMethod>.connectionMethods: List<MdocConnectionMethod>
     get() = flatMap { it.connectionMethod }

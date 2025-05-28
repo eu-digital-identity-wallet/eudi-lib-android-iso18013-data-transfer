@@ -193,7 +193,7 @@ transferManager.addTransferEventListener { event ->
             // generate the response
             val response = processedRequest.generateResponse(
                 disclosedDocuments = disclosedDocuments,
-                signatureAlgorithm = Algorithm.ES256
+                signatureAlgorithm = Algorithm.ESP256
             ).getOrThrow() as DeviceResponse
 
             transferManager.sendResponse(response)
@@ -408,7 +408,7 @@ transferManager.addTransferEventListener { event ->
             // generate the response
             val response = processedRequest.generateResponse(
                 disclosedDocuments = disclosedDocuments,
-                signatureAlgorithm = Algorithm.ES256
+                signatureAlgorithm = Algorithm.ESP256
             ).getOrThrow() as DeviceResponse
 
             transferManager.sendResponse(response)

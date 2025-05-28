@@ -16,8 +16,8 @@
 
 package eu.europa.ec.eudi.iso18013.transfer.response
 
-import com.android.identity.securearea.KeyUnlockData
 import eu.europa.ec.eudi.wallet.document.DocumentId
+import org.multipaz.securearea.KeyUnlockData
 
 /**
  * Represents a response that contains the document data that will be sent to an mdoc verifier

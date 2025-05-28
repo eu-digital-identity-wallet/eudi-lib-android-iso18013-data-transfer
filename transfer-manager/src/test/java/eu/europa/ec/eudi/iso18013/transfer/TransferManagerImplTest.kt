@@ -19,7 +19,6 @@ package eu.europa.ec.eudi.iso18013.transfer
 import android.content.Intent
 import android.util.Log
 import com.android.identity.android.mdoc.deviceretrieval.DeviceRetrievalHelper
-import com.android.identity.util.Constants.SESSION_DATA_STATUS_SESSION_TERMINATION
 import eu.europa.ec.eudi.iso18013.transfer.engagement.DeviceRetrievalMethod
 import eu.europa.ec.eudi.iso18013.transfer.engagement.NfcEngagementService
 import eu.europa.ec.eudi.iso18013.transfer.internal.QrEngagement
@@ -39,6 +38,7 @@ import io.mockk.spyk
 import io.mockk.verify
 import org.junit.Assert.assertThrows
 import org.mockito.MockedStatic
+import org.multipaz.util.Constants.SESSION_DATA_STATUS_SESSION_TERMINATION
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test

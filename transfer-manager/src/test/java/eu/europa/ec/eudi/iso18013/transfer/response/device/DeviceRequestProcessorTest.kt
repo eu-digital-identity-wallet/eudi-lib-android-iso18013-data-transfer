@@ -16,9 +16,6 @@
 
 package eu.europa.ec.eudi.iso18013.transfer.response.device
 
-import com.android.identity.crypto.Algorithm
-import com.android.identity.securearea.KeyLockedException
-import com.android.identity.securearea.software.SoftwareKeyUnlockData
 import eu.europa.ec.eudi.iso18013.transfer.DeviceRequest
 import eu.europa.ec.eudi.iso18013.transfer.DocumentManagerWithKeyLock
 import eu.europa.ec.eudi.iso18013.transfer.DocumentManagerWithoutKeyLock
@@ -34,6 +31,9 @@ import eu.europa.ec.eudi.wallet.document.format.MsoMdocData
 import eu.europa.ec.eudi.wallet.document.format.MsoMdocFormat
 import io.mockk.mockk
 import org.junit.Test
+import org.multipaz.crypto.Algorithm
+import org.multipaz.securearea.KeyLockedException
+import org.multipaz.securearea.software.SoftwareKeyUnlockData
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
@@ -44,8 +44,7 @@ class DeviceRequestProcessorTest {
         val documentManager = DocumentManagerWithoutKeyLock
         val expectedDocument = documentManager.getDocuments()
             .filterIsInstance<IssuedDocument>()
-            .filter { it.format is MsoMdocFormat && (it.format as MsoMdocFormat).docType == "org.iso.18013.5.1.mDL" }
-            .first()
+            .first { it.format is MsoMdocFormat && (it.format as MsoMdocFormat).docType == "org.iso.18013.5.1.mDL" }
 
         val requestProcessor = DeviceRequestProcessor(documentManager)
         val processedRequest = requestProcessor.process(DeviceRequest)
@@ -81,8 +80,7 @@ class DeviceRequestProcessorTest {
         val requestProcessor = DeviceRequestProcessor(documentManager)
         val expectedDocument = documentManager.getDocuments()
             .filterIsInstance<IssuedDocument>()
-            .filter { it.format is MsoMdocFormat && (it.format as MsoMdocFormat).docType == "org.iso.18013.5.1.mDL" }
-            .first()
+            .first { it.format is MsoMdocFormat && (it.format as MsoMdocFormat).docType == "org.iso.18013.5.1.mDL" }
         val processedRequest = requestProcessor.process(DeviceRequest)
         assertIs<ProcessedDeviceRequest>(processedRequest)
         val documentData = expectedDocument.data
@@ -109,8 +107,7 @@ class DeviceRequestProcessorTest {
         val requestProcessor = DeviceRequestProcessor(documentManager)
         val expectedDocument = documentManager.getDocuments()
             .filterIsInstance<IssuedDocument>()
-            .filter { it.format is MsoMdocFormat && (it.format as MsoMdocFormat).docType == "org.iso.18013.5.1.mDL" }
-            .first()
+            .first { it.format is MsoMdocFormat && (it.format as MsoMdocFormat).docType == "org.iso.18013.5.1.mDL" }
         val processedRequest = requestProcessor.process(DeviceRequest)
         assertIs<ProcessedDeviceRequest>(processedRequest)
         val documentData = expectedDocument.data
@@ -137,8 +134,7 @@ class DeviceRequestProcessorTest {
         val requestProcessor = DeviceRequestProcessor(documentManager)
         val expectedDocument = documentManager.getDocuments()
             .filterIsInstance<IssuedDocument>()
-            .filter { it.format is MsoMdocFormat && (it.format as MsoMdocFormat).docType == "org.iso.18013.5.1.mDL" }
-            .first()
+            .first { it.format is MsoMdocFormat && (it.format as MsoMdocFormat).docType == "org.iso.18013.5.1.mDL" }
         val processedRequest = requestProcessor.process(DeviceRequest)
         assertIs<ProcessedDeviceRequest>(processedRequest)
         val documentData = expectedDocument.data
