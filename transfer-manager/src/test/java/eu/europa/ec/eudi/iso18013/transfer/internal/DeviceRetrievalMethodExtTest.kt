@@ -22,7 +22,7 @@ import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
 import kotlin.test.Test
-import com.android.identity.cbor.Cbor as CborUtil
+import org.multipaz.cbor.Cbor as CborUtil
 
 @RunWith(Parameterized::class)
 class DeviceRetrievalMethodExtTest(

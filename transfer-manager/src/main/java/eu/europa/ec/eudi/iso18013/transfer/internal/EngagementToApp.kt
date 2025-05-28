@@ -16,18 +16,18 @@
 package eu.europa.ec.eudi.iso18013.transfer.internal
 
 import android.content.Context
-import android.net.Uri
 import android.util.Base64
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.android.identity.android.mdoc.deviceretrieval.DeviceRetrievalHelper
 import com.android.identity.android.mdoc.transport.DataTransport
 import com.android.identity.android.mdoc.transport.DataTransportOptions
-import com.android.identity.crypto.Crypto
-import com.android.identity.crypto.EcCurve
-import com.android.identity.crypto.EcPublicKey
-import com.android.identity.mdoc.engagement.EngagementParser
-import com.android.identity.mdoc.origininfo.OriginInfo
+import org.multipaz.crypto.Crypto
+import org.multipaz.crypto.EcCurve
+import org.multipaz.crypto.EcPublicKey
+import org.multipaz.mdoc.engagement.EngagementParser
+import org.multipaz.mdoc.origininfo.OriginInfo
+import androidx.core.net.toUri
 
 /**
  * Set up Engagement-to-app engagement transmission technology according to the ISO 18013-7
@@ -120,7 +120,7 @@ internal class EngagementToApp(
         reverseEngagementUri: String,
         origins: List<OriginInfo>,
     ) {
-        val uri = Uri.parse(reverseEngagementUri)
+        val uri = reverseEngagementUri.toUri()
         check(uri.scheme.equals("mdoc")) { "Only supports mdoc URIs" }
 
         val encodedReaderEngagement = Base64.decode(
@@ -128,7 +128,7 @@ internal class EngagementToApp(
             Base64.URL_SAFE or Base64.NO_PADDING,
         )
         val engagement = EngagementParser(encodedReaderEngagement).parse()
-        check(engagement.connectionMethods.size != 0) { "No connection methods in engagement" }
+        check(engagement.connectionMethods.isNotEmpty()) { "No connection methods in engagement" }
 
         // For now, just pick the first transport
         val connectionMethod = engagement.connectionMethods[0]

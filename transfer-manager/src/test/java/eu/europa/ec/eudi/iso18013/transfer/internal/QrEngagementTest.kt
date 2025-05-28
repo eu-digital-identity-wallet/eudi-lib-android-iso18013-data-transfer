@@ -20,7 +20,6 @@ import android.content.Context
 import com.android.identity.android.mdoc.engagement.QrEngagementHelper
 import com.android.identity.android.mdoc.transport.DataTransportBleCentralClientMode
 import com.android.identity.android.mdoc.transport.DataTransportBlePeripheralServerMode
-import com.android.identity.mdoc.connectionmethod.ConnectionMethodBle
 import eu.europa.ec.eudi.iso18013.transfer.engagement.BleRetrievalMethod
 import eu.europa.ec.eudi.iso18013.transfer.engagement.DeviceRetrievalMethod
 import eu.europa.ec.eudi.iso18013.transfer.engagement.QrCode
@@ -34,6 +33,7 @@ import io.mockk.unmockkAll
 import io.mockk.verify
 import org.junit.Assert.assertThrows
 import org.junit.runner.RunWith
+import org.multipaz.mdoc.connectionmethod.MdocConnectionMethodBle
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
@@ -53,7 +53,7 @@ class QrEngagementTest {
     @BeforeTest
     fun setUp() {
         context = RuntimeEnvironment.getApplication()
-        mockkConstructor(ConnectionMethodBle::class)
+        mockkConstructor(MdocConnectionMethodBle::class)
         mockkConstructor(DataTransportBlePeripheralServerMode::class)
         mockkConstructor(DataTransportBleCentralClientMode::class)
         every { anyConstructed<DataTransportBlePeripheralServerMode>().connect() } returns mockk()

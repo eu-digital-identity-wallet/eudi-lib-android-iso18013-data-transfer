@@ -16,7 +16,7 @@
 
 package eu.europa.ec.eudi.iso18013.transfer.response
 
-import com.android.identity.crypto.Algorithm
+import org.multipaz.crypto.Algorithm
 
 /**
  * Interface for request processor. A request processor processes the raw request and returns a processed request.

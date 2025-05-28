@@ -16,11 +16,11 @@
 
 package eu.europa.ec.eudi.iso18013.transfer.internal.readerauth
 
-import com.android.identity.crypto.javaX509Certificates
-import com.android.identity.mdoc.request.DeviceRequestParser
 import eu.europa.ec.eudi.iso18013.transfer.internal.cn
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStore
 import eu.europa.ec.eudi.iso18013.transfer.response.ReaderAuth
+import org.multipaz.crypto.javaX509Certificates
+import org.multipaz.mdoc.request.DeviceRequestParser
 
 internal fun ReaderTrustStore.performReaderAuthentication(docRequest: DeviceRequestParser.DocRequest): ReaderAuth? {
     val readerAuth = docRequest.readerAuth ?: return null

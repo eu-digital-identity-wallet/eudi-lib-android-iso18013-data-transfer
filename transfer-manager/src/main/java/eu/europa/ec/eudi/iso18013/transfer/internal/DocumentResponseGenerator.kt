@@ -16,19 +16,19 @@
 
 package eu.europa.ec.eudi.iso18013.transfer.internal
 
-import com.android.identity.crypto.Algorithm
-import com.android.identity.document.DocumentRequest
-import com.android.identity.document.NameSpacedData
-import com.android.identity.mdoc.mso.StaticAuthDataParser
-import com.android.identity.mdoc.response.DocumentGenerator
-import com.android.identity.mdoc.util.MdocUtil
-import com.android.identity.securearea.KeyUnlockData
 import eu.europa.ec.eudi.wallet.document.ElementIdentifier
 import eu.europa.ec.eudi.wallet.document.IssuedDocument
 import eu.europa.ec.eudi.wallet.document.NameSpace
 import eu.europa.ec.eudi.wallet.document.format.MsoMdocData
+import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toJavaInstant
+import org.multipaz.document.DocumentRequest
+import org.multipaz.document.NameSpacedData
+import org.multipaz.mdoc.mso.StaticAuthDataParser
+import org.multipaz.mdoc.response.DocumentGenerator
+import org.multipaz.mdoc.util.MdocUtil
+import org.multipaz.securearea.KeyUnlockData
 
 internal object DocumentResponseGenerator {
 
@@ -41,9 +41,8 @@ internal object DocumentResponseGenerator {
      * @param transcript the transcript to use for the response
      * @param elements the elements to include in the response
      * @param keyUnlockData the key unlock data for unlocking the document key if needed
-     * @param signatureAlgorithm the signature algorithm to use for the response
      * @throws IllegalArgumentException if the document format is not MsoMdocFormat, the document key is invalidated,
-     * @throws com.android.identity.securearea.KeyLockedException if the document key is locked and cannot be unlocked
+     * @throws org.multipaz.securearea.KeyLockedException if the document key is locked and cannot be unlocked
      */
     @JvmStatic
     @JvmOverloads
@@ -51,8 +50,7 @@ internal object DocumentResponseGenerator {
         document: IssuedDocument,
         transcript: ByteArray,
         elements: Map<NameSpace, List<ElementIdentifier>>? = null,
-        keyUnlockData: KeyUnlockData? = null,
-        signatureAlgorithm: Algorithm = Algorithm.ES256
+        keyUnlockData: KeyUnlockData? = null
     ): ByteArray {
         require(document.data is MsoMdocData) { "Document format is not MsoMdocFormat" }
         require(!document.isKeyInvalidated) { "Document key is invalidated" }
@@ -71,23 +69,23 @@ internal object DocumentResponseGenerator {
         val mergedIssuerNamespaces = MdocUtil.mergeIssuerNamesSpaces(
             request, documentData.nameSpacedData, staticAuthData
         )
-        return DocumentGenerator(docType, staticAuthData.issuerAuth, transcript)
-            .setIssuerNamespaces(mergedIssuerNamespaces)
-            .setDeviceNamespacesSignature(
-                dataElements = NameSpacedData.Builder().build(),
-                secureArea = document.secureArea,
-                keyAlias = document.keyAlias,
-                keyUnlockData = keyUnlockData,
-                signatureAlgorithm = signatureAlgorithm
-            )
-            .generate()
+        return runBlocking {
+            DocumentGenerator(docType, staticAuthData.issuerAuth, transcript)
+                .setIssuerNamespaces(mergedIssuerNamespaces)
+                .setDeviceNamespacesSignature(
+                    dataElements = NameSpacedData.Builder().build(),
+                    secureArea = document.secureArea,
+                    keyAlias = document.keyAlias,
+                    keyUnlockData = keyUnlockData
+                )
+                .generate()
+        }
     }
 
     fun IssuedDocument.generateDocumentResponse(
         transcript: ByteArray,
         elements: Map<NameSpace, List<ElementIdentifier>>? = null,
-        keyUnlockData: KeyUnlockData? = null,
-        signatureAlgorithm: Algorithm = Algorithm.ES256
+        keyUnlockData: KeyUnlockData? = null
     ): Result<ByteArray> {
         return try {
             Result.success(
@@ -95,8 +93,7 @@ internal object DocumentResponseGenerator {
                     this,
                     transcript,
                     elements,
-                    keyUnlockData,
-                    signatureAlgorithm
+                    keyUnlockData
                 )
             )
         } catch (e: Exception) {

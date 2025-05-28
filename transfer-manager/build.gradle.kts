@@ -102,15 +102,15 @@ android {
 dependencies {
     implementation(libs.appcompat)
     implementation(libs.eudi.document.manager)
-    api(libs.google.identity) {
+    implementation(libs.multipaz.android) {
         exclude(group = "org.bouncycastle")
+        exclude(group = "io.ktor")
     }
-    implementation(libs.google.identity.mdoc) {
+    implementation(libs.multipaz.android.legacy) {
         exclude(group = "org.bouncycastle")
+        exclude(group = "io.ktor")
     }
-    implementation(libs.google.identity.android) {
-        exclude(group = "org.bouncycastle")
-    }
+
     implementation(libs.kotlinx.datetime)
     implementation(libs.kotlinx.io.core)
     implementation(libs.kotlinx.io.bytestring)

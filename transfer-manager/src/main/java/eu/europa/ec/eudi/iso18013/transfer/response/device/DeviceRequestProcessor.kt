@@ -16,7 +16,6 @@
 
 package eu.europa.ec.eudi.iso18013.transfer.response.device
 
-import com.android.identity.mdoc.request.DeviceRequestParser
 import eu.europa.ec.eudi.iso18013.transfer.internal.getValidIssuedMsoMdocDocuments
 import eu.europa.ec.eudi.iso18013.transfer.internal.readerauth.performReaderAuthentication
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStore
@@ -30,6 +29,7 @@ import eu.europa.ec.eudi.wallet.document.DocType
 import eu.europa.ec.eudi.wallet.document.DocumentManager
 import eu.europa.ec.eudi.wallet.document.ElementIdentifier
 import eu.europa.ec.eudi.wallet.document.NameSpace
+import org.multipaz.mdoc.request.DeviceRequestParser
 
 /**
  * Implementation of [RequestProcessor] for [DeviceRequest] for the ISO 18013-5 standard.

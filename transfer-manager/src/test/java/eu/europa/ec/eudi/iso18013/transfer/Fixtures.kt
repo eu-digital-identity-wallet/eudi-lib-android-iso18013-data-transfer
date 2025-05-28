@@ -17,11 +17,6 @@
 package eu.europa.ec.eudi.iso18013.transfer
 
 import android.content.Context
-import com.android.identity.securearea.PassphraseConstraints
-import com.android.identity.securearea.SecureAreaRepository
-import com.android.identity.securearea.software.SoftwareCreateKeySettings
-import com.android.identity.securearea.software.SoftwareSecureArea
-import com.android.identity.storage.EphemeralStorageEngine
 import eu.europa.ec.eudi.iso18013.transfer.response.device.DeviceRequest
 import eu.europa.ec.eudi.wallet.document.CreateDocumentSettings
 import eu.europa.ec.eudi.wallet.document.DocumentManager
@@ -29,11 +24,20 @@ import eu.europa.ec.eudi.wallet.document.DocumentManagerImpl
 import eu.europa.ec.eudi.wallet.document.sample.SampleDocumentManagerImpl
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.runBlocking
+import org.multipaz.securearea.PassphraseConstraints
+import org.multipaz.securearea.SecureAreaRepository
+import org.multipaz.securearea.software.SoftwareCreateKeySettings
+import org.multipaz.securearea.software.SoftwareSecureArea
+import org.multipaz.storage.ephemeral.EphemeralStorage
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
-val StorageEngine = EphemeralStorageEngine()
-val SecureArea = SoftwareSecureArea(StorageEngine)
+val Storage = EphemeralStorage()
+val SecureArea = runBlocking { SoftwareSecureArea.create(Storage) }
+val SecureAreaRep = SecureAreaRepository.build {
+    add(SecureArea)
+}
 val Context: Context = mockk {
     every { applicationContext } returns this
     every { mainLooper } returns mockk(relaxed = true)
@@ -50,14 +54,11 @@ val DocumentManagerWithoutKeyLock: DocumentManager by lazy {
 
 @OptIn(ExperimentalEncodingApi::class)
 fun createDocumentManager(keyLockPassphrase: String?): DocumentManager {
-    val storageEngine = EphemeralStorageEngine()
     return SampleDocumentManagerImpl(
         DocumentManagerImpl(
             identifier = "DocumentManager",
-            storageEngine = storageEngine,
-            secureAreaRepository = SecureAreaRepository().apply {
-                addImplementation(SecureArea)
-            }
+            storage = Storage,
+            secureAreaRepository = SecureAreaRep
         )
     ).apply {
         loadMdocSampleDocuments(

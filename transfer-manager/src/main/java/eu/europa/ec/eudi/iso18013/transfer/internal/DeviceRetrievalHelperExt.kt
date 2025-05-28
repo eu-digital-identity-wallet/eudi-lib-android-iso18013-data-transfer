@@ -17,7 +17,7 @@ package eu.europa.ec.eudi.iso18013.transfer.internal
 
 import android.util.Log
 import com.android.identity.android.mdoc.deviceretrieval.DeviceRetrievalHelper
-import com.android.identity.util.Constants
+import org.multipaz.util.Constants
 
 internal fun DeviceRetrievalHelper.stopPresentation(
     sendSessionTerminationMessage: Boolean,

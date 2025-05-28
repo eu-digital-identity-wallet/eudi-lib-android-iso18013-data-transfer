@@ -16,9 +16,6 @@
 
 package eu.europa.ec.eudi.iso18013.transfer.response.device
 
-import com.android.identity.crypto.Algorithm
-import com.android.identity.mdoc.response.DeviceResponseGenerator
-import com.android.identity.util.Constants
 import eu.europa.ec.eudi.iso18013.transfer.asMap
 import eu.europa.ec.eudi.iso18013.transfer.internal.DocumentResponseGenerator.generateDocumentResponse
 import eu.europa.ec.eudi.iso18013.transfer.internal.assertAgeOverRequestLimitForIso18013
@@ -30,6 +27,9 @@ import eu.europa.ec.eudi.iso18013.transfer.response.RequestedDocuments
 import eu.europa.ec.eudi.iso18013.transfer.response.ResponseResult
 import eu.europa.ec.eudi.wallet.document.DocumentId
 import eu.europa.ec.eudi.wallet.document.DocumentManager
+import org.multipaz.crypto.Algorithm
+import org.multipaz.mdoc.response.DeviceResponseGenerator
+import org.multipaz.util.Constants
 
 /**
  * Implementation of [RequestProcessor.ProcessedRequest.Success] for [DeviceRequest].
@@ -54,7 +54,7 @@ class ProcessedDeviceRequest(
      */
     override fun generateResponse(
         disclosedDocuments: DisclosedDocuments,
-        signatureAlgorithm: Algorithm?
+        signatureAlgorithm: Algorithm? // TODO: signatureAlgorithm remove this parameter ?
     ): ResponseResult {
         try {
             val documentIds = mutableListOf<DocumentId>()
@@ -71,8 +71,7 @@ class ProcessedDeviceRequest(
                         .generateDocumentResponse(
                             transcript = sessionTranscript,
                             elements = disclosedDocument.disclosedItems.asMap(),
-                            keyUnlockData = disclosedDocument.keyUnlockData,
-                            signatureAlgorithm = signatureAlgorithm ?: Algorithm.ES256
+                            keyUnlockData = disclosedDocument.keyUnlockData
                         )
                         .getOrThrow()
                     deviceResponse.addDocument(documentResponse)
