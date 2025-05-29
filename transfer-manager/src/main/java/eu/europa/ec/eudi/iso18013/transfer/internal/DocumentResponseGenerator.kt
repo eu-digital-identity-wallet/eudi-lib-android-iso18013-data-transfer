@@ -19,10 +19,11 @@ package eu.europa.ec.eudi.iso18013.transfer.internal
 import eu.europa.ec.eudi.wallet.document.ElementIdentifier
 import eu.europa.ec.eudi.wallet.document.IssuedDocument
 import eu.europa.ec.eudi.wallet.document.NameSpace
-import eu.europa.ec.eudi.wallet.document.format.MsoMdocData
+import eu.europa.ec.eudi.wallet.document.fromIssuerProvidedData
 import kotlinx.coroutines.runBlocking
 import org.multipaz.document.DocumentRequest
 import org.multipaz.document.NameSpacedData
+import org.multipaz.mdoc.credential.MdocCredential
 import org.multipaz.mdoc.mso.StaticAuthDataParser
 import org.multipaz.mdoc.response.DocumentGenerator
 import org.multipaz.mdoc.util.MdocUtil
@@ -52,20 +53,20 @@ internal object DocumentResponseGenerator {
     ): ByteArray {
         return runBlocking {
             document.consumingCredential {
-                val documentData = document.data
-                require(documentData is MsoMdocData) { "Document format is not MsoMdocFormat" }
-                val docType = documentData.format.docType
-                val dataElements = (elements ?: documentData.nameSpaces)
-                    .flatMap { (nameSpace, elementIdentifiers) ->
-                        elementIdentifiers.map { elementIdentifier ->
-                            DocumentRequest.DataElement(nameSpace, elementIdentifier, false)
-                        }
+                require(this is MdocCredential) { "Document must be in MsoMdocFormat" }
+                val nameSpacedData = NameSpacedData.fromIssuerProvidedData(issuerProvidedData)
+                val dataElements = (elements ?: nameSpacedData.nameSpaceNames.associateWith {
+                    nameSpacedData.getDataElementNames(it)
+                }).flatMap { (nameSpace, elementIdentifiers) ->
+                    elementIdentifiers.map { elementIdentifier ->
+                        DocumentRequest.DataElement(nameSpace, elementIdentifier, false)
                     }
+                }
                 val request = DocumentRequest(dataElements)
 
                 val staticAuthData = StaticAuthDataParser(issuerProvidedData).parse()
                 val mergedIssuerNamespaces = MdocUtil.mergeIssuerNamesSpaces(
-                    request, documentData.nameSpacedData, staticAuthData
+                    request, nameSpacedData, staticAuthData
                 )
                 DocumentGenerator(docType, staticAuthData.issuerAuth, transcript)
                     .setIssuerNamespaces(mergedIssuerNamespaces)
