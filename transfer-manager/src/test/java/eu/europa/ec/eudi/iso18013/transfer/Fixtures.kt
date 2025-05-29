@@ -33,39 +33,31 @@ import org.multipaz.storage.ephemeral.EphemeralStorage
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
-val Storage = EphemeralStorage()
-val SecureArea = runBlocking { SoftwareSecureArea.create(Storage) }
-val SecureAreaRep = SecureAreaRepository.build {
-    add(SecureArea)
-}
 val Context: Context = mockk {
     every { applicationContext } returns this
     every { mainLooper } returns mockk(relaxed = true)
 }
 const val KeyLockPassphrase = "1234"
 
-val DocumentManagerWithKeyLock: DocumentManager by lazy {
-    createDocumentManager(KeyLockPassphrase)
-}
-
-val DocumentManagerWithoutKeyLock: DocumentManager by lazy {
-    createDocumentManager(null)
-}
-
 @OptIn(ExperimentalEncodingApi::class)
 fun createDocumentManager(keyLockPassphrase: String?): DocumentManager {
+    val storage = EphemeralStorage()
+    val secureArea = runBlocking { SoftwareSecureArea.create(storage) }
+    val secureAreaRep = SecureAreaRepository.build {
+        add(secureArea)
+    }
     return SampleDocumentManagerImpl(
         DocumentManagerImpl(
             identifier = "DocumentManager",
-            storage = Storage,
-            secureAreaRepository = SecureAreaRep,
+            storage = storage,
+            secureAreaRepository = secureAreaRep,
             ktorHttpClientFactory = null,
         )
     ).apply {
         loadMdocSampleDocuments(
             sampleData = Base64.decode(getResourceAsText("sample_documents.txt")),
             createSettings = CreateDocumentSettings(
-                secureAreaIdentifier = SecureArea.identifier,
+                secureAreaIdentifier = secureArea.identifier,
                 createKeySettings = keyLockPassphrase?.let { p ->
                     SoftwareCreateKeySettings.Builder()
                         .setPassphraseRequired(

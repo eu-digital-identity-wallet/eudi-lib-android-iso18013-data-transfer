@@ -17,9 +17,8 @@
 package eu.europa.ec.eudi.iso18013.transfer.response.device
 
 import eu.europa.ec.eudi.iso18013.transfer.DeviceRequest
-import eu.europa.ec.eudi.iso18013.transfer.DocumentManagerWithKeyLock
-import eu.europa.ec.eudi.iso18013.transfer.DocumentManagerWithoutKeyLock
 import eu.europa.ec.eudi.iso18013.transfer.KeyLockPassphrase
+import eu.europa.ec.eudi.iso18013.transfer.createDocumentManager
 import eu.europa.ec.eudi.iso18013.transfer.response.DisclosedDocument
 import eu.europa.ec.eudi.iso18013.transfer.response.DisclosedDocuments
 import eu.europa.ec.eudi.iso18013.transfer.response.Request
@@ -41,7 +40,7 @@ class DeviceRequestProcessorTest {
 
     @Test
     fun `process should return a RequestedDocuments containing only the documents found matching docType for given DeviceRequest`() {
-        val documentManager = DocumentManagerWithoutKeyLock
+        val documentManager = createDocumentManager(null)
         val expectedDocument = documentManager.getDocuments()
             .filterIsInstance<IssuedDocument>()
             .first { it.format is MsoMdocFormat && (it.format as MsoMdocFormat).docType == "org.iso.18013.5.1.mDL" }
@@ -66,7 +65,7 @@ class DeviceRequestProcessorTest {
 
     @Test
     fun `process should return a Failure result when request is not DeviceRequest`() {
-        val documentManager = DocumentManagerWithoutKeyLock
+        val documentManager = createDocumentManager(null)
 
         val requestProcessor = DeviceRequestProcessor(documentManager)
         val request = mockk<Request>()
@@ -76,7 +75,7 @@ class DeviceRequestProcessorTest {
 
     @Test
     fun `processed request should generate response`() {
-        val documentManager = DocumentManagerWithoutKeyLock
+        val documentManager = createDocumentManager(null)
         val requestProcessor = DeviceRequestProcessor(documentManager)
         val expectedDocument = documentManager.getDocuments()
             .filterIsInstance<IssuedDocument>()
@@ -103,7 +102,7 @@ class DeviceRequestProcessorTest {
 
     @Test
     fun `processed request should return failure if key needs unlock and no keyUnlock provided`() {
-        val documentManager = DocumentManagerWithKeyLock
+        val documentManager = createDocumentManager(KeyLockPassphrase)
         val requestProcessor = DeviceRequestProcessor(documentManager)
         val expectedDocument = documentManager.getDocuments()
             .filterIsInstance<IssuedDocument>()
@@ -130,7 +129,7 @@ class DeviceRequestProcessorTest {
 
     @Test
     fun `processed request should return success if key needs unlock and keyUnlock provided`() {
-        val documentManager = DocumentManagerWithKeyLock
+        val documentManager = createDocumentManager(KeyLockPassphrase)
         val requestProcessor = DeviceRequestProcessor(documentManager)
         val expectedDocument = documentManager.getDocuments()
             .filterIsInstance<IssuedDocument>()
