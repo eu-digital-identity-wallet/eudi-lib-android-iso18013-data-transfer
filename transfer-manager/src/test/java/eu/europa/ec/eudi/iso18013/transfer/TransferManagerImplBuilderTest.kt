@@ -31,7 +31,7 @@ class TransferManagerImplBuilderTest {
     @Test
     fun buildTransferManagerWithDefaults() {
         val transferManager = TransferManagerImpl.Builder(Context)
-            .documentManager(DocumentManagerWithoutKeyLock)
+            .documentManager(createDocumentManager(null))
             .build()
 
         assertNotNull(transferManager)
@@ -51,7 +51,7 @@ class TransferManagerImplBuilderTest {
     fun buildTransferManagerWithRetrievalMethods() {
         val retrievalMethods: List<DeviceRetrievalMethod> = listOf(mockk(), mockk())
         val transferManager = TransferManagerImpl.Builder(Context)
-            .documentManager(DocumentManagerWithoutKeyLock)
+            .documentManager(createDocumentManager(null))
             .retrievalMethods(retrievalMethods)
             .build()
 
@@ -64,7 +64,7 @@ class TransferManagerImplBuilderTest {
     fun buildTransferManagerWithReaderTrustStore() {
         val readerTrustStore = mockk<ReaderTrustStore>()
         val transferManager = TransferManagerImpl.Builder(Context)
-            .documentManager(DocumentManagerWithoutKeyLock)
+            .documentManager(createDocumentManager(null))
             .readerTrustStore(readerTrustStore)
             .build()
 

@@ -30,7 +30,7 @@ class TransferManagerTest {
     @Test
     fun `makeMsoMdocTransferManager method should return a MsoMdocTransferManager instance`() {
         val transferManager =
-            TransferManager.getDefault(Context, DocumentManagerWithoutKeyLock)
+            TransferManager.getDefault(Context, createDocumentManager(null))
 
         assertIs<eu.europa.ec.eudi.iso18013.transfer.TransferManagerImpl>(transferManager)
         assertIs<DeviceRequestProcessor>(transferManager.requestProcessor)
@@ -41,7 +41,7 @@ class TransferManagerTest {
         val deviceRetrievalMethods: List<DeviceRetrievalMethod> = listOf(mockk(), mock())
         val transferManager = TransferManager.getDefault(
             context = Context,
-            documentManager = DocumentManagerWithoutKeyLock,
+            documentManager = createDocumentManager(null),
             retrievalMethods = deviceRetrievalMethods
         )
 
@@ -55,7 +55,7 @@ class TransferManagerTest {
         val readerTrustStore: ReaderTrustStore = mockk()
         val transferManager = TransferManager.getDefault(
             context = Context,
-            documentManager = DocumentManagerWithoutKeyLock,
+            documentManager = createDocumentManager(null),
             readerTrustStore = readerTrustStore
         )
 
