@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import com.android.build.gradle.api.LibraryVariant
+import com.android.build.api.variant.LibraryVariant
 import com.github.jk1.license.filter.ExcludeTransitiveDependenciesFilter
 import com.github.jk1.license.filter.LicenseBundleNormalizer
 import com.github.jk1.license.filter.ReduceDuplicateLicensesFilter
@@ -94,8 +94,8 @@ android {
         }
     }
 
-    afterEvaluate {
-        libraryVariants.forEach { createJacocoTasks(it) }
+    androidComponents.onVariants { variant ->
+        createJacocoTasks(variant)
     }
 }
 
