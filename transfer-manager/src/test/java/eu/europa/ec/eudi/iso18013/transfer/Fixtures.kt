@@ -72,7 +72,7 @@ fun createDocumentManager(keyLockPassphrase: String?): DocumentManager {
                 "eu.europa.ec.eudi.pid.1" to "EU PID",
                 "org.iso.18013.5.1.mDL" to "mDL"
             )
-        )
+        ).getOrThrow()
     }
 }
 

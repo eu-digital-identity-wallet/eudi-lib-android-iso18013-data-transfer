@@ -16,10 +16,16 @@
 
 package eu.europa.ec.eudi.iso18013.transfer
 
+import android.util.Log
 import eu.europa.ec.eudi.iso18013.transfer.engagement.DeviceRetrievalMethod
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStore
 import eu.europa.ec.eudi.iso18013.transfer.response.device.DeviceRequestProcessor
 import io.mockk.mockk
+import org.junit.After
+import org.junit.Before
+import org.mockito.MockedStatic
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -27,6 +33,18 @@ import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 
 class TransferManagerImplBuilderTest {
+
+    lateinit var mockLog: MockedStatic<Log>
+
+    @BeforeTest
+    fun setUp() {
+        mockLog = mockAndroidLog()
+    }
+
+    @AfterTest
+    fun tearDown() {
+        mockLog.close()
+    }
 
     @Test
     fun buildTransferManagerWithDefaults() {
