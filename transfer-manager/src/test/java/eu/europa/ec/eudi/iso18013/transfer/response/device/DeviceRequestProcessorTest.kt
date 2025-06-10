@@ -16,9 +16,11 @@
 
 package eu.europa.ec.eudi.iso18013.transfer.response.device
 
+import android.util.Log
 import eu.europa.ec.eudi.iso18013.transfer.DeviceRequest
 import eu.europa.ec.eudi.iso18013.transfer.KeyLockPassphrase
 import eu.europa.ec.eudi.iso18013.transfer.createDocumentManager
+import eu.europa.ec.eudi.iso18013.transfer.mockAndroidLog
 import eu.europa.ec.eudi.iso18013.transfer.response.DisclosedDocument
 import eu.europa.ec.eudi.iso18013.transfer.response.DisclosedDocuments
 import eu.europa.ec.eudi.iso18013.transfer.response.Request
@@ -29,14 +31,31 @@ import eu.europa.ec.eudi.wallet.document.IssuedDocument
 import eu.europa.ec.eudi.wallet.document.format.MsoMdocData
 import eu.europa.ec.eudi.wallet.document.format.MsoMdocFormat
 import io.mockk.mockk
+import org.junit.After
+import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.Test
+import org.mockito.MockedStatic
 import org.multipaz.crypto.Algorithm
 import org.multipaz.securearea.KeyLockedException
 import org.multipaz.securearea.software.SoftwareKeyUnlockData
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
 class DeviceRequestProcessorTest {
+    lateinit var mockLog: MockedStatic<Log>
+
+    @BeforeTest
+    fun setUp() {
+        mockLog = mockAndroidLog()
+    }
+
+    @AfterTest
+    fun tearDown() {
+        mockLog.close()
+    }
 
     @Test
     fun `process should return a RequestedDocuments containing only the documents found matching docType for given DeviceRequest`() {

@@ -16,16 +16,32 @@
 
 package eu.europa.ec.eudi.iso18013.transfer
 
+import android.util.Log
 import eu.europa.ec.eudi.iso18013.transfer.engagement.DeviceRetrievalMethod
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStore
 import eu.europa.ec.eudi.iso18013.transfer.response.device.DeviceRequestProcessor
 import io.mockk.mockk
+import org.mockito.MockedStatic
 import org.mockito.kotlin.mock
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
 class TransferManagerTest {
+
+    lateinit var mockLog: MockedStatic<Log>
+
+    @BeforeTest
+    fun setUp() {
+        mockLog = mockAndroidLog()
+    }
+
+    @AfterTest
+    fun tearDown() {
+        mockLog.close()
+    }
 
     @Test
     fun `makeMsoMdocTransferManager method should return a MsoMdocTransferManager instance`() {
