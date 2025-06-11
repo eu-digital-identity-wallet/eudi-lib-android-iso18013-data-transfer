@@ -19,12 +19,12 @@ package eu.europa.ec.eudi.iso18013.transfer.internal
 import eu.europa.ec.eudi.wallet.document.ElementIdentifier
 import eu.europa.ec.eudi.wallet.document.IssuedDocument
 import eu.europa.ec.eudi.wallet.document.NameSpace
-import eu.europa.ec.eudi.wallet.document.fromIssuerProvidedData
+import eu.europa.ec.eudi.wallet.document.credential.CredentialIssuedData
+import eu.europa.ec.eudi.wallet.document.credential.getIssuedData
 import kotlinx.coroutines.runBlocking
 import org.multipaz.document.DocumentRequest
 import org.multipaz.document.NameSpacedData
 import org.multipaz.mdoc.credential.MdocCredential
-import org.multipaz.mdoc.mso.StaticAuthDataParser
 import org.multipaz.mdoc.response.DocumentGenerator
 import org.multipaz.mdoc.util.MdocUtil
 import org.multipaz.securearea.KeyUnlockData
@@ -54,7 +54,9 @@ internal object DocumentResponseGenerator {
         return runBlocking {
             document.consumingCredential {
                 require(this is MdocCredential) { "Document must be in MsoMdocFormat" }
-                val nameSpacedData = NameSpacedData.fromIssuerProvidedData(issuerProvidedData)
+                val credentialIssuedData =
+                    getIssuedData<CredentialIssuedData.MsoMdoc>()
+                val (nameSpacedData, staticAuthData) = credentialIssuedData.getOrThrow()
                 val dataElements = (elements ?: nameSpacedData.nameSpaceNames.associateWith {
                     nameSpacedData.getDataElementNames(it)
                 }).flatMap { (nameSpace, elementIdentifiers) ->
@@ -64,7 +66,6 @@ internal object DocumentResponseGenerator {
                 }
                 val request = DocumentRequest(dataElements)
 
-                val staticAuthData = StaticAuthDataParser(issuerProvidedData).parse()
                 val mergedIssuerNamespaces = MdocUtil.mergeIssuerNamesSpaces(
                     request, nameSpacedData, staticAuthData
                 )
