@@ -15,6 +15,7 @@
  */
 package eu.europa.ec.eudi.iso18013.transfer
 
+import android.content.Intent
 import eu.europa.ec.eudi.iso18013.transfer.engagement.QrCode
 import eu.europa.ec.eudi.iso18013.transfer.response.Request
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor
@@ -61,6 +62,13 @@ sealed interface TransferEvent {
      * @property redirectUri the redirect URI
      */
     data class Redirect(val redirectUri: URI) : TransferEvent
+
+    /**
+     * Intent to send event. This event is triggered when an intent is to be sent.
+     * This event is to be used for implementation of Digital Credentials API.
+     * @property intent the intent to be sent
+     */
+    data class IntentToSend(val intent: Intent) : TransferEvent
 
     /**
      * Disconnected event. This event is triggered when the transfer is disconnected.

@@ -150,8 +150,11 @@ The available events are:
 5. `TransferEvent.ResponseSent`: A response is sent.
 6. `TransferEvent.Redirect`: This event prompts to redirect the user to the given Redirect URI. Get
    the Redirect URI with `TransferEvent.Redirect.redirectUri`.
-7. `TransferEvent.Disconnected`: The devices are disconnected.
-8. `TransferEvent.Error`: An error occurred. Get the `Throwable` error with
+7. `TransferEvent.IntentToSend`: This event indicates that an intent is ready to be sent. Get the
+   intent with `TransferEvent.IntentToSend.intent`. This is used mainly for Digital Credential API
+   implementation.
+8. `TransferEvent.Disconnected`: The devices are disconnected.
+9. `TransferEvent.Error`: An error occurred. Get the `Throwable` error with
    `TransferEvent.Error.error`.
 
 The following example demonstrates how to attach a `TransferEvent.Listener` to the
@@ -209,6 +212,11 @@ transferManager.addTransferEventListener { event ->
         is TransferEvent.Redirect -> {
             // A redirect is needed. Used mainly for the OpenId4VP implementation
             val redirectUri = event.redirectUri // the redirect URI
+        }
+        is TransferEvent.IntentToSend -> {
+            // An intent is ready to be sent
+            // Used mainly for the DCAPI implementation
+            val intent = event.intent // the intent to send.
         }
         TransferEvent.Disconnected -> {
             // Informational event that device has been disconnected
