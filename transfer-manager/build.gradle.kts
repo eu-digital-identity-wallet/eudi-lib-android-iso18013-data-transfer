@@ -113,7 +113,6 @@ dependencies {
         exclude(group = "io.ktor")
     }
 
-    implementation(libs.kotlinx.datetime)
     implementation(libs.kotlinx.io.core)
     implementation(libs.kotlinx.io.bytestring)
 

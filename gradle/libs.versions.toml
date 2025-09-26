@@ -1,5 +1,5 @@
 [versions]
-agp = "8.11.0"
+agp = "8.13.0"
 appcompat = "1.7.1"
 bouncy-castle = "1.78.1"
 dependency-license-report = "2.9"
@@ -12,13 +12,12 @@ java = "17"
 json = "20250517"
 junitVersion = "1.2.1"
 kotlin = "2.1.21"
-kotlinx-datetime = "0.6.2"
 kotlinx-io = "0.5.4"
 mavenPublish = "0.33.0"
 mockito-inline = "5.2.0"
 mockito-kotlin = "5.4.0"
 mockk = "1.14.4"
-multipaz = "0.92.0"
+multipaz = "0.93.0"
 robolectricVersion = "4.15.1"
 sonarqube = "6.2.0.5505"
 zxing-core = "3.5.3"
@@ -31,7 +30,6 @@ bouncy-castle-pkix = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref =
 bouncy-castle-prov = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncy-castle" }
 eudi-document-manager = { module = "eu.europa.ec.eudi:eudi-lib-android-wallet-document-manager", version.ref = "eudi-document-manager" }
 json = { module = "org.json:json", version.ref = "json" }
-kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-io-bytestring = { group = "org.jetbrains.kotlinx", name = "kotlinx-io-bytestring", version.ref = "kotlinx-io" }
 kotlinx-io-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-io-core", version.ref = "kotlinx-io" }
 mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockito-inline" }

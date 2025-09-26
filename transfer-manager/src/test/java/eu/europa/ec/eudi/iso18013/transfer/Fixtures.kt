@@ -32,6 +32,7 @@ import org.multipaz.securearea.software.SoftwareSecureArea
 import org.multipaz.storage.ephemeral.EphemeralStorage
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
+import kotlin.time.ExperimentalTime
 
 val Context: Context = mockk {
     every { applicationContext } returns this
@@ -39,7 +40,7 @@ val Context: Context = mockk {
 }
 const val KeyLockPassphrase = "1234"
 
-@OptIn(ExperimentalEncodingApi::class)
+@OptIn(ExperimentalEncodingApi::class, ExperimentalTime::class)
 fun createDocumentManager(keyLockPassphrase: String?): DocumentManager {
     val storage = EphemeralStorage()
     val secureArea = runBlocking { SoftwareSecureArea.create(storage) }
