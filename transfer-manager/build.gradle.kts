@@ -101,6 +101,12 @@ android {
     }
 }
 
+kotlin {
+    compilerOptions {
+        optIn.add("kotlin.time.ExperimentalTime")
+    }
+}
+
 dependencies {
     implementation(libs.appcompat)
     implementation(libs.eudi.document.manager)
