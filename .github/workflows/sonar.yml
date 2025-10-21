@@ -49,8 +49,8 @@ jobs:
             -Dsonar.coverage.jacoco.xmlReportPaths=transfer-manager/build/reports/kover/report.xml
             -Dsonar.kotlin.coverage.reportPaths=transfer-manager/build/reports/kover/report.xml
             -Dsonar.kotlin.multiplatform.reportPaths=transfer-manager/build/reports/kover/report.xml
-            -Dsonar.sources=src/main
-            -Dsonar.tests=src/test
+            -Dsonar.sources=transfer-manager/src/main
+            -Dsonar.tests=transfer-manager/src/test
             -Dsonar.java.binaries=transfer-manager/build/classes/kotlin/main
             -Dsonar.kotlin.binaries=transfer-manager/build/classes/kotlin/main
       - uses: sonarsource/sonarqube-scan-action@v6.0.0
@@ -68,8 +68,8 @@ jobs:
             -Dsonar.coverage.jacoco.xmlReportPaths=transfer-manager/build/reports/kover/report.xml
             -Dsonar.kotlin.coverage.reportPaths=transfer-manager/build/reports/kover/report.xml
             -Dsonar.kotlin.multiplatform.reportPaths=transfer-manager/build/reports/kover/report.xml
-            -Dsonar.sources=src/main
-            -Dsonar.tests=src/test
+            -Dsonar.sources=transfer-manager/src/main
+            -Dsonar.tests=transfer-manager/src/test
             -Dsonar.java.binaries=transfer-manager/build/classes/kotlin/main
             -Dsonar.kotlin.binaries=transfer-manager/build/classes/kotlin/main
       - uses: actions/setup-node@v6
