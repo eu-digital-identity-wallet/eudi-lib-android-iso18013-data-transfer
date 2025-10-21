@@ -46,13 +46,13 @@ jobs:
             -Dsonar.projectKey=${{ env.PROJECT_KEY }}
             -Dsonar.scanner.skipJreProvisioning=true
             -Dsonar.language=kotlin
-            -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/kover/report.xml
-            -Dsonar.kotlin.coverage.reportPaths=build/reports/kover/report.xml
-            -Dsonar.kotlin.multiplatform.reportPaths=build/reports/kover/report.xml
+            -Dsonar.coverage.jacoco.xmlReportPaths=transfer-manager/build/reports/kover/report.xml
+            -Dsonar.kotlin.coverage.reportPaths=transfer-manager/build/reports/kover/report.xml
+            -Dsonar.kotlin.multiplatform.reportPaths=transfer-manager/build/reports/kover/report.xml
             -Dsonar.sources=src/main
             -Dsonar.tests=src/test
-            -Dsonar.java.binaries=build/classes/kotlin/main
-            -Dsonar.kotlin.binaries=build/classes/kotlin/main
+            -Dsonar.java.binaries=transfer-manager/build/classes/kotlin/main
+            -Dsonar.kotlin.binaries=transfer-manager/build/classes/kotlin/main
       - uses: sonarsource/sonarqube-scan-action@v6.0.0
         if: (github.event_name == 'pull_request_target')
         with:
@@ -65,13 +65,13 @@ jobs:
             -Dsonar.pullrequest.branch=${{ github.event.pull_request.head.ref }}
             -Dsonar.scanner.skipJreProvisioning=true
             -Dsonar.language=kotlin
-            -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/kover/report.xml
-            -Dsonar.kotlin.coverage.reportPaths=build/reports/kover/report.xml
-            -Dsonar.kotlin.multiplatform.reportPaths=build/reports/kover/report.xml
+            -Dsonar.coverage.jacoco.xmlReportPaths=transfer-manager/build/reports/kover/report.xml
+            -Dsonar.kotlin.coverage.reportPaths=transfer-manager/build/reports/kover/report.xml
+            -Dsonar.kotlin.multiplatform.reportPaths=transfer-manager/build/reports/kover/report.xml
             -Dsonar.sources=src/main
             -Dsonar.tests=src/test
-            -Dsonar.java.binaries=build/classes/kotlin/main
-            -Dsonar.kotlin.binaries=build/classes/kotlin/main
+            -Dsonar.java.binaries=transfer-manager/build/classes/kotlin/main
+            -Dsonar.kotlin.binaries=transfer-manager/build/classes/kotlin/main
       - uses: actions/setup-node@v6
         if: ((github.repository_owner == 'niscy-eudiw' || github.repository_owner == 'eu-digital-identity-wallet') && github.ref_name == 'main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch'))
         with:
