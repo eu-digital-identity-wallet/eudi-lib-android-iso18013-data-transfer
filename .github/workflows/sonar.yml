@@ -73,11 +73,11 @@ jobs:
             -Dsonar.java.binaries=transfer-manager/build/classes/kotlin/main
             -Dsonar.kotlin.binaries=transfer-manager/build/classes/kotlin/main
       - uses: actions/setup-node@v6
-        if: ((github.repository_owner == 'niscy-eudiw' || github.repository_owner == 'eu-digital-identity-wallet') && github.ref_name == 'main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch'))
+        if: (github.repository_owner == 'eu-digital-identity-wallet' && github.ref_name == 'main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch'))
         with:
           node-version: 18
       - name: Publish Sonar Report
-        if: ((github.repository_owner == 'niscy-eudiw' || github.repository_owner == 'eu-digital-identity-wallet') && github.ref_name == 'main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch'))
+        if: (github.repository_owner == 'eu-digital-identity-wallet' && github.ref_name == 'main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch'))
         run: |
           npm cache clean --force
           npm install -g sonar-report@3.0.10
