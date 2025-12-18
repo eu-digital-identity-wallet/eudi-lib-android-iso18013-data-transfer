@@ -23,6 +23,7 @@ import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStore
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor
 import eu.europa.ec.eudi.iso18013.transfer.response.Response
 import eu.europa.ec.eudi.wallet.document.DocumentManager
+import org.multipaz.mdoc.zkp.ZkSystemRepository
 
 /**
  * Transfer manager interface for managing the transfer of data between the wallet and the reader.
@@ -91,6 +92,7 @@ interface TransferManager : TransferEvent.Listenable {
          * @param documentManager
          * @param readerTrustStore
          * @param retrievalMethods
+         * @param zkSystemRepository
          * @return a [TransferManagerImpl]
          */
         @JvmStatic
@@ -98,11 +100,13 @@ interface TransferManager : TransferEvent.Listenable {
             context: Context,
             documentManager: DocumentManager,
             readerTrustStore: ReaderTrustStore? = null,
-            retrievalMethods: List<DeviceRetrievalMethod>? = null
+            retrievalMethods: List<DeviceRetrievalMethod>? = null,
+            zkSystemRepository: ZkSystemRepository? = null
         ): TransferManager = TransferManagerImpl(context) {
             documentManager(documentManager)
             readerTrustStore?.let { readerTrustStore(it) }
             retrievalMethods?.let { retrievalMethods(it) }
+            zkSystemRepository?.let { zkSystemRepository(it) }
         }
     }
 }

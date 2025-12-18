@@ -25,6 +25,8 @@ import eu.europa.ec.eudi.iso18013.transfer.response.Request
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestedDocument
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestedDocuments
+import eu.europa.ec.eudi.iso18013.transfer.zkp.MatchedZkSystem
+import eu.europa.ec.eudi.iso18013.transfer.zkp.findMatchedZkSystem
 import eu.europa.ec.eudi.wallet.document.DocType
 import eu.europa.ec.eudi.wallet.document.DocumentManager
 import eu.europa.ec.eudi.wallet.document.ElementIdentifier
@@ -32,16 +34,20 @@ import eu.europa.ec.eudi.wallet.document.NameSpace
 import kotlinx.coroutines.runBlocking
 import org.multipaz.cbor.Cbor
 import org.multipaz.cbor.DataItem
+import org.multipaz.mdoc.request.DocRequest
+import org.multipaz.mdoc.zkp.ZkSystemRepository
 import org.multipaz.mdoc.request.DeviceRequest as MultipazDeviceRequest
 
 /**
  * Implementation of [RequestProcessor] for [DeviceRequest] for the ISO 18013-5 standard.
  * @property documentManager the document manager to retrieve the requested documents
  * @property readerTrustStore the reader trust store to perform reader authentication
+ * @property zkSystemRepository the zero-knowledge proof system repository
  */
 class DeviceRequestProcessor(
     private val documentManager: DocumentManager,
-    override var readerTrustStore: ReaderTrustStore? = null
+    override var readerTrustStore: ReaderTrustStore? = null,
+    private var zkSystemRepository: ZkSystemRepository? = null
 ) : RequestProcessor, ReaderTrustStoreAware {
 
     /**
@@ -61,11 +67,18 @@ class DeviceRequestProcessor(
             require(request is DeviceRequest) { "Request must be a DeviceRequest" }
             val requestedDocuments = runBlocking {
                 val deviceRequestDataItem: DataItem = Cbor.decode(request.deviceRequestBytes)
-                val sessionTranscriptDataItem: DataItem = Cbor.decode(request.sessionTranscriptBytes)
-                val parsedRequest: MultipazDeviceRequest = MultipazDeviceRequest.fromDataItem(deviceRequestDataItem)
+                val sessionTranscriptDataItem: DataItem =
+                    Cbor.decode(request.sessionTranscriptBytes)
+                val parsedRequest: MultipazDeviceRequest =
+                    MultipazDeviceRequest.fromDataItem(deviceRequestDataItem)
 
                 parsedRequest.docRequests
-                    .map { docRequest -> docRequest.toRequestedMdocDocuments(parsedRequest, sessionTranscriptDataItem) }
+                    .map { docRequest ->
+                        docRequest.toRequestedMdocDocuments(
+                            parsedRequest = parsedRequest,
+                            sessionTranscript = sessionTranscriptDataItem
+                        )
+                    }
                     .let { helper.getRequestedDocuments(it) }
             }
             return ProcessedDeviceRequest(
@@ -109,6 +122,7 @@ class DeviceRequestProcessor(
                         documentId = it.id,
                         requestedItems = docItems,
                         readerAuth = requestedDocument.readerAuthentication.invoke(),
+                        matchedZkSystem = requestedDocument.matchedZkSystem
                     )
                 }
             }.let { RequestedDocuments(it) }
@@ -120,11 +134,13 @@ class DeviceRequestProcessor(
      * @property docType the document type
      * @property requested the requested elements
      * @property readerAuthentication the reader authentication
+     * @property matchedZkSystem the matched zero-knowledge proof system and its specification, if any
      */
     data class RequestedMdocDocument(
         val docType: DocType,
         val requested: Map<NameSpace, Map<ElementIdentifier, Boolean>>,
-        val readerAuthentication: () -> ReaderAuth?
+        val readerAuthentication: () -> ReaderAuth?,
+        val matchedZkSystem: MatchedZkSystem? = null
     )
 
     /**
@@ -133,18 +149,22 @@ class DeviceRequestProcessor(
      * @param sessionTranscript The session transcript DataItem for verification
      * @return the [RequestedMdocDocument]
      */
-    private fun org.multipaz.mdoc.request.DocRequest.toRequestedMdocDocuments(
+    private fun DocRequest.toRequestedMdocDocuments(
         parsedRequest: MultipazDeviceRequest,
         sessionTranscript: DataItem
     ): RequestedMdocDocument {
+        val readerAuth = readerTrustStore?.performReaderAuthentication(
+            docRequest = this,
+            parsedRequest = parsedRequest,
+            sessionTranscript = sessionTranscript
+        )
         return RequestedMdocDocument(
             docType = docType,
             requested = nameSpaces.mapValues { (_, dataElements) ->
                 dataElements.mapKeys { (elementName, _) -> elementName }
             },
-            readerAuthentication = {
-                readerTrustStore?.performReaderAuthentication(this, parsedRequest, sessionTranscript)
-            },
+            readerAuthentication = { readerAuth },
+            matchedZkSystem = zkSystemRepository?.let { findMatchedZkSystem(it) }
         )
     }
 }

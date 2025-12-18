@@ -39,6 +39,7 @@ import eu.europa.ec.eudi.iso18013.transfer.response.device.DeviceResponse
 import eu.europa.ec.eudi.wallet.document.DocumentManager
 import org.multipaz.mdoc.origininfo.OriginInfo
 import org.multipaz.mdoc.origininfo.OriginInfoDomain
+import org.multipaz.mdoc.zkp.ZkSystemRepository
 import org.multipaz.util.Constants
 
 /**
@@ -397,6 +398,7 @@ class TransferManagerImpl @JvmOverloads constructor(
      * @property documentManager document manager instance
      * @property readerTrustStore reader trust store instance
      * @property retrievalMethods list of device retrieval methods
+     * @property zkSystemRepository ZK system repository instance
      * @constructor
      * @param context
      */
@@ -405,6 +407,7 @@ class TransferManagerImpl @JvmOverloads constructor(
         var documentManager: DocumentManager? = null
         var readerTrustStore: ReaderTrustStore? = null
         var retrievalMethods: List<DeviceRetrievalMethod>? = null
+        var zkSystemRepository: ZkSystemRepository? = null
 
         /**
          * Document manager instance that will be used to retrieve the requested documents
@@ -430,6 +433,14 @@ class TransferManagerImpl @JvmOverloads constructor(
             apply { this.retrievalMethods = retrievalMethods }
 
         /**
+         * ZK system repository that holds the zero-knowledge proof systems
+         * @param zkSystemRepository
+         */
+        fun zkSystemRepository(zkSystemRepository: ZkSystemRepository) = apply {
+            this.zkSystemRepository = zkSystemRepository
+        }
+
+        /**
          * Build a [eu.europa.ec.eudi.iso18013.transfer.TransferManagerImpl] instance
          * with [DeviceRequestProcessor] instance
          * @return [eu.europa.ec.eudi.iso18013.transfer.TransferManagerImpl]
@@ -440,7 +451,8 @@ class TransferManagerImpl @JvmOverloads constructor(
                 context = context,
                 requestProcessor = DeviceRequestProcessor(
                     documentManager = documentManager!!,
-                    readerTrustStore = readerTrustStore
+                    readerTrustStore = readerTrustStore,
+                    zkSystemRepository = zkSystemRepository
                 ),
                 retrievalMethods = retrievalMethods ?: emptyList()
             )

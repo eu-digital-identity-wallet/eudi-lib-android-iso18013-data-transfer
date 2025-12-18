@@ -17,6 +17,7 @@
 package eu.europa.ec.eudi.iso18013.transfer.response
 
 import eu.europa.ec.eudi.iso18013.transfer.IntentToRetain
+import eu.europa.ec.eudi.iso18013.transfer.zkp.MatchedZkSystem
 import eu.europa.ec.eudi.wallet.document.DocumentId
 
 /**
@@ -25,10 +26,12 @@ import eu.europa.ec.eudi.wallet.document.DocumentId
  * @property documentId the unique id of the document
  * @property requestedItems the list of requested items
  * @property readerAuth the result of the reader authentication
+ * @property matchedZkSystem the matched zero-knowledge proof system and its specification, if applicable
  */
 
 data class RequestedDocument(
     val documentId: DocumentId,
     val requestedItems: Map<out DocItem, IntentToRetain>,
-    val readerAuth: ReaderAuth?
+    val readerAuth: ReaderAuth?,
+    internal val matchedZkSystem: MatchedZkSystem? = null
 )

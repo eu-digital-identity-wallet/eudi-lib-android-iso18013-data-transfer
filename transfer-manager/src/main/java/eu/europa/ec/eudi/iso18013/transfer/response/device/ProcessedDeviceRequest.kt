@@ -28,9 +28,11 @@ import eu.europa.ec.eudi.iso18013.transfer.response.ResponseResult
 import eu.europa.ec.eudi.wallet.document.DocumentId
 import eu.europa.ec.eudi.wallet.document.DocumentManager
 import kotlinx.coroutines.runBlocking
+import kotlinx.io.bytestring.ByteString
 import org.multipaz.crypto.Algorithm
 import org.multipaz.mdoc.response.DeviceResponseGenerator
 import org.multipaz.util.Constants
+import kotlin.time.ExperimentalTime
 
 /**
  * Implementation of [RequestProcessor.ProcessedRequest.Success] for [DeviceRequest].
@@ -53,20 +55,22 @@ class ProcessedDeviceRequest(
      * @param signatureAlgorithm the signature algorithm to use for the document responses
      * @return the response result with the device response or the error
      */
+    @OptIn(ExperimentalTime::class)
     override fun generateResponse(
         disclosedDocuments: DisclosedDocuments,
         signatureAlgorithm: Algorithm? // TODO: signatureAlgorithm remove this parameter ?
     ): ResponseResult {
         try {
             val documentIds = mutableListOf<DocumentId>()
-            val deviceResponse = DeviceResponseGenerator(Constants.DEVICE_RESPONSE_STATUS_OK)
+            val deviceResponseGenerator =
+                DeviceResponseGenerator(Constants.DEVICE_RESPONSE_STATUS_OK)
             disclosedDocuments
                 .let {
                     if (includeOnlyRequested) it.filterWithRequestedDocuments(requestedDocuments)
                     else it
                 }
                 .forEachIndexed { index, disclosedDocument ->
-                    val documentResponse = runBlocking {
+                    val encodedDocument = runBlocking {
                         documentManager.getValidIssuedMsoMdocDocumentById(disclosedDocument.documentId)
                     }.assertAgeOverRequestLimitForIso18013(disclosedDocument)
                         .generateDocumentResponse(
@@ -75,12 +79,36 @@ class ProcessedDeviceRequest(
                             keyUnlockData = disclosedDocument.keyUnlockData
                         )
                         .getOrThrow()
-                    deviceResponse.addDocument(documentResponse)
+
+                    // Check for matched ZK system for the disclosed document
+                    // If found, generate ZK proof, else use encoded document
+                    val matchedZkSystem = requestedDocuments.find {
+                        it.documentId == disclosedDocument.documentId
+                    }?.matchedZkSystem
+
+                    if (matchedZkSystem == null) {
+                        // No matched ZK system, add encoded document
+                        deviceResponseGenerator.addDocument(encodedDocument)
+                    } else {
+                        // Matched ZK system found, try to generate ZK proof
+                        runCatching {
+                            matchedZkSystem.system.generateProof(
+                                zkSystemSpec = matchedZkSystem.spec,
+                                encodedDocument = ByteString(encodedDocument),
+                                encodedSessionTranscript = ByteString(sessionTranscript)
+                            )
+                        }.onSuccess { zkDocument ->
+                            deviceResponseGenerator.addZkDocument(zkDocument)
+                        }.onFailure {
+                            // Fallback to encoded document if ZK proof generation fails
+                            deviceResponseGenerator.addDocument(encodedDocument)
+                        }
+                    }
                     documentIds.add(disclosedDocument.documentId)
                 }
             return ResponseResult.Success(
                 DeviceResponse(
-                    deviceResponseBytes = deviceResponse.generate(),
+                    deviceResponseBytes = deviceResponseGenerator.generate(),
                     sessionTranscriptBytes = sessionTranscript,
                     documentIds = documentIds
                 )
@@ -89,5 +117,4 @@ class ProcessedDeviceRequest(
             return ResponseResult.Failure(e)
         }
     }
-
 }
