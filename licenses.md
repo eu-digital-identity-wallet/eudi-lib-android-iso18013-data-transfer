@@ -1,7 +1,7 @@
 
 # EUDI ISO 18013-5 document transfer library
 ## Dependency License Report
-_2025-12-17 11:02:57 EET_
+_2025-12-18 16:12:21 EET_
 ## Apache License, Version 2.0
 
 **1** **Group:** `androidx.appcompat` **Name:** `appcompat` **Version:** `1.7.1` 
@@ -29,10 +29,10 @@ _2025-12-17 11:02:57 EET_
 > - **POM Project URL**: [https://github.com/Kotlin/kotlinx-io](https://github.com/Kotlin/kotlinx-io)
 > - **POM License**: Apache License, Version 2.0 - [https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
-**7** **Group:** `org.multipaz` **Name:** `multipaz-android-legacy` **Version:** `0.94.0` 
+**7** **Group:** `org.multipaz` **Name:** `multipaz-android` **Version:** `0.95.0` 
 > - **POM License**: Apache License, Version 2.0 - [https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
-**8** **Group:** `org.multipaz` **Name:** `multipaz-android` **Version:** `0.94.0` 
+**8** **Group:** `org.multipaz` **Name:** `multipaz-android-legacy` **Version:** `0.95.0` 
 > - **POM License**: Apache License, Version 2.0 - [https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
 ## Bouncy Castle Licence

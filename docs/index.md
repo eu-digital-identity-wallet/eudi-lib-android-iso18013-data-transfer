@@ -12,3 +12,4 @@
 | [eu.europa.ec.eudi.iso18013.transfer.readerauth.profile](transfer-manager/eu.europa.ec.eudi.iso18013.transfer.readerauth.profile/index.md) |
 | [eu.europa.ec.eudi.iso18013.transfer.response](transfer-manager/eu.europa.ec.eudi.iso18013.transfer.response/index.md) |
 | [eu.europa.ec.eudi.iso18013.transfer.response.device](transfer-manager/eu.europa.ec.eudi.iso18013.transfer.response.device/index.md) |
+| [eu.europa.ec.eudi.iso18013.transfer.zkp](transfer-manager/eu.europa.ec.eudi.iso18013.transfer.zkp/index.md) |

@@ -27,6 +27,7 @@ androidJvm
 | [documentManager](document-manager.md) | [androidJvm]<br>var [documentManager](document-manager.md): DocumentManager?<br>document manager instance |
 | [readerTrustStore](reader-trust-store.md) | [androidJvm]<br>var [readerTrustStore](reader-trust-store.md): [ReaderTrustStore](../../../eu.europa.ec.eudi.iso18013.transfer.readerauth/-reader-trust-store/index.md)?<br>reader trust store instance |
 | [retrievalMethods](retrieval-methods.md) | [androidJvm]<br>var [retrievalMethods](retrieval-methods.md): [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html)&lt;[DeviceRetrievalMethod](../../../eu.europa.ec.eudi.iso18013.transfer.engagement/-device-retrieval-method/index.md)&gt;?<br>list of device retrieval methods |
+| [zkSystemRepository](zk-system-repository.md) | [androidJvm]<br>var [zkSystemRepository](zk-system-repository.md): ZkSystemRepository?<br>ZK system repository instance |
 
 ## Functions
 
@@ -36,3 +37,4 @@ androidJvm
 | [documentManager](document-manager.md) | [androidJvm]<br>fun [documentManager](document-manager.md)(documentManager: DocumentManager): &lt;Error class: unknown class&gt;<br>Document manager instance that will be used to retrieve the requested documents |
 | [readerTrustStore](reader-trust-store.md) | [androidJvm]<br>fun [readerTrustStore](reader-trust-store.md)(readerTrustStore: [ReaderTrustStore](../../../eu.europa.ec.eudi.iso18013.transfer.readerauth/-reader-trust-store/index.md)): &lt;Error class: unknown class&gt;<br>Reader trust store instance that will be used to verify the reader's certificate |
 | [retrievalMethods](retrieval-methods.md) | [androidJvm]<br>fun [retrievalMethods](retrieval-methods.md)(retrievalMethods: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html)&lt;[DeviceRetrievalMethod](../../../eu.europa.ec.eudi.iso18013.transfer.engagement/-device-retrieval-method/index.md)&gt;): &lt;Error class: unknown class&gt;<br>Retrieval methods that will be used to retrieve the device request from the mdoc verifier |
+| [zkSystemRepository](zk-system-repository.md) | [androidJvm]<br>fun [zkSystemRepository](zk-system-repository.md)(zkSystemRepository: ZkSystemRepository): &lt;Error class: unknown class&gt;<br>ZK system repository that holds the zero-knowledge proof systems |
