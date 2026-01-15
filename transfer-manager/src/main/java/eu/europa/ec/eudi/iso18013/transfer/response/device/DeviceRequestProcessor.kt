@@ -69,8 +69,17 @@ class DeviceRequestProcessor(
                 val deviceRequestDataItem: DataItem = Cbor.decode(request.deviceRequestBytes)
                 val sessionTranscriptDataItem: DataItem =
                     Cbor.decode(request.sessionTranscriptBytes)
-                val parsedRequest: MultipazDeviceRequest =
-                    MultipazDeviceRequest.fromDataItem(deviceRequestDataItem)
+                val parsedRequest = MultipazDeviceRequest.fromDataItem(deviceRequestDataItem).apply {
+                    // It is important to call 'verifyReaderAuthentication' here.
+                    // Otherwise, an "IllegalStateException: readerAuth not verified" exception
+                    // may be thrown later when try to access 'DocRequest'.
+                    // We ignore the result of 'verifyReaderAuthentication' here.
+                    // The reader authentication is performed on later stage based on
+                    // the given or not readerTrustStore.
+                    runCatching {
+                        verifyReaderAuthentication(sessionTranscriptDataItem)
+                    }
+                }
 
                 parsedRequest.docRequests
                     .map { docRequest ->
@@ -153,17 +162,18 @@ class DeviceRequestProcessor(
         parsedRequest: MultipazDeviceRequest,
         sessionTranscript: DataItem
     ): RequestedMdocDocument {
-        val readerAuth = readerTrustStore?.performReaderAuthentication(
-            docRequest = this,
-            parsedRequest = parsedRequest,
-            sessionTranscript = sessionTranscript
-        )
         return RequestedMdocDocument(
             docType = docType,
             requested = nameSpaces.mapValues { (_, dataElements) ->
                 dataElements.mapKeys { (elementName, _) -> elementName }
             },
-            readerAuthentication = { readerAuth },
+            readerAuthentication = {
+                readerTrustStore?.performReaderAuthentication(
+                    docRequest = this,
+                    parsedRequest = parsedRequest,
+                    sessionTranscript = sessionTranscript
+                )
+            },
             matchedZkSystem = zkSystemRepository?.let { findMatchedZkSystem(it) }
         )
     }
