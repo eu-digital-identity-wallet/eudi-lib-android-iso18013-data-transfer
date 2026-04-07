@@ -17,14 +17,11 @@
 package eu.europa.ec.eudi.iso18013.transfer
 
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.android.identity.android.mdoc.deviceretrieval.DeviceRetrievalHelper
 import eu.europa.ec.eudi.iso18013.transfer.engagement.DeviceRetrievalMethod
 import eu.europa.ec.eudi.iso18013.transfer.engagement.NfcEngagementService
-import eu.europa.ec.eudi.iso18013.transfer.internal.EngagementToApp
 import eu.europa.ec.eudi.iso18013.transfer.internal.QrEngagement
 import eu.europa.ec.eudi.iso18013.transfer.internal.TAG
 import eu.europa.ec.eudi.iso18013.transfer.internal.stopPresentation
@@ -38,14 +35,12 @@ import eu.europa.ec.eudi.iso18013.transfer.response.device.DeviceRequest
 import eu.europa.ec.eudi.iso18013.transfer.response.device.DeviceRequestProcessor
 import eu.europa.ec.eudi.iso18013.transfer.response.device.DeviceResponse
 import eu.europa.ec.eudi.wallet.document.DocumentManager
-import org.multipaz.mdoc.origininfo.OriginInfo
-import org.multipaz.mdoc.origininfo.OriginInfoDomain
 import org.multipaz.mdoc.zkp.ZkSystemRepository
 import org.multipaz.util.Constants
 
 /**
  * Transfer Manager class used for performing device engagement and data retrieval
- * for ISO 18013-5 and ISO 18013-7 standards.
+ * for ISO 18013-5 standard.
  *
  * @property retrievalMethods list of device retrieval methods to be used for the transfer
  *
@@ -73,13 +68,6 @@ class TransferManagerImpl @JvmOverloads constructor(
     @JvmSynthetic
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal var deviceRetrievalHelper: DeviceRetrievalHelper? = null
-
-    /**
-     * Engagement to app instance
-     */
-    @JvmSynthetic
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    internal var engagementToApp: EngagementToApp? = null
 
     /**
      * QR engagement instance
@@ -243,81 +231,6 @@ class TransferManagerImpl @JvmOverloads constructor(
     }
 
     /**
-     * Starts the engagement to app, according to ISO 18013-7.
-     * @param intent The intent being received
-     * If the transfer has already started, an error event will be triggered
-     * with an [IllegalStateException] containing the message "Transfer has already started."
-     * @see TransferEvent.Error
-     */
-    override fun startEngagementToApp(intent: Intent) {
-        if (hasStarted) {
-            Log.d(this.TAG, TRANSFER_STARTED_MSG)
-            transferEventListeners.onTransferEvent(
-                TransferEvent.Error(
-                    IllegalStateException(
-                        TRANSFER_STARTED_MSG,
-                    ),
-                ),
-            )
-            return
-        }
-        Log.d(this.TAG, "New intent $intent")
-
-        var mdocUri: String? = null
-        var mdocReferrerUri: String? = null
-        if (intent.scheme.equals("mdoc")) {
-            val uri = Uri.parse(intent.toUri(0))
-            mdocUri = "mdoc://" + uri.authority
-            mdocReferrerUri = intent.extras?.getString(Intent.EXTRA_REFERRER)
-        }
-
-        if (mdocUri == null) {
-            Log.e(this.TAG, "No mdoc:// URI")
-            return
-        }
-        Log.i(this.TAG, "uri: $mdocUri")
-
-        val originInfos = ArrayList<OriginInfo>()
-        if (mdocReferrerUri == null) {
-            Log.w(this.TAG, "No referrer URI")
-        } else {
-            Log.i(this.TAG, "referrer: $mdocReferrerUri")
-            originInfos.add(OriginInfoDomain(mdocReferrerUri))
-        }
-
-        engagementToApp = EngagementToApp(
-            context = context,
-            dataTransportOptions = retrievalMethods.transportOptions,
-            onPresentationReady = { deviceRetrievalHelper ->
-                this.deviceRetrievalHelper = deviceRetrievalHelper
-                transferEventListeners.onTransferEvent(TransferEvent.Connected)
-            },
-            onNewRequest = { deviceRequestBytes ->
-                val deviceRequest = DeviceRequest(
-                    deviceRequestBytes,
-                    deviceRetrievalHelper?.sessionTranscript!!
-                )
-                transferEventListeners.onTransferEvent(
-                    TransferEvent.RequestReceived(
-                        processedRequest = requestProcessor.process(deviceRequest),
-                        request = deviceRequest
-                    )
-                )
-            },
-            onDisconnected = {
-                transferEventListeners.onTransferEvent(TransferEvent.Disconnected)
-            },
-            onCommunicationError = { error ->
-                Log.d(this.TAG, "onError: ${error.message}")
-                transferEventListeners.onTransferEvent(TransferEvent.Error(error))
-            },
-        ).apply {
-            configure(mdocUri, originInfos)
-        }
-        hasStarted = true
-    }
-
-    /**
      * Sends the response bytes to the connected mdoc verifier and terminates the session.
      *
      * **Note:** Currently, only a single request-response cycle per session is supported.
@@ -372,7 +285,6 @@ class TransferManagerImpl @JvmOverloads constructor(
     private fun destroy() {
         deviceRetrievalHelper = null
         qrEngagement = null
-        engagementToApp = null
         hasStarted = false
     }
 

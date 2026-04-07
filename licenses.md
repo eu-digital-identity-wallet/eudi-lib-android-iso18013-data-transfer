@@ -1,7 +1,7 @@
 
 # EUDI ISO 18013-5 document transfer library
 ## Dependency License Report
-_2025-12-18 16:12:21 EET_
+_2026-04-07 13:25:55 EEST_
 ## Apache License, Version 2.0
 
 **1** **Group:** `androidx.appcompat` **Name:** `appcompat` **Version:** `1.7.1` 

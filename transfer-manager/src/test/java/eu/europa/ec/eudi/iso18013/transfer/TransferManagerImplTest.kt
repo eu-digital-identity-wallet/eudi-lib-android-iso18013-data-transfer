@@ -16,7 +16,6 @@
 
 package eu.europa.ec.eudi.iso18013.transfer
 
-import android.content.Intent
 import android.util.Log
 import com.android.identity.android.mdoc.deviceretrieval.DeviceRetrievalHelper
 import eu.europa.ec.eudi.iso18013.transfer.engagement.DeviceRetrievalMethod
@@ -283,24 +282,6 @@ class TransferManagerImplTest {
         manager.addTransferEventListener(listener)
         manager.startQrEngagement()
         manager.startQrEngagement()
-
-        verify(exactly = 1) { listener.onTransferEvent(any<TransferEvent.Error>()) }
-    }
-
-
-    @Test
-    fun `startEngagementToApp fails when already started`() {
-        val intent = mockk<Intent>()
-        mockkConstructor(QrEngagement::class)
-        every { anyConstructed<QrEngagement>().configure() } just Runs
-        val manager = TransferManagerImpl(
-            context = Context,
-            requestProcessor = mockk(),
-        )
-        val listener = mockk<TransferEvent.Listener>(relaxed = true)
-        manager.addTransferEventListener(listener)
-        manager.startQrEngagement()
-        manager.startEngagementToApp(intent)
 
         verify(exactly = 1) { listener.onTransferEvent(any<TransferEvent.Error>()) }
     }

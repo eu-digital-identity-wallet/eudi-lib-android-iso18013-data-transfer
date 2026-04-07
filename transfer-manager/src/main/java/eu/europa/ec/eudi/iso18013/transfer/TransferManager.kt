@@ -16,7 +16,6 @@
 package eu.europa.ec.eudi.iso18013.transfer
 
 import android.content.Context
-import android.content.Intent
 import eu.europa.ec.eudi.iso18013.transfer.engagement.DeviceRetrievalMethod
 import eu.europa.ec.eudi.iso18013.transfer.engagement.NfcEngagementService
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStore
@@ -56,12 +55,6 @@ interface TransferManager : TransferEvent.Listenable {
     fun startQrEngagement()
 
     /**
-     * Starts the engagement to app, according to ISO 18013-7.
-     * @param intent The intent being received
-     */
-    fun startEngagementToApp(intent: Intent)
-
-    /**
      * Sends response bytes to the connected reader and terminates the session.
      *
      * **Note:** Currently, only a single request-response cycle per session is supported.
@@ -91,8 +84,8 @@ interface TransferManager : TransferEvent.Listenable {
      */
     companion object {
         /**
-         * Create a new instance of [TransferManager] for the ISO 18013-5 and ISO 18013-7
-         * standards.
+         * Create a new instance of [TransferManager] for the ISO 18013-5
+         * standard.
          *
          * @param context
          * @param documentManager

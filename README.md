@@ -15,7 +15,6 @@ Currently, the library supports the following devices engagement methods:
 
 - [x] QR
 - [x] NFC tag
-- [x] Reverse engagement with app link
 
 and the transfer of the documents is done using Bluetooth Low Energy (BLE).
 
@@ -99,7 +98,7 @@ For source code documentation, see in the [docs](docs/index.md) directory.
 ### Instantiating the TransferManager
 
 The library provides a `TransferManager` implementation that can be used to present documents
-using the ISO 18013-5 for proximity presentation and the ISO 18013-7 for remote presentation.
+using the ISO 18013-5 for proximity presentation.
 
 To create a new instance of the `TransferManager`, you can use the `TransferManager.getDefault`
 method.
@@ -236,8 +235,7 @@ Transfer Manager provides the following methods for enabling device engagement a
 transfer:
 
 1. Scanning QR code
-2. Reverse engagement using an app link
-3. Using NFC .
+2. Using NFC
 
 These engagement methods offer seamless device pairing and data transfer initiation.
 
@@ -246,49 +244,6 @@ These engagement methods offer seamless device pairing and data transfer initiat
 With the `TransferManager` instance created, you can initiate the transfer with QR code by calling
 the `TransferManager.startQrEngagement()` method. The method initiates the transfer process and
 triggers the `TransferEvent.QrEngagementReady` event when the QR code is ready to be displayed.
-
-#### Using App Link
-
-To enable ISO 18013-7 REST API functionality, declare to your app's manifest file (
-AndroidManifest.xml) an Intent Filter for your MainActivity:
-
-```xml
-
-<intent-filter>
-    <action android:name="android.intent.action.VIEW" />
-    <category android:name="android.intent.category.DEFAULT" />
-    <category android:name="android.intent.category.BROWSABLE" />
-    <data android:scheme="mdoc" android:host="*" />
-</intent-filter>
-```
-
-and set `launchMode="singleTask"` for this activity.
-
-To initiate the transfer using an app link (reverse engagement), use the
-`TransferManager.startEngagementToApp(Intent)` method. The intent contains the mdoc uri for the
-device engagement.
-
-The example below demonstrates how to initiate the device engagement and transfer.
-
-```kotlin
-import androidx.appcompat.app.AppCompatActivity
-
-class MainActivity : AppCompatActivity() {
-
-    // ... rest of activity code
-
-    override fun onResume() {
-        super.onResume()
-        transferManager.startEngagementToApp(intent)
-    }
-
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        transferManager.startEngagementToApp(intent)
-    }
-}
-
-```
 
 #### Using NFC
 
