@@ -25,6 +25,7 @@ import eu.europa.ec.eudi.iso18013.transfer.engagement.DeviceRetrievalMethod
 import eu.europa.ec.eudi.iso18013.transfer.engagement.QrCode
 import org.multipaz.crypto.Crypto
 import org.multipaz.crypto.EcCurve
+import org.multipaz.crypto.EcPrivateKey
 import org.multipaz.crypto.EcPublicKey
 
 /**
@@ -61,11 +62,9 @@ internal class QrEngagement(
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal var deviceRetrievalHelper: DeviceRetrievalHelper? = null
 
-    @get:JvmSynthetic
+    @JvmSynthetic
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    internal val eDevicePrivateKey by lazy {
-        Crypto.createEcPrivateKey(EcCurve.P256)
-    }
+    internal lateinit var eDevicePrivateKey: EcPrivateKey
 
     @get:JvmSynthetic
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -143,6 +142,7 @@ internal class QrEngagement(
      * Configures the QR engagement
      */
     fun configure() {
+        eDevicePrivateKey = Crypto.createEcPrivateKey(EcCurve.P256)
         helper = QrEngagementHelper.Builder(
             context,
             eDevicePrivateKey.publicKey,

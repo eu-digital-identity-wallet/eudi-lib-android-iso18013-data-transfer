@@ -34,6 +34,7 @@ import eu.europa.ec.eudi.iso18013.transfer.internal.mainExecutor
 import eu.europa.ec.eudi.iso18013.transfer.internal.transportOptions
 import org.multipaz.crypto.Crypto
 import org.multipaz.crypto.EcCurve
+import org.multipaz.crypto.EcPrivateKey
 import org.multipaz.crypto.EcPublicKey
 
 /**
@@ -118,9 +119,7 @@ abstract class NfcEngagementService : HostApduService() {
 
     private var deviceRetrievalHelper: DeviceRetrievalHelper? = null
 
-    private val eDevicePrivateKey by lazy {
-        Crypto.createEcPrivateKey(EcCurve.P256)
-    }
+    private lateinit var eDevicePrivateKey: EcPrivateKey
 
     companion object {
 
@@ -250,6 +249,7 @@ abstract class NfcEngagementService : HostApduService() {
 
     override fun onCreate() {
         super.onCreate()
+        eDevicePrivateKey = Crypto.createEcPrivateKey(EcCurve.P256)
         transferManager.setupNfcEngagement(this)
         nfcEngagement = NfcEngagementHelper.Builder(
             applicationContext,

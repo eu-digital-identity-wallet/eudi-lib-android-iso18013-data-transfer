@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 European Commission
+ * Copyright (c) 2024-2026 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
 
 @RunWith(RobolectricTestRunner::class)
@@ -106,6 +107,41 @@ class QrEngagementTest {
         }
         qrEngagement.close()
         verify(exactly = 1) { qrEngagement.helper.close() }
+    }
+
+    @Test
+    fun `eDevicePrivateKey should generate a fresh key for each engagement session`() {
+        val qrEngagement = QrEngagement(
+            context = context,
+            retrievalMethods = retrievalMethods,
+            onQrEngagementReady = { },
+            onDisconnected = {},
+            onConnecting = {},
+            onNewDeviceRequest = {},
+            onCommunicationError = {},
+            onDeviceRetrievalHelperReady = {},
+        )
+
+        // First session: configure() generates a fresh key
+        qrEngagement.configure()
+        val firstSessionKey = qrEngagement.eDevicePrivateKey
+
+        // Key must remain stable within the same session
+        assertEquals(
+            firstSessionKey,
+            qrEngagement.eDevicePrivateKey,
+            "eDevicePrivateKey must remain stable within the same session"
+        )
+
+        // Second session: configure() must generate a new ephemeral key
+        qrEngagement.configure()
+        val secondSessionKey = qrEngagement.eDevicePrivateKey
+
+        assertNotEquals(
+            firstSessionKey,
+            secondSessionKey,
+            "eDevicePrivateKey must be a fresh ephemeral key per engagement"
+        )
     }
 
     class OnQrEngementReady : Function1<QrCode, Unit> {
