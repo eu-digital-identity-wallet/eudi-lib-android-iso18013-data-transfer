@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2025 European Commission
+ *  Copyright (c) 2025-2026 European Commission
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@
 package eu.europa.ec.eudi.iso18013.transfer.readerauth
 
 import android.util.Log
-import eu.europa.ec.eudi.iso18013.transfer.internal.readerauth.crl.CertificateCRLValidation
-import eu.europa.ec.eudi.iso18013.transfer.internal.readerauth.crl.CertificateCRLValidationException
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.profile.ProfileValidation
 import org.bouncycastle.asn1.x500.X500Name
 import java.security.InvalidAlgorithmParameterException
@@ -31,6 +29,7 @@ import java.security.cert.CertificateFactory
 import java.security.cert.CollectionCertStoreParameters
 import java.security.cert.PKIXCertPathValidatorResult
 import java.security.cert.PKIXParameters
+import java.security.cert.PKIXRevocationChecker
 import java.security.cert.TrustAnchor
 import java.security.cert.X509Certificate
 import java.util.Date
@@ -40,7 +39,8 @@ class ReaderTrustStoreImpl(
     private val profileValidation: ProfileValidation,
     private var errorLogger: ((tag: String, message: String, cause: Throwable) -> Unit) = { tag, message, cause ->
         Log.d(tag, message, cause)
-    }
+    },
+    private val revocationPolicy: RevocationPolicy = RevocationPolicy.NoCheck,
 ) : ReaderTrustStore {
 
     private val trustedCertMap: Map<X500Name, X509Certificate> by lazy {
@@ -60,7 +60,8 @@ class ReaderTrustStoreImpl(
     /**
      * Validates the certification trust path of a document signer.
      *
-     * This function verifies the certificate chain against a set of trusted certificates
+     * This function verifies the certificate chain against a set of trusted certificates,
+     * performs revocation checking based on the configured [RevocationPolicy],
      * and performs additional profile validation on the signer's certificate.
      *
      * @param chainToDocumentSigner The certificate chain leading to the document signer's certificate.
@@ -69,9 +70,7 @@ class ReaderTrustStoreImpl(
     override fun validateCertificationTrustPath(chainToDocumentSigner: List<X509Certificate>): Boolean {
         if (chainToDocumentSigner.isEmpty()) return false
 
-        var result = false
-
-        try {
+        return try {
             val certStore = CertStore.getInstance(
                 "Collection",
                 CollectionCertStoreParameters(trustedCertificates),
@@ -80,37 +79,55 @@ class ReaderTrustStoreImpl(
                 TrustAnchor(it, null)
             }.toSet()
 
+            val validator = CertPathValidator.getInstance("PKIX")
             val params = PKIXParameters(trustAnchors).apply {
-                isRevocationEnabled = false
                 addCertStore(certStore)
                 date = Date()
-            }
-            val certificateFactory =
-                CertificateFactory.getInstance("X.509")
-            val certPath = certificateFactory.generateCertPath(chainToDocumentSigner)
-            val certPathValidationResult = CertPathValidator
-                .getInstance("PKIX")
-                .validate(certPath, params) as PKIXCertPathValidatorResult
-            val trustedRootCA = certPathValidationResult.trustAnchor.trustedCert
-            result = profileValidation.validate(chainToDocumentSigner, trustedRootCA)
-            chainToDocumentSigner.first().let { certificate ->
-                CertificateCRLValidation.verify(certificate)
+
+                when (revocationPolicy) {
+                    is RevocationPolicy.NoCheck -> {
+                        isRevocationEnabled = false
+                    }
+                    is RevocationPolicy.HardFail -> {
+                        isRevocationEnabled = true
+                        val checker = validator.revocationChecker as PKIXRevocationChecker
+                        checker.options = setOf(
+                            PKIXRevocationChecker.Option.PREFER_CRLS,
+                            PKIXRevocationChecker.Option.NO_FALLBACK,
+                        )
+                        addCertPathChecker(checker)
+                    }
+                    is RevocationPolicy.SoftFail -> {
+                        isRevocationEnabled = true
+                        val checker = validator.revocationChecker as PKIXRevocationChecker
+                        checker.options = setOf(
+                            PKIXRevocationChecker.Option.PREFER_CRLS,
+                            PKIXRevocationChecker.Option.NO_FALLBACK,
+                            PKIXRevocationChecker.Option.SOFT_FAIL,
+                        )
+                        addCertPathChecker(checker)
+                    }
+                }
             }
 
-        } catch (e: Throwable) {
+            val certPath = CertificateFactory.getInstance("X.509")
+                .generateCertPath(chainToDocumentSigner)
+            val certPathValidationResult = validator
+                .validate(certPath, params) as PKIXCertPathValidatorResult
+            val trustedRootCA = certPathValidationResult.trustAnchor.trustedCert
+
+            profileValidation.validate(chainToDocumentSigner, trustedRootCA)
+        } catch (e: Exception) {
             when (e) {
                 is InvalidAlgorithmParameterException ->
                     errorLogger(TAG, "INVALID_ALGORITHM_PARAMETER", e)
-
                 is NoSuchAlgorithmException -> errorLogger(TAG, "NO_SUCH_ALGORITHM", e)
                 is CertificateException -> errorLogger(TAG, "CERTIFICATE_ERROR", e)
                 is CertPathValidatorException -> errorLogger(TAG, "CERTIFICATE_PATH_ERROR", e)
-                is CertificateCRLValidationException -> errorLogger(TAG, "CERTIFICATE_REVOKED", e)
                 else -> errorLogger(TAG, "UNKNOWN_ERROR", e)
             }
+            false
         }
-
-        return result
     }
 
     companion object {

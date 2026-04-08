@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2025 European Commission
+ *  Copyright (c) 2025-2026 European Commission
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package eu.europa.ec.eudi.iso18013.transfer.readerauth
 
 import android.util.Log
-import eu.europa.ec.eudi.iso18013.transfer.internal.readerauth.crl.CertificateCRLValidation
 import eu.europa.ec.eudi.iso18013.transfer.mockAndroidLog
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.profile.ProfileValidation
 import io.mockk.every
@@ -28,18 +27,24 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.MockedStatic
-import org.mockito.Mockito
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.times
 import java.security.Security
+import java.security.cert.CertPathValidator
+import java.security.cert.CertPathValidatorException
+import java.security.cert.CertStore
+import java.security.cert.CertificateFactory
+import java.security.cert.CollectionCertStoreParameters
+import java.security.cert.PKIXParameters
+import java.security.cert.PKIXRevocationChecker
+import java.security.cert.TrustAnchor
 import java.security.cert.X509Certificate
+import java.util.Date
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class ReaderTrustStoreImplTest {
 
     private lateinit var mockLog: MockedStatic<Log>
-    private lateinit var mockCrlValidation: MockedStatic<CertificateCRLValidation>
     private lateinit var rootCertificate: X509Certificate
     private lateinit var leafCertificate: X509Certificate
 
@@ -47,16 +52,6 @@ class ReaderTrustStoreImplTest {
     fun setup() {
         Security.addProvider(BouncyCastleProvider())
         mockLog = mockAndroidLog()
-
-        // Create root and leaf certificates for tests
-        createCertificates()
-
-        // Mock the CRL validation
-        mockCrlValidation = Mockito.mockStatic(CertificateCRLValidation::class.java)
-        mockCrlValidation.`when`<Unit> { CertificateCRLValidation.verify(any()) }.thenAnswer { }
-    }
-
-    private fun createCertificates() {
         rootCertificate = trustedCertificate
         leafCertificate = validCertificate
     }
@@ -64,77 +59,189 @@ class ReaderTrustStoreImplTest {
     @After
     fun close() {
         mockLog.close()
-        mockCrlValidation.close()
-        // clear mockStatic
-        Mockito.framework().clearInlineMocks()
     }
 
     @Test
-    fun testChain() {
-        // Create certificate chain with leaf certificate first, followed by root
+    fun testChainValidationWithNoCheckPolicy() {
         val certificateChain = listOf(leafCertificate, rootCertificate)
 
-        // For debugging: output certificate information
-        println("Leaf certificate subject: ${leafCertificate.subjectX500Principal.name}")
-        println("Leaf certificate issuer: ${leafCertificate.issuerX500Principal.name}")
-        println("Root certificate subject: ${rootCertificate.subjectX500Principal.name}")
-
-        // Create a custom trust store with mocked ProfileValidation
         val profileValidation = mockk<ProfileValidation>()
         every { profileValidation.validate(any(), any()) } returns true
 
-        // Setup trust store with rootCA as the trusted certificate
         val trustStore = ReaderTrustStoreImpl(
             trustedCertificates = listOf(rootCertificate),
             profileValidation = profileValidation,
-            // Add a custom error logger to help with debugging
-            errorLogger = { tag, message, cause ->
-                println("$tag: $message")
-                cause?.printStackTrace()
-            }
+            revocationPolicy = RevocationPolicy.NoCheck,
+            errorLogger = { _, _, _ -> }
         )
 
-        // Use createCertificationTrustPath to debug
-        val trustPath = trustStore.createCertificationTrustPath(certificateChain)
-        println("Trust path created: ${trustPath != null}")
-
-        // Validate the certificate chain with the trust store
         val result = trustStore.validateCertificationTrustPath(certificateChain)
 
-        // Verify the chain is valid
-        assertTrue(result, "Certificate chain validation should succeed")
-
-        // Verify that profile validation was called
+        assertTrue(result, "Certificate chain validation should succeed with NoCheck policy")
         verify(exactly = 1) {
             profileValidation.validate(any(), any())
         }
     }
 
     @Test
-    fun testCRLValidationIsPerformedForLeafCertificate() {
-        // Create certificate chain with leaf certificate first, followed by root
+    fun testValidationReturnsFalseWhenProfileValidationFails() {
         val certificateChain = listOf(leafCertificate, rootCertificate)
 
-        // Create a mock ProfileValidation that always returns true
+        val profileValidation = mockk<ProfileValidation>()
+        every { profileValidation.validate(any(), any()) } returns false
+
+        val trustStore = ReaderTrustStoreImpl(
+            trustedCertificates = listOf(rootCertificate),
+            profileValidation = profileValidation,
+            revocationPolicy = RevocationPolicy.NoCheck,
+            errorLogger = { _, _, _ -> }
+        )
+
+        val result = trustStore.validateCertificationTrustPath(certificateChain)
+
+        assertFalse(result, "Validation should fail when profile validation returns false")
+    }
+
+    @Test
+    fun testValidationReturnsFalseForUntrustedChain() {
+        val certificateChain = listOf(leafCertificate, rootCertificate)
+
         val profileValidation = mockk<ProfileValidation>()
         every { profileValidation.validate(any(), any()) } returns true
 
-        // Setup trust store with rootCA as the trusted certificate
+        // Use an empty trust store — no trusted certificates
         val trustStore = ReaderTrustStoreImpl(
-            trustedCertificates = listOf(rootCertificate),
-            profileValidation = profileValidation
+            trustedCertificates = emptyList(),
+            profileValidation = profileValidation,
+            revocationPolicy = RevocationPolicy.NoCheck,
+            errorLogger = { _, _, _ -> }
         )
 
-        // Validate the certificate chain
         val result = trustStore.validateCertificationTrustPath(certificateChain)
 
-        // Verify the chain is valid
-        assertTrue(result, "Certificate chain validation should succeed")
+        assertFalse(result, "Validation should fail for untrusted certificate chain")
+    }
 
-        // Verify that CRL validation was performed exactly once for the leaf certificate
-        mockCrlValidation.verify({ CertificateCRLValidation.verify(eq(leafCertificate)) }, times(1))
+    @Test
+    fun testValidationReturnsFalseForEmptyChain() {
+        val profileValidation = mockk<ProfileValidation>()
 
-        // Verify that CRL validation was NOT performed for the root certificate
-        mockCrlValidation.verify({ CertificateCRLValidation.verify(eq(rootCertificate)) }, times(0))
+        val trustStore = ReaderTrustStoreImpl(
+            trustedCertificates = listOf(rootCertificate),
+            profileValidation = profileValidation,
+            revocationPolicy = RevocationPolicy.NoCheck,
+            errorLogger = { _, _, _ -> }
+        )
+
+        val result = trustStore.validateCertificationTrustPath(emptyList())
+
+        assertFalse(result, "Validation should fail for empty chain")
+    }
+
+    @Test
+    fun testDefaultRevocationPolicyIsNoCheck() {
+        val certificateChain = listOf(leafCertificate, rootCertificate)
+
+        val profileValidation = mockk<ProfileValidation>()
+        every { profileValidation.validate(any(), any()) } returns true
+
+        // Use constructor without explicit revocationPolicy — should default to NoCheck
+        val trustStore = ReaderTrustStoreImpl(
+            trustedCertificates = listOf(rootCertificate),
+            profileValidation = profileValidation,
+            errorLogger = { _, _, _ -> }
+        )
+
+        // With NoCheck, validation should succeed even though the leaf cert has
+        // a CRL distribution point (https://example.com/crl.pem) that is unreachable
+        val result = trustStore.validateCertificationTrustPath(certificateChain)
+
+        assertTrue(result, "Default policy (NoCheck) should not perform revocation checking")
+    }
+
+    @Test
+    fun testHardFailPolicyFailsWhenCrlIsUnavailable() {
+        val certificateChain = listOf(leafCertificate, rootCertificate)
+
+        val profileValidation = mockk<ProfileValidation>()
+        every { profileValidation.validate(any(), any()) } returns true
+
+        val trustStore = ReaderTrustStoreImpl(
+            trustedCertificates = listOf(rootCertificate),
+            profileValidation = profileValidation,
+            revocationPolicy = RevocationPolicy.HardFail,
+            errorLogger = { _, _, _ -> }
+        )
+
+        // HardFail should fail because the CRL at https://example.com/crl.pem is unreachable
+        val result = trustStore.validateCertificationTrustPath(certificateChain)
+
+        assertFalse(result, "HardFail policy should fail when CRL distribution point is unreachable")
+    }
+
+    @Test
+    fun testSoftFailPolicySucceedsWhenCrlIsUnavailable() {
+        val certificateChain = listOf(leafCertificate, rootCertificate)
+
+        val profileValidation = mockk<ProfileValidation>()
+        every { profileValidation.validate(any(), any()) } returns true
+
+        val trustStore = ReaderTrustStoreImpl(
+            trustedCertificates = listOf(rootCertificate),
+            profileValidation = profileValidation,
+            revocationPolicy = RevocationPolicy.SoftFail,
+            errorLogger = { _, _, _ -> }
+        )
+
+        // SoftFail should succeed because CRL unavailability is tolerated
+        val result = trustStore.validateCertificationTrustPath(certificateChain)
+
+        assertTrue(result, "SoftFail policy should succeed when CRL is unavailable")
+    }
+
+    @Test
+    fun testRevokedCertificateIsRejectedWithCRL() {
+        // This test validates that PKIXRevocationChecker correctly rejects a
+        // certificate whose serial number appears in a CRL, using the same
+        // checker configuration as ReaderTrustStoreImpl with HardFail policy.
+        val certStore = CertStore.getInstance(
+            "Collection",
+            CollectionCertStoreParameters(listOf(rootCertificate, revokedCertificateCRL))
+        )
+        val trustAnchors = setOf(TrustAnchor(rootCertificate, null))
+
+        val validator = CertPathValidator.getInstance("PKIX")
+        val params = PKIXParameters(trustAnchors).apply {
+            addCertStore(certStore)
+            date = Date()
+            isRevocationEnabled = true
+            val checker = validator.revocationChecker as PKIXRevocationChecker
+            checker.options = setOf(
+                PKIXRevocationChecker.Option.PREFER_CRLS,
+                PKIXRevocationChecker.Option.NO_FALLBACK,
+            )
+            addCertPathChecker(checker)
+        }
+
+        val certPath = CertificateFactory.getInstance("X.509")
+            .generateCertPath(listOf(leafCertificate))
+
+        // PKIXRevocationChecker should reject the certificate because it's in the CRL
+        assertFailsWith<CertPathValidatorException> {
+            validator.validate(certPath, params)
+        }
+    }
+
+    @Test
+    fun testGetDefaultFactoryWithRevocationPolicy() {
+        val trustStore = ReaderTrustStore.getDefault(
+            listOf(rootCertificate),
+            RevocationPolicy.NoCheck
+        )
+
+        val certificateChain = listOf(leafCertificate, rootCertificate)
+        val result = trustStore.validateCertificationTrustPath(certificateChain)
+
+        assertTrue(result, "Factory-created trust store with NoCheck should validate successfully")
     }
 }

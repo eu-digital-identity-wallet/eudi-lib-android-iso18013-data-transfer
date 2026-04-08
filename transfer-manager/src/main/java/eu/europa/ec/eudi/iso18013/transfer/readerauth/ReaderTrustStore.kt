@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2023-2025 European Commission
+ *  Copyright (c) 2023-2026 European Commission
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -59,12 +59,28 @@ interface ReaderTrustStore {
     companion object {
         /**
          * Returns a default trust store that uses the given list of trusted certificates.
+         * Revocation checking is disabled (NoCheck) for backwards compatibility.
          *
          * @param trustedCertificates the trusted certificates
          */
         @JvmStatic
         fun getDefault(trustedCertificates: List<X509Certificate>): ReaderTrustStore {
-            return ReaderTrustStoreImpl(trustedCertificates, DEFAULT)
+            return ReaderTrustStoreImpl(trustedCertificates, DEFAULT, revocationPolicy = RevocationPolicy.NoCheck)
+        }
+
+        /**
+         * Returns a default trust store that uses the given list of trusted certificates
+         * and the specified revocation policy.
+         *
+         * @param trustedCertificates the trusted certificates
+         * @param revocationPolicy the policy controlling certificate revocation checking
+         */
+        @JvmStatic
+        fun getDefault(
+            trustedCertificates: List<X509Certificate>,
+            revocationPolicy: RevocationPolicy,
+        ): ReaderTrustStore {
+            return ReaderTrustStoreImpl(trustedCertificates, DEFAULT, revocationPolicy = revocationPolicy)
         }
     }
 }

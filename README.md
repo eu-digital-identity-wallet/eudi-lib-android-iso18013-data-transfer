@@ -28,8 +28,8 @@ Reader authentication is accomplished by verifying the following:
   trusted root certificate
 - Certificate's **profile validation**: Examines the attributes and constraints defined in the
   certificate profile to ensure that they meet the predefined criteria for a trusted certificate
-- **CRL validation**: Checking the Certificate Revocation List to verify that the certificate has
-  not been revoked or compromised.
+- **Revocation checking**: Optional certificate revocation checking via CRL, configurable through
+  `RevocationPolicy` (disabled by default for backwards compatibility).
 
 The library is written in Kotlin and is available for Android.
 
@@ -456,11 +456,11 @@ The library performs three key verification steps:
    - Common Name verification
    - Signature algorithm verification
 
-3. **Certificate Revocation List (CRL) Validation**: The library automatically checks if the leaf certificate (reader's certificate) has been revoked by downloading and validating against the CRL distribution points specified in the certificate.
+3. **Certificate Revocation Checking**: When enabled via `RevocationPolicy`, the library checks if certificates in the chain have been revoked using CRL distribution points. Revocation checking uses Java's `PKIXRevocationChecker` which verifies CRL signatures, rejects expired CRLs, and checks all certificates in the chain (not just the leaf). Revocation checking is disabled by default for backwards compatibility.
 
 #### Default Implementation
 
-By default, the library provides a standard implementation of the `ReaderTrustStore` interface through `ReaderTrustStoreImpl`, which performs all the validations mentioned above:
+By default, the library provides a standard implementation of the `ReaderTrustStore` interface through `ReaderTrustStoreImpl`, which performs certificate path and profile validation. Revocation checking is disabled by default:
 
 ```kotlin
 // Create a default ReaderTrustStore with your trusted certificates
@@ -478,6 +478,22 @@ transferManager = TransferManager.getDefault(
     documentManager = documentManager,
     retrievalMethods = retrievalMethods,
     readerTrustStore = readerTrustStore
+)
+```
+
+To enable revocation checking, pass a `RevocationPolicy`:
+
+```kotlin
+// HardFail: reject if certificate is revoked OR CRL is unavailable
+val readerTrustStore = ReaderTrustStore.getDefault(
+    trustedCertificates = trustedCertificates,
+    revocationPolicy = RevocationPolicy.HardFail
+)
+
+// SoftFail: reject if certificate is revoked, but tolerate CRL unavailability
+val readerTrustStore = ReaderTrustStore.getDefault(
+    trustedCertificates = trustedCertificates,
+    revocationPolicy = RevocationPolicy.SoftFail
 )
 ```
 

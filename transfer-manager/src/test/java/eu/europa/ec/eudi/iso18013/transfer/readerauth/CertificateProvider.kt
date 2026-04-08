@@ -22,6 +22,7 @@ import org.bouncycastle.asn1.x500.X500Name
 import org.bouncycastle.asn1.x509.AuthorityKeyIdentifier
 import org.bouncycastle.asn1.x509.BasicConstraints
 import org.bouncycastle.asn1.x509.CRLDistPoint
+import org.bouncycastle.asn1.x509.CRLReason
 import org.bouncycastle.asn1.x509.DistributionPoint
 import org.bouncycastle.asn1.x509.DistributionPointName
 import org.bouncycastle.asn1.x509.ExtendedKeyUsage
@@ -29,6 +30,8 @@ import org.bouncycastle.asn1.x509.Extension
 import org.bouncycastle.asn1.x509.GeneralName
 import org.bouncycastle.asn1.x509.GeneralNames
 import org.bouncycastle.asn1.x509.KeyUsage
+import org.bouncycastle.cert.X509v2CRLBuilder
+import org.bouncycastle.cert.jcajce.JcaX509CRLConverter
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter
 import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder
@@ -114,7 +117,7 @@ val validCertificate: X509Certificate by lazy {
             true,
             BasicConstraints(false)  // isCA=false
         )
-        
+
         addExtension(
             Extension.subjectKeyIdentifier,
             false,
@@ -309,6 +312,25 @@ private fun buildThreeCertChain(tamperIntermediateAki: Boolean): List<X509Certif
         .getCertificate(leafBuilder.build(leafSigner))
 
     return listOf(leaf, intermediate, root)
+}
+
+val revokedCertificateCRL: java.security.cert.X509CRL by lazy {
+    val issuerName = X500Name(trustedCertificate.subjectX500Principal.name)
+    val now = Date()
+    val nextUpdate = Date(now.time + 30 * 86400000L)
+
+    val crlBuilder = X509v2CRLBuilder(issuerName, now).apply {
+        addCRLEntry(validCertificate.serialNumber, now, CRLReason.unspecified)
+        setNextUpdate(nextUpdate)
+        addExtension(
+            Extension.authorityKeyIdentifier,
+            false,
+            extUtils.createAuthorityKeyIdentifier(trustedKeyPair.public)
+        )
+    }
+
+    val signer = JcaContentSignerBuilder(signatureAlgorithm).build(trustedKeyPair.private)
+    JcaX509CRLConverter().getCRL(crlBuilder.build(signer))
 }
 
 val invalidCertificate: X509Certificate by lazy {
