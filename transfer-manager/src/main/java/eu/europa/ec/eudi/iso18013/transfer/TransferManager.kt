@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 European Commission
+ * Copyright (c) 2023-2026 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import android.content.Intent
 import eu.europa.ec.eudi.iso18013.transfer.engagement.DeviceRetrievalMethod
 import eu.europa.ec.eudi.iso18013.transfer.engagement.NfcEngagementService
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStore
+import eu.europa.ec.eudi.iso18013.transfer.response.ReaderAuthPolicy
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor
 import eu.europa.ec.eudi.iso18013.transfer.response.Response
 import eu.europa.ec.eudi.wallet.document.DocumentManager
@@ -96,6 +97,7 @@ interface TransferManager : TransferEvent.Listenable {
          * @param context
          * @param documentManager
          * @param readerTrustStore
+         * @param readerAuthPolicy
          * @param retrievalMethods
          * @param zkSystemRepository
          * @return a [TransferManagerImpl]
@@ -105,11 +107,13 @@ interface TransferManager : TransferEvent.Listenable {
             context: Context,
             documentManager: DocumentManager,
             readerTrustStore: ReaderTrustStore? = null,
+            readerAuthPolicy: ReaderAuthPolicy = ReaderAuthPolicy.EnforceIfPresent,
             retrievalMethods: List<DeviceRetrievalMethod>? = null,
             zkSystemRepository: ZkSystemRepository? = null
         ): TransferManager = TransferManagerImpl(context) {
             documentManager(documentManager)
             readerTrustStore?.let { readerTrustStore(it) }
+            readerAuthPolicy(readerAuthPolicy)
             retrievalMethods?.let { retrievalMethods(it) }
             zkSystemRepository?.let { zkSystemRepository(it) }
         }

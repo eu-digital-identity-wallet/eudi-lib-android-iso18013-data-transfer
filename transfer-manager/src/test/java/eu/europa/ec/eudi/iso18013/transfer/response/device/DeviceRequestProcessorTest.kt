@@ -23,7 +23,11 @@ import eu.europa.ec.eudi.iso18013.transfer.createDocumentManager
 import eu.europa.ec.eudi.iso18013.transfer.mockAndroidLog
 import eu.europa.ec.eudi.iso18013.transfer.response.DisclosedDocument
 import eu.europa.ec.eudi.iso18013.transfer.response.DisclosedDocuments
+import eu.europa.ec.eudi.iso18013.transfer.response.ReaderAuth
+import eu.europa.ec.eudi.iso18013.transfer.response.ReaderAuthPolicy
 import eu.europa.ec.eudi.iso18013.transfer.response.Request
+import eu.europa.ec.eudi.iso18013.transfer.response.RequestedDocument
+import eu.europa.ec.eudi.iso18013.transfer.response.RequestedDocuments
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor.ProcessedRequest.Failure
 import eu.europa.ec.eudi.iso18013.transfer.response.ResponseResult
 import eu.europa.ec.eudi.iso18013.transfer.toDocItems
@@ -232,5 +236,318 @@ class DeviceRequestProcessorTest {
         assertIs<ResponseResult.Success>(responseResult)
         assertIs<DeviceResponse>(responseResult.response)
 
+    }
+
+    @Test
+    fun `EnforceIfPresent should skip documents with failed reader authentication`() {
+        val documentManager = createDocumentManager(null)
+        val requestProcessor = DeviceRequestProcessor(documentManager)
+        val expectedDocument = documentManager.getDocuments()
+            .filterIsInstance<IssuedDocument>()
+            .first { it.format is MsoMdocFormat && (it.format as MsoMdocFormat).docType == "org.iso.18013.5.1.mDL" }
+        val processedRequest = requestProcessor.process(DeviceRequest)
+        assertIs<ProcessedDeviceRequest>(processedRequest)
+
+        val failedReaderAuth = ReaderAuth(
+            readerAuth = byteArrayOf(0),
+            readerSignIsValid = false,
+            readerCertificatedIsTrusted = false,
+            readerCertificateChain = emptyList(),
+            readerCommonName = "CN=Untrusted Reader",
+        )
+
+        val processedWithFailedAuth = ProcessedDeviceRequest(
+            documentManager = documentManager,
+            sessionTranscript = byteArrayOf(0),
+            requestedDocuments = RequestedDocuments(
+                processedRequest.requestedDocuments.map { doc ->
+                    doc.copy(readerAuth = failedReaderAuth)
+                }
+            ),
+            readerAuthPolicy = ReaderAuthPolicy.EnforceIfPresent,
+        )
+
+        val documentData = expectedDocument.data
+        assertIs<MsoMdocData>(documentData)
+
+        val responseResult = processedWithFailedAuth.generateResponse(
+            disclosedDocuments = DisclosedDocuments(
+                DisclosedDocument(
+                    documentId = expectedDocument.id,
+                    disclosedItems = documentData.nameSpaces.toDocItems(),
+                )
+            ),
+            signatureAlgorithm = Algorithm.ES256,
+        )
+
+        assertIs<ResponseResult.Success>(responseResult)
+        val deviceResponse = responseResult.response as DeviceResponse
+        assertEquals(emptyList(), deviceResponse.documentIds)
+    }
+
+    @Test
+    fun `EnforceIfPresent should include documents with null reader authentication`() {
+        val documentManager = createDocumentManager(null)
+        val requestProcessor = DeviceRequestProcessor(documentManager)
+        val expectedDocument = documentManager.getDocuments()
+            .filterIsInstance<IssuedDocument>()
+            .first { it.format is MsoMdocFormat && (it.format as MsoMdocFormat).docType == "org.iso.18013.5.1.mDL" }
+        val processedRequest = requestProcessor.process(DeviceRequest)
+        assertIs<ProcessedDeviceRequest>(processedRequest)
+
+        val processedWithNullAuth = ProcessedDeviceRequest(
+            documentManager = documentManager,
+            sessionTranscript = byteArrayOf(0),
+            requestedDocuments = RequestedDocuments(
+                processedRequest.requestedDocuments.map { doc ->
+                    doc.copy(readerAuth = null)
+                }
+            ),
+            readerAuthPolicy = ReaderAuthPolicy.EnforceIfPresent,
+        )
+
+        val documentData = expectedDocument.data
+        assertIs<MsoMdocData>(documentData)
+
+        val responseResult = processedWithNullAuth.generateResponse(
+            disclosedDocuments = DisclosedDocuments(
+                DisclosedDocument(
+                    documentId = expectedDocument.id,
+                    disclosedItems = documentData.nameSpaces.toDocItems(),
+                )
+            ),
+            signatureAlgorithm = Algorithm.ES256,
+        )
+
+        assertIs<ResponseResult.Success>(responseResult)
+        val deviceResponse = responseResult.response as DeviceResponse
+        assertEquals(listOf(expectedDocument.id), deviceResponse.documentIds)
+    }
+
+    @Test
+    fun `EnforceIfPresent should include documents with verified reader authentication`() {
+        val documentManager = createDocumentManager(null)
+        val requestProcessor = DeviceRequestProcessor(documentManager)
+        val expectedDocument = documentManager.getDocuments()
+            .filterIsInstance<IssuedDocument>()
+            .first { it.format is MsoMdocFormat && (it.format as MsoMdocFormat).docType == "org.iso.18013.5.1.mDL" }
+        val processedRequest = requestProcessor.process(DeviceRequest)
+        assertIs<ProcessedDeviceRequest>(processedRequest)
+
+        val verifiedReaderAuth = ReaderAuth(
+            readerAuth = byteArrayOf(0),
+            readerSignIsValid = true,
+            readerCertificatedIsTrusted = true,
+            readerCertificateChain = emptyList(),
+            readerCommonName = "CN=Trusted Reader",
+        )
+
+        val processedWithVerifiedAuth = ProcessedDeviceRequest(
+            documentManager = documentManager,
+            sessionTranscript = byteArrayOf(0),
+            requestedDocuments = RequestedDocuments(
+                processedRequest.requestedDocuments.map { doc ->
+                    doc.copy(readerAuth = verifiedReaderAuth)
+                }
+            ),
+            readerAuthPolicy = ReaderAuthPolicy.EnforceIfPresent,
+        )
+
+        val documentData = expectedDocument.data
+        assertIs<MsoMdocData>(documentData)
+
+        val responseResult = processedWithVerifiedAuth.generateResponse(
+            disclosedDocuments = DisclosedDocuments(
+                DisclosedDocument(
+                    documentId = expectedDocument.id,
+                    disclosedItems = documentData.nameSpaces.toDocItems(),
+                )
+            ),
+            signatureAlgorithm = Algorithm.ES256,
+        )
+
+        assertIs<ResponseResult.Success>(responseResult)
+        val deviceResponse = responseResult.response as DeviceResponse
+        assertEquals(listOf(expectedDocument.id), deviceResponse.documentIds)
+    }
+
+    @Test
+    fun `DoNotEnforce should include documents with failed reader authentication`() {
+        val documentManager = createDocumentManager(null)
+        val requestProcessor = DeviceRequestProcessor(documentManager)
+        val expectedDocument = documentManager.getDocuments()
+            .filterIsInstance<IssuedDocument>()
+            .first { it.format is MsoMdocFormat && (it.format as MsoMdocFormat).docType == "org.iso.18013.5.1.mDL" }
+        val processedRequest = requestProcessor.process(DeviceRequest)
+        assertIs<ProcessedDeviceRequest>(processedRequest)
+
+        val failedReaderAuth = ReaderAuth(
+            readerAuth = byteArrayOf(0),
+            readerSignIsValid = false,
+            readerCertificatedIsTrusted = false,
+            readerCertificateChain = emptyList(),
+            readerCommonName = "CN=Untrusted Reader",
+        )
+
+        val processedWithDoNotEnforce = ProcessedDeviceRequest(
+            documentManager = documentManager,
+            sessionTranscript = byteArrayOf(0),
+            requestedDocuments = RequestedDocuments(
+                processedRequest.requestedDocuments.map { doc ->
+                    doc.copy(readerAuth = failedReaderAuth)
+                }
+            ),
+            readerAuthPolicy = ReaderAuthPolicy.DoNotEnforce,
+        )
+
+        val documentData = expectedDocument.data
+        assertIs<MsoMdocData>(documentData)
+
+        val responseResult = processedWithDoNotEnforce.generateResponse(
+            disclosedDocuments = DisclosedDocuments(
+                DisclosedDocument(
+                    documentId = expectedDocument.id,
+                    disclosedItems = documentData.nameSpaces.toDocItems(),
+                )
+            ),
+            signatureAlgorithm = Algorithm.ES256,
+        )
+
+        assertIs<ResponseResult.Success>(responseResult)
+        val deviceResponse = responseResult.response as DeviceResponse
+        assertEquals(listOf(expectedDocument.id), deviceResponse.documentIds)
+    }
+
+    @Test
+    fun `AlwaysRequire should skip documents with failed reader authentication`() {
+        val documentManager = createDocumentManager(null)
+        val requestProcessor = DeviceRequestProcessor(documentManager)
+        val expectedDocument = documentManager.getDocuments()
+            .filterIsInstance<IssuedDocument>()
+            .first { it.format is MsoMdocFormat && (it.format as MsoMdocFormat).docType == "org.iso.18013.5.1.mDL" }
+        val processedRequest = requestProcessor.process(DeviceRequest)
+        assertIs<ProcessedDeviceRequest>(processedRequest)
+
+        val failedReaderAuth = ReaderAuth(
+            readerAuth = byteArrayOf(0),
+            readerSignIsValid = false,
+            readerCertificatedIsTrusted = false,
+            readerCertificateChain = emptyList(),
+            readerCommonName = "CN=Untrusted Reader",
+        )
+
+        val processedWithAlwaysRequire = ProcessedDeviceRequest(
+            documentManager = documentManager,
+            sessionTranscript = byteArrayOf(0),
+            requestedDocuments = RequestedDocuments(
+                processedRequest.requestedDocuments.map { doc ->
+                    doc.copy(readerAuth = failedReaderAuth)
+                }
+            ),
+            readerAuthPolicy = ReaderAuthPolicy.AlwaysRequire,
+        )
+
+        val documentData = expectedDocument.data
+        assertIs<MsoMdocData>(documentData)
+
+        val responseResult = processedWithAlwaysRequire.generateResponse(
+            disclosedDocuments = DisclosedDocuments(
+                DisclosedDocument(
+                    documentId = expectedDocument.id,
+                    disclosedItems = documentData.nameSpaces.toDocItems(),
+                )
+            ),
+            signatureAlgorithm = Algorithm.ES256,
+        )
+
+        assertIs<ResponseResult.Success>(responseResult)
+        val deviceResponse = responseResult.response as DeviceResponse
+        assertEquals(emptyList(), deviceResponse.documentIds)
+    }
+
+    @Test
+    fun `AlwaysRequire should include documents with verified reader authentication`() {
+        val documentManager = createDocumentManager(null)
+        val requestProcessor = DeviceRequestProcessor(documentManager)
+        val expectedDocument = documentManager.getDocuments()
+            .filterIsInstance<IssuedDocument>()
+            .first { it.format is MsoMdocFormat && (it.format as MsoMdocFormat).docType == "org.iso.18013.5.1.mDL" }
+        val processedRequest = requestProcessor.process(DeviceRequest)
+        assertIs<ProcessedDeviceRequest>(processedRequest)
+
+        val verifiedReaderAuth = ReaderAuth(
+            readerAuth = byteArrayOf(0),
+            readerSignIsValid = true,
+            readerCertificatedIsTrusted = true,
+            readerCertificateChain = emptyList(),
+            readerCommonName = "CN=Trusted Reader",
+        )
+
+        val processedWithAlwaysRequire = ProcessedDeviceRequest(
+            documentManager = documentManager,
+            sessionTranscript = byteArrayOf(0),
+            requestedDocuments = RequestedDocuments(
+                processedRequest.requestedDocuments.map { doc ->
+                    doc.copy(readerAuth = verifiedReaderAuth)
+                }
+            ),
+            readerAuthPolicy = ReaderAuthPolicy.AlwaysRequire,
+        )
+
+        val documentData = expectedDocument.data
+        assertIs<MsoMdocData>(documentData)
+
+        val responseResult = processedWithAlwaysRequire.generateResponse(
+            disclosedDocuments = DisclosedDocuments(
+                DisclosedDocument(
+                    documentId = expectedDocument.id,
+                    disclosedItems = documentData.nameSpaces.toDocItems(),
+                )
+            ),
+            signatureAlgorithm = Algorithm.ES256,
+        )
+
+        assertIs<ResponseResult.Success>(responseResult)
+        val deviceResponse = responseResult.response as DeviceResponse
+        assertEquals(listOf(expectedDocument.id), deviceResponse.documentIds)
+    }
+
+    @Test
+    fun `AlwaysRequire should skip documents with null reader authentication`() {
+        val documentManager = createDocumentManager(null)
+        val requestProcessor = DeviceRequestProcessor(documentManager)
+        val expectedDocument = documentManager.getDocuments()
+            .filterIsInstance<IssuedDocument>()
+            .first { it.format is MsoMdocFormat && (it.format as MsoMdocFormat).docType == "org.iso.18013.5.1.mDL" }
+        val processedRequest = requestProcessor.process(DeviceRequest)
+        assertIs<ProcessedDeviceRequest>(processedRequest)
+
+        val processedWithAlwaysRequire = ProcessedDeviceRequest(
+            documentManager = documentManager,
+            sessionTranscript = byteArrayOf(0),
+            requestedDocuments = RequestedDocuments(
+                processedRequest.requestedDocuments.map { doc ->
+                    doc.copy(readerAuth = null)
+                }
+            ),
+            readerAuthPolicy = ReaderAuthPolicy.AlwaysRequire,
+        )
+
+        val documentData = expectedDocument.data
+        assertIs<MsoMdocData>(documentData)
+
+        val responseResult = processedWithAlwaysRequire.generateResponse(
+            disclosedDocuments = DisclosedDocuments(
+                DisclosedDocument(
+                    documentId = expectedDocument.id,
+                    disclosedItems = documentData.nameSpaces.toDocItems(),
+                )
+            ),
+            signatureAlgorithm = Algorithm.ES256,
+        )
+
+        assertIs<ResponseResult.Success>(responseResult)
+        val deviceResponse = responseResult.response as DeviceResponse
+        assertEquals(emptyList(), deviceResponse.documentIds)
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 European Commission
+ * Copyright (c) 2024-2026 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import eu.europa.ec.eudi.iso18013.transfer.internal.stopPresentation
 import eu.europa.ec.eudi.iso18013.transfer.internal.transportOptions
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStore
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStoreAware
+import eu.europa.ec.eudi.iso18013.transfer.response.ReaderAuthPolicy
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor
 import eu.europa.ec.eudi.iso18013.transfer.response.Response
 import eu.europa.ec.eudi.iso18013.transfer.response.device.DeviceRequest
@@ -413,6 +414,7 @@ class TransferManagerImpl @JvmOverloads constructor(
         private val context = context.applicationContext
         var documentManager: DocumentManager? = null
         var readerTrustStore: ReaderTrustStore? = null
+        var readerAuthPolicy: ReaderAuthPolicy = ReaderAuthPolicy.EnforceIfPresent
         var retrievalMethods: List<DeviceRetrievalMethod>? = null
         var zkSystemRepository: ZkSystemRepository? = null
 
@@ -430,6 +432,15 @@ class TransferManagerImpl @JvmOverloads constructor(
          */
         fun readerTrustStore(readerTrustStore: ReaderTrustStore) = apply {
             this.readerTrustStore = readerTrustStore
+        }
+
+        /**
+         * Policy for enforcing reader authentication results during response generation.
+         * Default is [ReaderAuthPolicy.EnforceIfPresent].
+         * @param readerAuthPolicy the reader authentication policy
+         */
+        fun readerAuthPolicy(readerAuthPolicy: ReaderAuthPolicy) = apply {
+            this.readerAuthPolicy = readerAuthPolicy
         }
 
         /**
@@ -459,7 +470,8 @@ class TransferManagerImpl @JvmOverloads constructor(
                 requestProcessor = DeviceRequestProcessor(
                     documentManager = documentManager!!,
                     readerTrustStore = readerTrustStore,
-                    zkSystemRepository = zkSystemRepository
+                    readerAuthPolicy = readerAuthPolicy,
+                    zkSystemRepository = zkSystemRepository,
                 ),
                 retrievalMethods = retrievalMethods ?: emptyList()
             )

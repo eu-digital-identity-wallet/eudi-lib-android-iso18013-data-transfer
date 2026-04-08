@@ -22,6 +22,7 @@ import eu.europa.ec.eudi.iso18013.transfer.internal.assertAgeOverRequestLimitFor
 import eu.europa.ec.eudi.iso18013.transfer.internal.filterWithRequestedDocuments
 import eu.europa.ec.eudi.iso18013.transfer.internal.getValidIssuedMsoMdocDocumentById
 import eu.europa.ec.eudi.iso18013.transfer.response.DisclosedDocuments
+import eu.europa.ec.eudi.iso18013.transfer.response.ReaderAuthPolicy
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestedDocuments
 import eu.europa.ec.eudi.iso18013.transfer.response.ResponseResult
@@ -39,11 +40,13 @@ import kotlin.time.ExperimentalTime
  * @property documentManager the document manager to use for resolving documents
  * @property sessionTranscript the session transcript
  * @property requestedDocuments the requested documents
+ * @property readerAuthPolicy the policy for enforcing reader authentication results. Default is [ReaderAuthPolicy.EnforceIfPresent].
  */
 class ProcessedDeviceRequest(
     private val documentManager: DocumentManager,
     private val sessionTranscript: ByteArray,
-    requestedDocuments: RequestedDocuments
+    requestedDocuments: RequestedDocuments,
+    private val readerAuthPolicy: ReaderAuthPolicy = ReaderAuthPolicy.EnforceIfPresent,
 ) : RequestProcessor.ProcessedRequest.Success(requestedDocuments) {
 
     /**
@@ -64,6 +67,19 @@ class ProcessedDeviceRequest(
             disclosedDocuments
                 .filterWithRequestedDocuments(requestedDocuments)
                 .forEachIndexed { index, disclosedDocument ->
+                    val requestedDocument = requestedDocuments.find {
+                        it.documentId == disclosedDocument.documentId
+                    }
+
+                    // Enforce reader authentication based on the configured policy
+                    val readerAuth = requestedDocument?.readerAuth
+                    val skipByPolicy = when (readerAuthPolicy) {
+                        ReaderAuthPolicy.DoNotEnforce -> false
+                        ReaderAuthPolicy.EnforceIfPresent -> readerAuth?.isVerified == false
+                        ReaderAuthPolicy.AlwaysRequire -> readerAuth?.isVerified != true
+                    }
+                    if (skipByPolicy) return@forEachIndexed
+
                     val encodedDocument = runBlocking {
                         documentManager.getValidIssuedMsoMdocDocumentById(disclosedDocument.documentId)
                     }.assertAgeOverRequestLimitForIso18013(disclosedDocument)
@@ -76,9 +92,7 @@ class ProcessedDeviceRequest(
 
                     // Check for matched ZK system for the disclosed document
                     // If found, generate ZK proof, else use encoded document
-                    val matchedZkSystem = requestedDocuments.find {
-                        it.documentId == disclosedDocument.documentId
-                    }?.matchedZkSystem
+                    val matchedZkSystem = requestedDocument?.matchedZkSystem
 
                     if (matchedZkSystem == null) {
                         // No matched ZK system, add encoded document

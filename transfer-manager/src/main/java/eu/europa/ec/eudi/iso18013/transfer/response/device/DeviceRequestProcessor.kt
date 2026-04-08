@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 European Commission
+ * Copyright (c) 2024-2026 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import eu.europa.ec.eudi.iso18013.transfer.internal.readerauth.performReaderAuth
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStore
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStoreAware
 import eu.europa.ec.eudi.iso18013.transfer.response.ReaderAuth
+import eu.europa.ec.eudi.iso18013.transfer.response.ReaderAuthPolicy
 import eu.europa.ec.eudi.iso18013.transfer.response.Request
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestedDocument
@@ -42,12 +43,14 @@ import org.multipaz.mdoc.request.DeviceRequest as MultipazDeviceRequest
  * Implementation of [RequestProcessor] for [DeviceRequest] for the ISO 18013-5 standard.
  * @property documentManager the document manager to retrieve the requested documents
  * @property readerTrustStore the reader trust store to perform reader authentication
+ * @property readerAuthPolicy the policy for enforcing reader authentication results during response generation
  * @property zkSystemRepository the zero-knowledge proof system repository
  */
 class DeviceRequestProcessor(
     private val documentManager: DocumentManager,
     override var readerTrustStore: ReaderTrustStore? = null,
-    private var zkSystemRepository: ZkSystemRepository? = null
+    private val readerAuthPolicy: ReaderAuthPolicy = ReaderAuthPolicy.EnforceIfPresent,
+    private var zkSystemRepository: ZkSystemRepository? = null,
 ) : RequestProcessor, ReaderTrustStoreAware {
 
     /**
@@ -93,7 +96,8 @@ class DeviceRequestProcessor(
             return ProcessedDeviceRequest(
                 documentManager = documentManager,
                 requestedDocuments = requestedDocuments,
-                sessionTranscript = request.sessionTranscriptBytes
+                sessionTranscript = request.sessionTranscriptBytes,
+                readerAuthPolicy = readerAuthPolicy,
             )
         } catch (e: Throwable) {
             return RequestProcessor.ProcessedRequest.Failure(e)

@@ -128,6 +128,7 @@ val transferManager = TransferManager.getDefault(
         )
     ),
     readerTrustStore = readerTrustStore,
+    readerAuthPolicy = ReaderAuthPolicy.EnforceIfPresent, // default
 )
 ``` 
 
@@ -495,6 +496,41 @@ val readerTrustStore = ReaderTrustStore.getDefault(
     trustedCertificates = trustedCertificates,
     revocationPolicy = RevocationPolicy.SoftFail
 )
+```
+
+#### Reader Authentication Enforcement Policy
+
+The `ReaderAuthPolicy` controls how reader authentication results are enforced when generating a
+device response via `ProcessedDeviceRequest.generateResponse()`. It determines whether documents
+are included in the response based on their reader authentication status.
+
+Three policies are available:
+
+| Policy | Behavior |
+|---|---|
+| `ReaderAuthPolicy.DoNotEnforce` | Documents are always included regardless of reader authentication status. |
+| `ReaderAuthPolicy.EnforceIfPresent` | **(Default)** Documents with failed reader authentication are excluded. Documents without reader authentication (e.g., when no `ReaderTrustStore` is configured) are still included. |
+| `ReaderAuthPolicy.AlwaysRequire` | Only documents with verified reader authentication are included. Documents without reader authentication or with failed authentication are excluded. |
+
+The policy is configured when creating the `TransferManager`:
+
+```kotlin
+val transferManager = TransferManager.getDefault(
+    context = context,
+    documentManager = documentManager,
+    readerTrustStore = readerTrustStore,
+    readerAuthPolicy = ReaderAuthPolicy.AlwaysRequire, // strictest mode
+)
+```
+
+Or using the builder:
+
+```kotlin
+val transferManager = TransferManagerImpl.Builder(context)
+    .documentManager(documentManager)
+    .readerTrustStore(readerTrustStore)
+    .readerAuthPolicy(ReaderAuthPolicy.AlwaysRequire)
+    .build()
 ```
 
 #### Custom Implementation
