@@ -3,4 +3,4 @@
 # DeviceRequestProcessor
 
 [androidJvm]\
-constructor(documentManager: DocumentManager, readerTrustStore: [ReaderTrustStore](../../eu.europa.ec.eudi.iso18013.transfer.readerauth/-reader-trust-store/index.md)? = null, zkSystemRepository: ZkSystemRepository? = null)
+constructor(documentManager: DocumentManager, readerTrustStore: [ReaderTrustStore](../../eu.europa.ec.eudi.iso18013.transfer.readerauth/-reader-trust-store/index.md)? = null, readerAuthPolicy: [ReaderAuthPolicy](../../eu.europa.ec.eudi.iso18013.transfer.response/-reader-auth-policy/index.md) = ReaderAuthPolicy.EnforceIfPresent, zkSystemRepository: ZkSystemRepository? = null)
