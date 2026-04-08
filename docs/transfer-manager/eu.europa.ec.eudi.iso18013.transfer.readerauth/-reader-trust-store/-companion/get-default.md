@@ -8,7 +8,7 @@
 
 fun [getDefault](get-default.md)(trustedCertificates: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html)&lt;[X509Certificate](https://developer.android.com/reference/kotlin/java/security/cert/X509Certificate.html)&gt;): [ReaderTrustStore](../index.md)
 
-Returns a default trust store that uses the given list of trusted certificates.
+Returns a default trust store that uses the given list of trusted certificates. Revocation checking is disabled (NoCheck) for backwards compatibility.
 
 #### Parameters
 
@@ -17,3 +17,20 @@ androidJvm
 | | |
 |---|---|
 | trustedCertificates | the trusted certificates |
+
+[androidJvm]\
+
+@[JvmStatic](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)
+
+fun [getDefault](get-default.md)(trustedCertificates: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html)&lt;[X509Certificate](https://developer.android.com/reference/kotlin/java/security/cert/X509Certificate.html)&gt;, revocationPolicy: [RevocationPolicy](../../-revocation-policy/index.md)): [ReaderTrustStore](../index.md)
+
+Returns a default trust store that uses the given list of trusted certificates and the specified revocation policy.
+
+#### Parameters
+
+androidJvm
+
+| | |
+|---|---|
+| trustedCertificates | the trusted certificates |
+| revocationPolicy | the policy controlling certificate revocation checking |

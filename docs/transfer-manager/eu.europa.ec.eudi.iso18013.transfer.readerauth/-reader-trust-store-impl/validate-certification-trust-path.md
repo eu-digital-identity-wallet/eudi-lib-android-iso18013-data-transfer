@@ -7,7 +7,7 @@ open override fun [validateCertificationTrustPath](validate-certification-trust-
 
 Validates the certification trust path of a document signer.
 
-This function verifies the certificate chain against a set of trusted certificates and performs additional profile validation on the signer's certificate.
+This function verifies the certificate chain against a set of trusted certificates, performs revocation checking based on the configured [RevocationPolicy](../-revocation-policy/index.md), and performs additional profile validation on the signer's certificate.
 
 #### Return
 
