@@ -26,6 +26,7 @@ import eu.europa.ec.eudi.iso18013.transfer.response.ReaderAuthPolicy
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestedDocuments
 import eu.europa.ec.eudi.iso18013.transfer.response.ResponseResult
+import eu.europa.ec.eudi.iso18013.transfer.zkp.ZkResponsePolicy
 import eu.europa.ec.eudi.wallet.document.DocumentId
 import eu.europa.ec.eudi.wallet.document.DocumentManager
 import kotlinx.coroutines.runBlocking
@@ -41,12 +42,14 @@ import kotlin.time.ExperimentalTime
  * @property sessionTranscript the session transcript
  * @property requestedDocuments the requested documents
  * @property readerAuthPolicy the policy for enforcing reader authentication results. Default is [ReaderAuthPolicy.EnforceIfPresent].
+ * @property zkResponsePolicy the policy to use when ZK proof generation fails. Default is [ZkResponsePolicy.FallbackToFullDisclosure].
  */
 class ProcessedDeviceRequest(
     private val documentManager: DocumentManager,
     private val sessionTranscript: ByteArray,
     requestedDocuments: RequestedDocuments,
     private val readerAuthPolicy: ReaderAuthPolicy = ReaderAuthPolicy.EnforceIfPresent,
+    private val zkResponsePolicy: ZkResponsePolicy = ZkResponsePolicy.FallbackToFullDisclosure,
 ) : RequestProcessor.ProcessedRequest.Success(requestedDocuments) {
 
     /**
@@ -98,18 +101,29 @@ class ProcessedDeviceRequest(
                         // No matched ZK system, add encoded document
                         deviceResponseGenerator.addDocument(encodedDocument)
                     } else {
-                        // Matched ZK system found, try to generate ZK proof
-                        runCatching {
-                            matchedZkSystem.system.generateProof(
-                                zkSystemSpec = matchedZkSystem.spec,
-                                encodedDocument = ByteString(encodedDocument),
-                                encodedSessionTranscript = ByteString(sessionTranscript)
-                            )
-                        }.onSuccess { zkDocument ->
-                            deviceResponseGenerator.addZkDocument(zkDocument)
-                        }.onFailure {
-                            // Fallback to encoded document if ZK proof generation fails
-                            deviceResponseGenerator.addDocument(encodedDocument)
+                        when (zkResponsePolicy) {
+                            ZkResponsePolicy.Strict -> {
+                                val zkDocument = matchedZkSystem.system.generateProof(
+                                    zkSystemSpec = matchedZkSystem.spec,
+                                    encodedDocument = ByteString(encodedDocument),
+                                    encodedSessionTranscript = ByteString(sessionTranscript)
+                                )
+                                deviceResponseGenerator.addZkDocument(zkDocument)
+                            }
+
+                            ZkResponsePolicy.FallbackToFullDisclosure -> {
+                                runCatching {
+                                    matchedZkSystem.system.generateProof(
+                                        zkSystemSpec = matchedZkSystem.spec,
+                                        encodedDocument = ByteString(encodedDocument),
+                                        encodedSessionTranscript = ByteString(sessionTranscript)
+                                    )
+                                }.onSuccess { zkDocument ->
+                                    deviceResponseGenerator.addZkDocument(zkDocument)
+                                }.onFailure {
+                                    deviceResponseGenerator.addDocument(encodedDocument)
+                                }
+                            }
                         }
                     }
                     documentIds.add(disclosedDocument.documentId)

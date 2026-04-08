@@ -26,20 +26,25 @@ import eu.europa.ec.eudi.iso18013.transfer.response.DisclosedDocuments
 import eu.europa.ec.eudi.iso18013.transfer.response.ReaderAuth
 import eu.europa.ec.eudi.iso18013.transfer.response.ReaderAuthPolicy
 import eu.europa.ec.eudi.iso18013.transfer.response.Request
+import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor.ProcessedRequest.Failure
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestedDocument
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestedDocuments
-import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor.ProcessedRequest.Failure
 import eu.europa.ec.eudi.iso18013.transfer.response.ResponseResult
 import eu.europa.ec.eudi.iso18013.transfer.toDocItems
+import eu.europa.ec.eudi.iso18013.transfer.zkp.MatchedZkSystem
+import eu.europa.ec.eudi.iso18013.transfer.zkp.ZkResponsePolicy
 import eu.europa.ec.eudi.wallet.document.IssuedDocument
 import eu.europa.ec.eudi.wallet.document.format.MsoMdocData
 import eu.europa.ec.eudi.wallet.document.format.MsoMdocFormat
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import org.mockito.MockedStatic
 import org.multipaz.crypto.Algorithm
 import org.multipaz.mdoc.response.DeviceResponseParser
+import org.multipaz.mdoc.zkp.ZkSystem
+import org.multipaz.mdoc.zkp.ZkSystemSpec
 import org.multipaz.securearea.KeyLockedException
 import org.multipaz.securearea.software.SoftwareKeyUnlockData
 import kotlin.test.AfterTest
@@ -47,6 +52,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
+import kotlin.time.ExperimentalTime
 
 class DeviceRequestProcessorTest {
     lateinit var mockLog: MockedStatic<Log>
@@ -549,5 +555,110 @@ class DeviceRequestProcessorTest {
         assertIs<ResponseResult.Success>(responseResult)
         val deviceResponse = responseResult.response as DeviceResponse
         assertEquals(emptyList(), deviceResponse.documentIds)
+    }
+
+    @OptIn(ExperimentalTime::class)
+    @Test
+    fun `processed request should return failure when ZK proof generation fails`() {
+        val documentManager = createDocumentManager(null)
+        val requestProcessor = DeviceRequestProcessor(documentManager)
+        val expectedDocument = documentManager.getDocuments()
+            .filterIsInstance<IssuedDocument>()
+            .first { it.format is MsoMdocFormat && (it.format as MsoMdocFormat).docType == "org.iso.18013.5.1.mDL" }
+        val processedRequest = requestProcessor.process(DeviceRequest)
+        assertIs<ProcessedDeviceRequest>(processedRequest)
+        val documentData = expectedDocument.data
+        assertIs<MsoMdocData>(documentData)
+
+        // Create a matched ZK system that throws on generateProof
+        val failingZkSystem = mockk<ZkSystem> {
+            every { generateProof(any(), any(), any()) } throws RuntimeException("ZK proof generation failed")
+        }
+        val zkSystemSpec = mockk<ZkSystemSpec>()
+        val matchedZkSystem = MatchedZkSystem(failingZkSystem, zkSystemSpec)
+
+        // Rebuild requestedDocuments with the failing matchedZkSystem
+        val requestedDocumentsWithZk = RequestedDocuments(
+            processedRequest.requestedDocuments.map { reqDoc ->
+                RequestedDocument(
+                    documentId = reqDoc.documentId,
+                    requestedItems = reqDoc.requestedItems,
+                    readerAuth = reqDoc.readerAuth,
+                    matchedZkSystem = matchedZkSystem
+                )
+            }
+        )
+
+        val processedRequestWithZk = ProcessedDeviceRequest(
+            documentManager = documentManager,
+            sessionTranscript = DeviceRequest.sessionTranscriptBytes,
+            requestedDocuments = requestedDocumentsWithZk,
+            zkResponsePolicy = ZkResponsePolicy.Strict,
+        )
+
+        val responseResult = processedRequestWithZk.generateResponse(
+            disclosedDocuments = DisclosedDocuments(
+                DisclosedDocument(
+                    documentId = expectedDocument.id,
+                    disclosedItems = documentData.nameSpaces.toDocItems(),
+                )
+            ),
+            signatureAlgorithm = Algorithm.ES256,
+        )
+
+        // ZK proof failure must NOT silently fall back to full disclosure
+        assertIs<ResponseResult.Failure>(responseResult)
+    }
+
+    @OptIn(ExperimentalTime::class)
+    @Test
+    fun `processed request should return success with fallback policy when ZK proof generation fails`() {
+        val documentManager = createDocumentManager(null)
+        val requestProcessor = DeviceRequestProcessor(documentManager)
+        val expectedDocument = documentManager.getDocuments()
+            .filterIsInstance<IssuedDocument>()
+            .first { it.format is MsoMdocFormat && (it.format as MsoMdocFormat).docType == "org.iso.18013.5.1.mDL" }
+        val processedRequest = requestProcessor.process(DeviceRequest)
+        assertIs<ProcessedDeviceRequest>(processedRequest)
+        val documentData = expectedDocument.data
+        assertIs<MsoMdocData>(documentData)
+
+        val failingZkSystem = mockk<ZkSystem> {
+            every { generateProof(any(), any(), any()) } throws RuntimeException("ZK proof generation failed")
+        }
+        val zkSystemSpec = mockk<ZkSystemSpec>()
+        val matchedZkSystem = MatchedZkSystem(failingZkSystem, zkSystemSpec)
+
+        val requestedDocumentsWithZk = RequestedDocuments(
+            processedRequest.requestedDocuments.map { reqDoc ->
+                RequestedDocument(
+                    documentId = reqDoc.documentId,
+                    requestedItems = reqDoc.requestedItems,
+                    readerAuth = reqDoc.readerAuth,
+                    matchedZkSystem = matchedZkSystem
+                )
+            }
+        )
+
+        val processedRequestWithZk = ProcessedDeviceRequest(
+            documentManager = documentManager,
+            sessionTranscript = DeviceRequest.sessionTranscriptBytes,
+            requestedDocuments = requestedDocumentsWithZk,
+            zkResponsePolicy = ZkResponsePolicy.FallbackToFullDisclosure,
+        )
+
+        val responseResult = processedRequestWithZk.generateResponse(
+            disclosedDocuments = DisclosedDocuments(
+                DisclosedDocument(
+                    documentId = expectedDocument.id,
+                    disclosedItems = documentData.nameSpaces.toDocItems(),
+                )
+            ),
+            signatureAlgorithm = Algorithm.ES256,
+        )
+
+        // FallbackToFullDisclosure should return success even when ZK proof fails
+        assertIs<ResponseResult.Success>(responseResult)
+        assertIs<DeviceResponse>(responseResult.response)
     }
 }

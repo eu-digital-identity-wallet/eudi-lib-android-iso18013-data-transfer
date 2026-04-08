@@ -554,6 +554,33 @@ is TransferEvent.RequestReceived -> {
 }
 ```
 
+### Zero-Knowledge Proof Support
+
+The library supports Zero-Knowledge Proof (ZKP) systems for selective disclosure. When configured,
+the wallet can generate ZK proofs instead of disclosing raw document data, providing enhanced privacy.
+
+To enable ZKP support, provide a `ZkSystemRepository` and optionally configure the `ZkResponsePolicy`:
+
+```kotlin
+val transferManager = TransferManager.getDefault(
+    context = context,
+    documentManager = documentManager,
+    zkSystemRepository = zkSystemRepository,
+    zkResponsePolicy = ZkResponsePolicy.Strict,
+)
+```
+
+The `ZkResponsePolicy` determines behavior when ZK proof generation fails:
+
+| Policy | Behavior |
+|--------|----------|
+| `ZkResponsePolicy.Strict` | Aborts disclosure for the document. **Recommended for production.** |
+| `ZkResponsePolicy.FallbackToFullDisclosure` | Falls back to sending the full document. Current default for backwards compatibility. |
+
+> **Note:** The default policy is `FallbackToFullDisclosure` for backwards compatibility. This will
+> change to `Strict` in a future release. We recommend explicitly setting `ZkResponsePolicy.Strict`
+> in production to prevent unintended full document disclosure when proof generation fails.
+
 ## How to contribute
 
 We welcome contributions to this project. To ensure that the process is smooth for everyone

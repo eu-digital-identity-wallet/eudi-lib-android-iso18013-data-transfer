@@ -34,6 +34,7 @@ import eu.europa.ec.eudi.iso18013.transfer.response.Response
 import eu.europa.ec.eudi.iso18013.transfer.response.device.DeviceRequest
 import eu.europa.ec.eudi.iso18013.transfer.response.device.DeviceRequestProcessor
 import eu.europa.ec.eudi.iso18013.transfer.response.device.DeviceResponse
+import eu.europa.ec.eudi.iso18013.transfer.zkp.ZkResponsePolicy
 import eu.europa.ec.eudi.wallet.document.DocumentManager
 import org.multipaz.mdoc.zkp.ZkSystemRepository
 import org.multipaz.util.Constants
@@ -319,6 +320,7 @@ class TransferManagerImpl @JvmOverloads constructor(
      * @property readerTrustStore reader trust store instance
      * @property retrievalMethods list of device retrieval methods
      * @property zkSystemRepository ZK system repository instance
+     * @property zkResponsePolicy ZK response policy
      * @constructor
      * @param context
      */
@@ -329,6 +331,7 @@ class TransferManagerImpl @JvmOverloads constructor(
         var readerAuthPolicy: ReaderAuthPolicy = ReaderAuthPolicy.EnforceIfPresent
         var retrievalMethods: List<DeviceRetrievalMethod>? = null
         var zkSystemRepository: ZkSystemRepository? = null
+        var zkResponsePolicy: ZkResponsePolicy = ZkResponsePolicy.FallbackToFullDisclosure
 
         /**
          * Document manager instance that will be used to retrieve the requested documents
@@ -371,6 +374,16 @@ class TransferManagerImpl @JvmOverloads constructor(
         }
 
         /**
+         * ZK response policy that determines behavior when ZK proof generation fails.
+         * Defaults to [ZkResponsePolicy.FallbackToFullDisclosure] for backwards compatibility.
+         * Consider using [ZkResponsePolicy.Strict] for production to prevent unintended full disclosure.
+         * @param zkResponsePolicy
+         */
+        fun zkResponsePolicy(zkResponsePolicy: ZkResponsePolicy) = apply {
+            this.zkResponsePolicy = zkResponsePolicy
+        }
+
+        /**
          * Build a [eu.europa.ec.eudi.iso18013.transfer.TransferManagerImpl] instance
          * with [DeviceRequestProcessor] instance
          * @return [eu.europa.ec.eudi.iso18013.transfer.TransferManagerImpl]
@@ -384,6 +397,7 @@ class TransferManagerImpl @JvmOverloads constructor(
                     readerTrustStore = readerTrustStore,
                     readerAuthPolicy = readerAuthPolicy,
                     zkSystemRepository = zkSystemRepository,
+                    zkResponsePolicy = zkResponsePolicy,
                 ),
                 retrievalMethods = retrievalMethods ?: emptyList()
             )

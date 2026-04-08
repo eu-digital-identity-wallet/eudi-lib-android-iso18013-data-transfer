@@ -27,6 +27,7 @@ import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestedDocument
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestedDocuments
 import eu.europa.ec.eudi.iso18013.transfer.zkp.MatchedZkSystem
+import eu.europa.ec.eudi.iso18013.transfer.zkp.ZkResponsePolicy
 import eu.europa.ec.eudi.iso18013.transfer.zkp.findMatchedZkSystem
 import eu.europa.ec.eudi.wallet.document.DocType
 import eu.europa.ec.eudi.wallet.document.DocumentManager
@@ -45,12 +46,14 @@ import org.multipaz.mdoc.request.DeviceRequest as MultipazDeviceRequest
  * @property readerTrustStore the reader trust store to perform reader authentication
  * @property readerAuthPolicy the policy for enforcing reader authentication results during response generation
  * @property zkSystemRepository the zero-knowledge proof system repository
+ * @property zkResponsePolicy the ZK response policy to use when ZK proof generation fails
  */
 class DeviceRequestProcessor(
     private val documentManager: DocumentManager,
     override var readerTrustStore: ReaderTrustStore? = null,
     private val readerAuthPolicy: ReaderAuthPolicy = ReaderAuthPolicy.EnforceIfPresent,
     private var zkSystemRepository: ZkSystemRepository? = null,
+    internal val zkResponsePolicy: ZkResponsePolicy = ZkResponsePolicy.FallbackToFullDisclosure,
 ) : RequestProcessor, ReaderTrustStoreAware {
 
     /**
@@ -98,6 +101,7 @@ class DeviceRequestProcessor(
                 requestedDocuments = requestedDocuments,
                 sessionTranscript = request.sessionTranscriptBytes,
                 readerAuthPolicy = readerAuthPolicy,
+                zkResponsePolicy = zkResponsePolicy,
             )
         } catch (e: Throwable) {
             return RequestProcessor.ProcessedRequest.Failure(e)
