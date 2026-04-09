@@ -383,7 +383,11 @@ requested document's keys, that are needed to sign the response. In this case, e
 `DisclosedDocument` must contain the `keyUnlockData` property that defines the key unlocking.
 
 Finally, the response is sent back to the verifier with the
-`TransferManager.sendResponse(Response)`
+`TransferManager.sendResponse(Response)`.
+
+> **Note:** Currently, only a single request-response cycle per session is supported.
+> Sending a response automatically terminates the presentation session. To perform another
+> exchange, a new session must be started.
 
 The following example demonstrates how to handle the request and send the response.
 

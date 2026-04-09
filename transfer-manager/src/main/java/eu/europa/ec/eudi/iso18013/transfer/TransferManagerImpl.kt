@@ -317,7 +317,14 @@ class TransferManagerImpl @JvmOverloads constructor(
     }
 
     /**
-     * Sends the response bytes to the connected mdoc verifier
+     * Sends the response bytes to the connected mdoc verifier and terminates the session.
+     *
+     * **Note:** Currently, only a single request-response cycle per session is supported.
+     * The response is sent with [Constants.SESSION_DATA_STATUS_SESSION_TERMINATION], which
+     * signals the end of the session to the verifier. Although ISO 18013-5 permits multiple
+     * request-response exchanges within a single session, this library always terminates
+     * the session after the first response.
+     *
      * To generate the response, use the [eu.europa.ec.eudi.iso18013.transfer.response.device.ProcessedDeviceRequest.generateResponse]
      * that is provided by the [eu.europa.ec.eudi.iso18013.transfer.TransferEvent.RequestReceived] event.
      * @param response the response to send

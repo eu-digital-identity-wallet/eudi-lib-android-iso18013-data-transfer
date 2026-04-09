@@ -61,7 +61,12 @@ interface TransferManager : TransferEvent.Listenable {
     fun startEngagementToApp(intent: Intent)
 
     /**
-     * Sends response bytes to the connected reader
+     * Sends response bytes to the connected reader and terminates the session.
+     *
+     * **Note:** Currently, only a single request-response cycle per session is supported.
+     * Calling this method sends the response along with a session termination signal,
+     * ending the presentation session. To perform another exchange, a new session must be started.
+     *
      * To generate the response, use the [RequestProcessor.ProcessedRequest.Success.generateResponse]
      * method.
      * @param response The response to be sent
