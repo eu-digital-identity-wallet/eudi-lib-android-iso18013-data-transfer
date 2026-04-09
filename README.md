@@ -581,6 +581,11 @@ The `ZkResponsePolicy` determines behavior when ZK proof generation fails:
 > change to `Strict` in a future release. We recommend explicitly setting `ZkResponsePolicy.Strict`
 > in production to prevent unintended full document disclosure when proof generation fails.
 
+When a ZK proof is successfully generated, the credential is **not consumed** — the credential policy
+(e.g., one-time-use limits) is not applied, since the actual credential key is never sent to the
+verifier. Credential consumption only occurs when the full document is disclosed (regular path or
+fallback).
+
 ## How to contribute
 
 We welcome contributions to this project. To ensure that the process is smooth for everyone

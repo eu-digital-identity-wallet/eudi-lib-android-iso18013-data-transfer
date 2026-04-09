@@ -18,17 +18,21 @@ package eu.europa.ec.eudi.iso18013.transfer.response.device
 
 import eu.europa.ec.eudi.iso18013.transfer.asMap
 import eu.europa.ec.eudi.iso18013.transfer.internal.DocumentResponseGenerator.generateDocumentResponse
+import eu.europa.ec.eudi.iso18013.transfer.internal.DocumentResponseGenerator.generateDocumentResponseWithoutConsuming
 import eu.europa.ec.eudi.iso18013.transfer.internal.assertAgeOverRequestLimitForIso18013
 import eu.europa.ec.eudi.iso18013.transfer.internal.filterWithRequestedDocuments
 import eu.europa.ec.eudi.iso18013.transfer.internal.getValidIssuedMsoMdocDocumentById
+import eu.europa.ec.eudi.iso18013.transfer.response.DisclosedDocument
 import eu.europa.ec.eudi.iso18013.transfer.response.DisclosedDocuments
 import eu.europa.ec.eudi.iso18013.transfer.response.ReaderAuthPolicy
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestedDocuments
 import eu.europa.ec.eudi.iso18013.transfer.response.ResponseResult
+import eu.europa.ec.eudi.iso18013.transfer.zkp.MatchedZkSystem
 import eu.europa.ec.eudi.iso18013.transfer.zkp.ZkResponsePolicy
 import eu.europa.ec.eudi.wallet.document.DocumentId
 import eu.europa.ec.eudi.wallet.document.DocumentManager
+import eu.europa.ec.eudi.wallet.document.IssuedDocument
 import kotlinx.coroutines.runBlocking
 import kotlinx.io.bytestring.ByteString
 import org.multipaz.crypto.Algorithm
@@ -61,7 +65,7 @@ class ProcessedDeviceRequest(
     @OptIn(ExperimentalTime::class)
     override fun generateResponse(
         disclosedDocuments: DisclosedDocuments,
-        signatureAlgorithm: Algorithm? // TODO: signatureAlgorithm remove this parameter ?
+        signatureAlgorithm: Algorithm?
     ): ResponseResult {
         try {
             val documentIds = mutableListOf<DocumentId>()
@@ -69,7 +73,7 @@ class ProcessedDeviceRequest(
                 DeviceResponseGenerator(Constants.DEVICE_RESPONSE_STATUS_OK)
             disclosedDocuments
                 .filterWithRequestedDocuments(requestedDocuments)
-                .forEachIndexed { index, disclosedDocument ->
+                .forEach { disclosedDocument ->
                     val requestedDocument = requestedDocuments.find {
                         it.documentId == disclosedDocument.documentId
                     }
@@ -81,50 +85,20 @@ class ProcessedDeviceRequest(
                         ReaderAuthPolicy.EnforceIfPresent -> readerAuth?.isVerified == false
                         ReaderAuthPolicy.AlwaysRequire -> readerAuth?.isVerified != true
                     }
-                    if (skipByPolicy) return@forEachIndexed
+                    if (skipByPolicy) return@forEach
 
-                    val encodedDocument = runBlocking {
+                    val issuedDocument = runBlocking {
                         documentManager.getValidIssuedMsoMdocDocumentById(disclosedDocument.documentId)
                     }.assertAgeOverRequestLimitForIso18013(disclosedDocument)
-                        .generateDocumentResponse(
-                            transcript = sessionTranscript,
-                            elements = disclosedDocument.disclosedItems.asMap(),
-                            keyUnlockData = disclosedDocument.keyUnlockData
-                        )
-                        .getOrThrow()
 
-                    // Check for matched ZK system for the disclosed document
-                    // If found, generate ZK proof, else use encoded document
                     val matchedZkSystem = requestedDocument?.matchedZkSystem
 
                     if (matchedZkSystem == null) {
-                        // No matched ZK system, add encoded document
-                        deviceResponseGenerator.addDocument(encodedDocument)
+                        addDocumentResponse(issuedDocument, disclosedDocument, deviceResponseGenerator)
                     } else {
-                        when (zkResponsePolicy) {
-                            ZkResponsePolicy.Strict -> {
-                                val zkDocument = matchedZkSystem.system.generateProof(
-                                    zkSystemSpec = matchedZkSystem.spec,
-                                    encodedDocument = ByteString(encodedDocument),
-                                    encodedSessionTranscript = ByteString(sessionTranscript)
-                                )
-                                deviceResponseGenerator.addZkDocument(zkDocument)
-                            }
-
-                            ZkResponsePolicy.FallbackToFullDisclosure -> {
-                                runCatching {
-                                    matchedZkSystem.system.generateProof(
-                                        zkSystemSpec = matchedZkSystem.spec,
-                                        encodedDocument = ByteString(encodedDocument),
-                                        encodedSessionTranscript = ByteString(sessionTranscript)
-                                    )
-                                }.onSuccess { zkDocument ->
-                                    deviceResponseGenerator.addZkDocument(zkDocument)
-                                }.onFailure {
-                                    deviceResponseGenerator.addDocument(encodedDocument)
-                                }
-                            }
-                        }
+                        addZkDocumentResponse(
+                            issuedDocument, disclosedDocument, matchedZkSystem, deviceResponseGenerator
+                        )
                     }
                     documentIds.add(disclosedDocument.documentId)
                 }
@@ -137,6 +111,73 @@ class ProcessedDeviceRequest(
             )
         } catch (e: Exception) {
             return ResponseResult.Failure(e)
+        }
+    }
+
+    /**
+     * Generates a document response with credential consumption and adds it to the response.
+     * Uses [eu.europa.ec.eudi.wallet.document.IssuedDocument.consumingCredential] to apply
+     * the [eu.europa.ec.eudi.wallet.document.CreateDocumentSettings.CredentialPolicy].
+     *
+     * @param issuedDocument the issued document from the document manager
+     * @param disclosedDocument the document with disclosed items
+     * @param deviceResponseGenerator the generator to add the document to
+     */
+    private fun addDocumentResponse(
+        issuedDocument: IssuedDocument,
+        disclosedDocument: DisclosedDocument,
+        deviceResponseGenerator: DeviceResponseGenerator
+    ) {
+        val encodedDocument = issuedDocument.generateDocumentResponse(
+            transcript = sessionTranscript,
+            elements = disclosedDocument.disclosedItems.asMap(),
+            keyUnlockData = disclosedDocument.keyUnlockData
+        ).getOrThrow()
+        deviceResponseGenerator.addDocument(encodedDocument)
+    }
+
+    /**
+     * Attempts to generate a ZK proof response without consuming the credential.
+     * Uses [eu.europa.ec.eudi.wallet.document.IssuedDocument.findCredential] to bypass
+     * the [eu.europa.ec.eudi.wallet.document.CreateDocumentSettings.CredentialPolicy].
+     *
+     * On ZK proof success, adds the ZK document to the response.
+     * On ZK proof failure, behavior depends on [zkResponsePolicy]:
+     * - [ZkResponsePolicy.Strict]: throws the exception (becomes [ResponseResult.Failure])
+     * - [ZkResponsePolicy.FallbackToFullDisclosure]: falls back to [addDocumentResponse]
+     *
+     * @param issuedDocument the issued document from the document manager
+     * @param disclosedDocument the document with disclosed items
+     * @param matchedZkSystem the matched ZK system and spec
+     * @param deviceResponseGenerator the generator to add the document to
+     */
+    @OptIn(ExperimentalTime::class)
+    private fun addZkDocumentResponse(
+        issuedDocument: IssuedDocument,
+        disclosedDocument: DisclosedDocument,
+        matchedZkSystem: MatchedZkSystem,
+        deviceResponseGenerator: DeviceResponseGenerator
+    ) {
+        val encodedDocument = issuedDocument.generateDocumentResponseWithoutConsuming(
+            transcript = sessionTranscript,
+            elements = disclosedDocument.disclosedItems.asMap(),
+            keyUnlockData = disclosedDocument.keyUnlockData
+        ).getOrThrow()
+
+        val zkResult = runCatching {
+            matchedZkSystem.system.generateProof(
+                zkSystemSpec = matchedZkSystem.spec,
+                encodedDocument = ByteString(encodedDocument),
+                encodedSessionTranscript = ByteString(sessionTranscript)
+            )
+        }
+
+        if (zkResult.isSuccess) {
+            deviceResponseGenerator.addZkDocument(zkResult.getOrThrow())
+        } else when (zkResponsePolicy) {
+            ZkResponsePolicy.Strict -> throw zkResult.exceptionOrNull()!!
+            ZkResponsePolicy.FallbackToFullDisclosure ->
+                addDocumentResponse(issuedDocument, disclosedDocument, deviceResponseGenerator)
         }
     }
 }
