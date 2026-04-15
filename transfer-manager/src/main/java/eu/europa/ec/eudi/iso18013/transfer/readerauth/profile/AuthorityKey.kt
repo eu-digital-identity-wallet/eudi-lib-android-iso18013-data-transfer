@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2023-2025 European Commission
+ *  Copyright (c) 2023-2026 European Commission
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -30,33 +30,37 @@ class AuthorityKey : ProfileValidation {
         trustCA: X509Certificate,
     ): Boolean {
         require(chain.isNotEmpty())
-        val readerAuthCertificate = chain.first()
         try {
-            val authorityKeyIdentifier: AuthorityKeyIdentifier =
-                AuthorityKeyIdentifier.getInstance(
-                    DEROctetString.getInstance(
-                        readerAuthCertificate.getExtensionValue(Extension.authorityKeyIdentifier.id),
-                    ).octets,
-                )
-
-            val ca = if (chain.size > 1) {
-                chain[1]
-            } else trustCA
-
-            val subjectKeyIdentifier: SubjectKeyIdentifier =
-                SubjectKeyIdentifier.getInstance(
-                    DEROctetString.getInstance(
-                        ca.getExtensionValue(Extension.subjectKeyIdentifier.id),
-                    ).octets,
-                )
-
-            return authorityKeyIdentifier.keyIdentifier.contentEquals(subjectKeyIdentifier.keyIdentifier)
-                .also {
-                    Log.d(this.TAG, "AuthorityKeyIdentifier: $it")
+            // ISO/IEC 18013-5 Annex B, Table B.6 requires every certificate's
+            // AuthorityKeyIdentifier to match its issuer's SubjectKeyIdentifier,
+            // not only the leaf. Walk every adjacent pair in the chain and fall
+            // back to trustCA as the issuer of the last certificate.
+            chain.forEachIndexed { index, certificate ->
+                val issuer = if (index + 1 < chain.size) chain[index + 1] else trustCA
+                if (!aki(certificate).contentEquals(ski(issuer))) {
+                    Log.d(this.TAG, "AuthorityKeyIdentifier mismatch at chain index $index")
+                    return false
                 }
+            }
+            Log.d(this.TAG, "AuthorityKeyIdentifier: true")
+            return true
         } catch (e: Throwable) {
             Log.e(this.TAG, "Error", e)
             return false
         }
     }
+
+    private fun aki(certificate: X509Certificate): ByteArray =
+        AuthorityKeyIdentifier.getInstance(
+            DEROctetString.getInstance(
+                certificate.getExtensionValue(Extension.authorityKeyIdentifier.id),
+            ).octets,
+        ).keyIdentifier
+
+    private fun ski(certificate: X509Certificate): ByteArray =
+        SubjectKeyIdentifier.getInstance(
+            DEROctetString.getInstance(
+                certificate.getExtensionValue(Extension.subjectKeyIdentifier.id),
+            ).octets,
+        ).keyIdentifier
 }

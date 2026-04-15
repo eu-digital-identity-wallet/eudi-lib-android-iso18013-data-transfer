@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025 European Commission
+ * Copyright (c) 2023-2026 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,9 @@ import android.util.Log
 import eu.europa.ec.eudi.iso18013.transfer.mockAndroidLog
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadCert
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadInvalidCert
+import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadThreeCertChainWithIntermediateAkiMismatch
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadTrustCert
+import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadValidThreeCertChain
 import org.junit.After
 import org.junit.Before
 import org.mockito.MockedStatic
@@ -63,6 +65,26 @@ class AuthorityKeyTest {
         val result = validation.validate(invalidCert, trustCA)
 
         // Assert the result
+        assertFalse(result)
+    }
+
+    // Issue 114: chains longer than two must have every intermediate's AKI
+    // validated against its issuer's SKI, not just the leaf.
+    @Test
+    fun testVerify_ThreeCertChain_AllMatch_ReturnsTrue() {
+        val chain = loadValidThreeCertChain()
+
+        val result = validation.validate(chain, trustCA)
+
+        assertTrue(result)
+    }
+
+    @Test
+    fun testVerify_ThreeCertChain_IntermediateAkiMismatch_ReturnsFalse() {
+        val chain = loadThreeCertChainWithIntermediateAkiMismatch()
+
+        val result = validation.validate(chain, trustCA)
+
         assertFalse(result)
     }
 

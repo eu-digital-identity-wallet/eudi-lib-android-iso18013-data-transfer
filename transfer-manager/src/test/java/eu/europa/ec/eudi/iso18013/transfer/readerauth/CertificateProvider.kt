@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2023-2025 European Commission
+ *  Copyright (c) 2023-2026 European Commission
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import org.bouncycastle.asn1.ASN1EncodableVector
 import org.bouncycastle.asn1.ASN1ObjectIdentifier
 import org.bouncycastle.asn1.DERSequence
 import org.bouncycastle.asn1.x500.X500Name
+import org.bouncycastle.asn1.x509.AuthorityKeyIdentifier
 import org.bouncycastle.asn1.x509.BasicConstraints
 import org.bouncycastle.asn1.x509.CRLDistPoint
 import org.bouncycastle.asn1.x509.DistributionPoint
@@ -201,6 +202,115 @@ private val untrustedRoot: X509Certificate
         return JcaX509CertificateConverter().getCertificate(builder.build(signer))
     }
 
+/**
+ * Builds a 3-certificate chain `[leaf, intermediate, root]` under the trusted root.
+ *
+ * Every certificate's AuthorityKeyIdentifier is correctly set to its issuer's
+ * SubjectKeyIdentifier, so an ISO 18013-5 Annex B Authority Key profile
+ * validator must accept this chain.
+ */
+val validThreeCertChain: List<X509Certificate> by lazy {
+    buildThreeCertChain(tamperIntermediateAki = false)
+}
+
+/**
+ * Builds a 3-certificate chain `[leaf, intermediate, root]` where the
+ * intermediate certificate's AuthorityKeyIdentifier is deliberately corrupted
+ * so it does NOT match the root's SubjectKeyIdentifier.
+ *
+ * The chain is still cryptographically signed correctly (PKIX path validation
+ * passes), exposing the profile gap described in issue 114.
+ */
+val threeCertChainWithIntermediateAkiMismatch: List<X509Certificate> by lazy {
+    buildThreeCertChain(tamperIntermediateAki = true)
+}
+
+private fun buildThreeCertChain(tamperIntermediateAki: Boolean): List<X509Certificate> {
+    // Root CA is the existing trustedCertificate (self-signed).
+    val root = trustedCertificate
+
+    // Intermediate CA signed by the root.
+    val intermediateKeyPair = KeyPairGenerator.getInstance("EC").apply {
+        initialize(ECGenParameterSpec("secp256r1"))
+    }.generateKeyPair()
+    val intermediateSerial = BigInteger(64, SecureRandom())
+    val intermediateIssuer = X500Name(root.subjectX500Principal.name)
+    val intermediateSubject = X500Name("CN=Intermediate CA")
+    val intermediateNotBefore = Date.from(Instant.now().minusSeconds(3600))
+    val intermediateNotAfter = Date(intermediateNotBefore.time + 30 * 86400000L)
+
+    val intermediateAkiExtension = if (tamperIntermediateAki) {
+        // Replace the AKI key identifier with bytes that do NOT match the root's SKI.
+        val bogus = ByteArray(20) { 0xCC.toByte() }
+        AuthorityKeyIdentifier(bogus)
+    } else {
+        extUtils.createAuthorityKeyIdentifier(root)
+    }
+
+    val intermediateBuilder = JcaX509v3CertificateBuilder(
+        intermediateIssuer,
+        intermediateSerial,
+        intermediateNotBefore,
+        intermediateNotAfter,
+        intermediateSubject,
+        intermediateKeyPair.public
+    ).apply {
+        addExtension(Extension.basicConstraints, true, BasicConstraints(true))
+        addExtension(
+            Extension.keyUsage,
+            true,
+            KeyUsage(KeyUsage.keyCertSign or KeyUsage.cRLSign)
+        )
+        addExtension(
+            Extension.subjectKeyIdentifier,
+            false,
+            extUtils.createSubjectKeyIdentifier(intermediateKeyPair.public)
+        )
+        addExtension(Extension.authorityKeyIdentifier, false, intermediateAkiExtension)
+    }
+    val intermediateSigner =
+        JcaContentSignerBuilder(signatureAlgorithm).build(trustedKeyPair.private)
+    val intermediate: X509Certificate = JcaX509CertificateConverter()
+        .getCertificate(intermediateBuilder.build(intermediateSigner))
+
+    // Leaf certificate signed by the intermediate.
+    val leafKeyPair = KeyPairGenerator.getInstance("EC").apply {
+        initialize(ECGenParameterSpec("secp256r1"))
+    }.generateKeyPair()
+    val leafSerial = BigInteger(64, SecureRandom())
+    val leafIssuer = X500Name(intermediate.subjectX500Principal.name)
+    val leafSubject = X500Name("CN=ValidCertificate")
+    val leafNotBefore = Date()
+    val leafNotAfter = Date(leafNotBefore.time + 30 * 86400000L)
+    val leafBuilder = JcaX509v3CertificateBuilder(
+        leafIssuer,
+        leafSerial,
+        leafNotBefore,
+        leafNotAfter,
+        leafSubject,
+        leafKeyPair.public
+    ).apply {
+        addExtension(Extension.basicConstraints, true, BasicConstraints(false))
+        addExtension(
+            Extension.subjectKeyIdentifier,
+            false,
+            extUtils.createSubjectKeyIdentifier(leafKeyPair.public)
+        )
+        addExtension(
+            Extension.authorityKeyIdentifier,
+            false,
+            extUtils.createAuthorityKeyIdentifier(intermediate)
+        )
+        addExtension(Extension.keyUsage, true, KeyUsage(KeyUsage.digitalSignature))
+    }
+    val leafSigner =
+        JcaContentSignerBuilder(signatureAlgorithm).build(intermediateKeyPair.private)
+    val leaf: X509Certificate = JcaX509CertificateConverter()
+        .getCertificate(leafBuilder.build(leafSigner))
+
+    return listOf(leaf, intermediate, root)
+}
+
 val invalidCertificate: X509Certificate by lazy {
     val keyPair = KeyPairGenerator.getInstance("RSA").apply {
         initialize(2048)
@@ -228,3 +338,8 @@ fun loadCert(): X509Certificate = validCertificate
 fun loadInvalidCert(): X509Certificate = invalidCertificate
 
 fun loadTrustCert(): X509Certificate = trustedCertificate
+
+fun loadValidThreeCertChain(): List<X509Certificate> = validThreeCertChain
+
+fun loadThreeCertChainWithIntermediateAkiMismatch(): List<X509Certificate> =
+    threeCertChainWithIntermediateAkiMismatch
