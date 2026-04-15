@@ -333,6 +333,50 @@ val revokedCertificateCRL: java.security.cert.X509CRL by lazy {
     JcaX509CRLConverter().getCRL(crlBuilder.build(signer))
 }
 
+private fun buildLeafCertificateWithValidity(
+    notBefore: Date,
+    notAfter: Date,
+): X509Certificate {
+    val keyPair = KeyPairGenerator.getInstance("EC").apply {
+        initialize(ECGenParameterSpec("secp256r1"))
+    }.generateKeyPair()
+    val serialNumber = BigInteger(64, SecureRandom())
+    val issuer = X500Name(trustedCertificate.subjectX500Principal.name)
+    val subject = X500Name("CN=ValidityTestCertificate")
+    val builder = JcaX509v3CertificateBuilder(
+        issuer,
+        serialNumber,
+        notBefore,
+        notAfter,
+        subject,
+        keyPair.public,
+    )
+    val signer = JcaContentSignerBuilder(signatureAlgorithm).build(trustedKeyPair.private)
+    return JcaX509CertificateConverter().getCertificate(builder.build(signer))
+}
+
+val notYetValidCertificate: X509Certificate by lazy {
+    // notBefore starts 1 day in the future
+    val notBefore = Date.from(Instant.now().plusSeconds(86400))
+    val notAfter = Date(notBefore.time + 30 * 86400000L)
+    buildLeafCertificateWithValidity(notBefore, notAfter)
+}
+
+val expiredCertificate: X509Certificate by lazy {
+    // notAfter ended 1 day ago
+    val notAfter = Date.from(Instant.now().minusSeconds(86400))
+    val notBefore = Date(notAfter.time - 30 * 86400000L)
+    buildLeafCertificateWithValidity(notBefore, notAfter)
+}
+
+val tooLongButCurrentlyValidCertificate: X509Certificate by lazy {
+    // Currently valid window, but total duration exceeds MAX_VALIDITY_PERIOD_DAYS (1187)
+    val notBefore = Date.from(Instant.now().minusSeconds(86400))
+    // 1500 days after notBefore
+    val notAfter = Date(notBefore.time + 1500L * 86400000L)
+    buildLeafCertificateWithValidity(notBefore, notAfter)
+}
+
 val invalidCertificate: X509Certificate by lazy {
     val keyPair = KeyPairGenerator.getInstance("RSA").apply {
         initialize(2048)
@@ -365,3 +409,9 @@ fun loadValidThreeCertChain(): List<X509Certificate> = validThreeCertChain
 
 fun loadThreeCertChainWithIntermediateAkiMismatch(): List<X509Certificate> =
     threeCertChainWithIntermediateAkiMismatch
+
+fun loadNotYetValidCert(): X509Certificate = notYetValidCertificate
+
+fun loadExpiredCert(): X509Certificate = expiredCertificate
+
+fun loadTooLongButCurrentlyValidCert(): X509Certificate = tooLongButCurrentlyValidCertificate

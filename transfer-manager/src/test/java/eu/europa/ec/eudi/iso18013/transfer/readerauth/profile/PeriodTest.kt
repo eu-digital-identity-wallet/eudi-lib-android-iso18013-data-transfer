@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025 European Commission
+ * Copyright (c) 2023-2026 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,10 @@ package eu.europa.ec.eudi.iso18013.transfer.readerauth.profile
 import android.util.Log
 import eu.europa.ec.eudi.iso18013.transfer.mockAndroidLog
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadCert
+import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadExpiredCert
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadInvalidCert
+import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadNotYetValidCert
+import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadTooLongButCurrentlyValidCert
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.loadTrustCert
 import org.junit.After
 import org.junit.Before
@@ -63,6 +66,36 @@ class PeriodTest {
         val result = validation.validate(invalidCert, trustCA)
 
         // Assert the result
+        assertFalse(result)
+    }
+
+    @Test
+    fun testVerify_NotYetValid() {
+        // Certificate whose notBefore is in the future; current time is outside [notBefore, notAfter].
+        val notYetValid = listOf(loadNotYetValidCert())
+
+        val result = validation.validate(notYetValid, trustCA)
+
+        assertFalse(result)
+    }
+
+    @Test
+    fun testVerify_Expired() {
+        // Certificate whose notAfter is in the past; current time is outside [notBefore, notAfter].
+        val expired = listOf(loadExpiredCert())
+
+        val result = validation.validate(expired, trustCA)
+
+        assertFalse(result)
+    }
+
+    @Test
+    fun testVerify_TooLongButCurrentlyValid() {
+        // Certificate currently in its validity window, but total lifetime exceeds MAX_VALIDITY_PERIOD_DAYS.
+        val tooLong = listOf(loadTooLongButCurrentlyValidCert())
+
+        val result = validation.validate(tooLong, trustCA)
+
         assertFalse(result)
     }
 
