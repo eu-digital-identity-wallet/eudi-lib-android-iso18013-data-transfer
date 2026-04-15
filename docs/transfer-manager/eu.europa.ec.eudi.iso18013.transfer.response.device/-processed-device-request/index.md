@@ -17,7 +17,6 @@ Implementation of [RequestProcessor.ProcessedRequest.Success](../../eu.europa.ec
 
 | Name | Summary |
 |---|---|
-| [includeOnlyRequested](include-only-requested.md) | [androidJvm]<br>var [includeOnlyRequested](include-only-requested.md): [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html)<br>whether to include only the requested documents or all the disclosed documents. Default is true. |
 | [requestedDocuments](../../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/-processed-request/-success/requested-documents.md) | [androidJvm]<br>val [requestedDocuments](../../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/-processed-request/-success/requested-documents.md): [RequestedDocuments](../../eu.europa.ec.eudi.iso18013.transfer.response/-requested-documents/index.md)<br>the requested documents |
 
 ## Functions

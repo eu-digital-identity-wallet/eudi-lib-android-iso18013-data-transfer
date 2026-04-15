@@ -21,8 +21,6 @@ import eu.europa.ec.eudi.iso18013.transfer.engagement.DeviceRetrievalMethod
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStore
 import eu.europa.ec.eudi.iso18013.transfer.response.device.DeviceRequestProcessor
 import io.mockk.mockk
-import org.junit.After
-import org.junit.Before
 import org.mockito.MockedStatic
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest

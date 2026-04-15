@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 European Commission
+ * Copyright (c) 2024-2026 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,18 +31,18 @@ import eu.europa.ec.eudi.wallet.document.IssuedDocument
 import eu.europa.ec.eudi.wallet.document.format.MsoMdocData
 import eu.europa.ec.eudi.wallet.document.format.MsoMdocFormat
 import io.mockk.mockk
-import org.junit.After
-import org.junit.Before
-import org.junit.BeforeClass
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import org.mockito.MockedStatic
 import org.multipaz.crypto.Algorithm
+import org.multipaz.mdoc.response.DeviceResponseParser
 import org.multipaz.securearea.KeyLockedException
 import org.multipaz.securearea.software.SoftwareKeyUnlockData
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertTrue
 
 class DeviceRequestProcessorTest {
     lateinit var mockLog: MockedStatic<Log>
@@ -144,6 +144,66 @@ class DeviceRequestProcessorTest {
         assertIs<ResponseResult.Failure>(responseResult)
         assertIs<KeyLockedException>(responseResult.throwable)
 
+    }
+
+    @Test
+    fun `generateResponse should include only the requested items even when more are disclosed`() {
+        val documentManager = createDocumentManager(null)
+        val requestProcessor = DeviceRequestProcessor(documentManager)
+        val expectedDocument = documentManager.getDocuments()
+            .filterIsInstance<IssuedDocument>()
+            .first { it.format is MsoMdocFormat && (it.format as MsoMdocFormat).docType == "org.iso.18013.5.1.mDL" }
+        val processedRequest = requestProcessor.process(DeviceRequest)
+        assertIs<ProcessedDeviceRequest>(processedRequest)
+
+        val documentData = expectedDocument.data
+        assertIs<MsoMdocData>(documentData)
+
+        // Disclose ALL items from the document (a superset of what was requested).
+        val allDisclosedItems = documentData.nameSpaces.toDocItems()
+        val responseResult = processedRequest.generateResponse(
+            disclosedDocuments = DisclosedDocuments(
+                DisclosedDocument(
+                    documentId = expectedDocument.id,
+                    disclosedItems = allDisclosedItems,
+                )
+            ),
+            signatureAlgorithm = Algorithm.ES256,
+        )
+
+        assertIs<ResponseResult.Success>(responseResult)
+        val deviceResponse = responseResult.response
+        assertIs<DeviceResponse>(deviceResponse)
+
+        // Intersection of the requested items (from the DeviceRequest fixture)
+        // and the items actually present in the sample document. The request
+        // also asks for org.iso.18013.5.1.Utopia/UtopiaID, which the sample
+        // document does not contain, so it is expected to be absent.
+        val expectedItems = setOf(
+            "org.iso.18013.5.1" to "given_name",
+            "org.iso.18013.5.1" to "birth_date",
+            "org.iso.18013.5.1" to "issue_date",
+            "org.iso.18013.5.1" to "portrait",
+        )
+
+        val parsed = runBlocking {
+            DeviceResponseParser(
+                encodedDeviceResponse = deviceResponse.deviceResponseBytes,
+                encodedSessionTranscript = deviceResponse.sessionTranscriptBytes,
+            ).parse()
+        }
+        val parsedDocument = parsed.documents.single()
+        val actualItems = parsedDocument.issuerNamespaces.flatMap { ns ->
+            parsedDocument.getIssuerEntryNames(ns).map { ns to it }
+        }.toSet()
+
+        // Precondition: the document contains items beyond the requested set,
+        // so the assertion below is a real filtering check and not vacuous.
+        assertTrue(
+            allDisclosedItems.size > expectedItems.size,
+            "Test fixture precondition: the document must contain more items than were requested"
+        )
+        assertEquals(expectedItems, actualItems)
     }
 
     @Test

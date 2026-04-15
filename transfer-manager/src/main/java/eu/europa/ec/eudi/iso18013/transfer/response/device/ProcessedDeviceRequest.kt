@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 European Commission
+ * Copyright (c) 2024-2026 European Commission
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,15 +39,12 @@ import kotlin.time.ExperimentalTime
  * @property documentManager the document manager to use for resolving documents
  * @property sessionTranscript the session transcript
  * @property requestedDocuments the requested documents
- * @property includeOnlyRequested whether to include only the requested documents or all the disclosed documents. Default is true.
  */
 class ProcessedDeviceRequest(
     private val documentManager: DocumentManager,
     private val sessionTranscript: ByteArray,
     requestedDocuments: RequestedDocuments
 ) : RequestProcessor.ProcessedRequest.Success(requestedDocuments) {
-
-    var includeOnlyRequested: Boolean = true
 
     /**
      * Generate the response for the disclosed documents.
@@ -65,10 +62,7 @@ class ProcessedDeviceRequest(
             val deviceResponseGenerator =
                 DeviceResponseGenerator(Constants.DEVICE_RESPONSE_STATUS_OK)
             disclosedDocuments
-                .let {
-                    if (includeOnlyRequested) it.filterWithRequestedDocuments(requestedDocuments)
-                    else it
-                }
+                .filterWithRequestedDocuments(requestedDocuments)
                 .forEachIndexed { index, disclosedDocument ->
                     val encodedDocument = runBlocking {
                         documentManager.getValidIssuedMsoMdocDocumentById(disclosedDocument.documentId)
