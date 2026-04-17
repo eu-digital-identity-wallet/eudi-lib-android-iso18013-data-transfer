@@ -1,5 +1,5 @@
 [versions]
-agp = "8.13.1"
+agp = "9.0.1"
 appcompat = "1.7.1"
 bouncy-castle = "1.78.1"
 dependency-license-report = "2.9"
@@ -16,7 +16,7 @@ mavenPublish = "0.33.0"
 mockito-inline = "5.2.0"
 mockito-kotlin = "5.4.0"
 mockk = "1.14.4"
-multipaz = "0.95.0"
+multipaz = "0.97.0"
 robolectricVersion = "4.15.1"
 sonarqube = "6.2.0.5505"
 zxing-core = "3.5.3"
@@ -43,13 +43,13 @@ robolectric-robolectric = { module = "org.robolectric:robolectric", version.ref 
 zxing-core = { module = "com.google.zxing:core", version.ref = "zxing-core" }
 cbor = { module = "com.upokecenter:cbor", version.ref = "cbor" }
 cose = { module = "com.augustcellars.cose:cose-java", version.ref = "cose" }
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "agp" }
 dependency-license-report = { id = "com.github.jk1.dependency-license-report", version.ref = "dependency-license-report" }
 dependencycheck = { id = "org.owasp.dependencycheck", version.ref = "dependencycheck" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
 sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }

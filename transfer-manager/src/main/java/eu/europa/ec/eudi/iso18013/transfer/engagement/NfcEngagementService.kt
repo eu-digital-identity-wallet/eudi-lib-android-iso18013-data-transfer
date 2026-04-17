@@ -32,6 +32,7 @@ import eu.europa.ec.eudi.iso18013.transfer.internal.TAG
 import eu.europa.ec.eudi.iso18013.transfer.internal.connectionMethods
 import eu.europa.ec.eudi.iso18013.transfer.internal.mainExecutor
 import eu.europa.ec.eudi.iso18013.transfer.internal.transportOptions
+import kotlinx.coroutines.runBlocking
 import org.multipaz.crypto.Crypto
 import org.multipaz.crypto.EcCurve
 import org.multipaz.crypto.EcPrivateKey
@@ -249,7 +250,9 @@ abstract class NfcEngagementService : HostApduService() {
 
     override fun onCreate() {
         super.onCreate()
-        eDevicePrivateKey = Crypto.createEcPrivateKey(EcCurve.P256)
+        eDevicePrivateKey = runBlocking {
+            Crypto.createEcPrivateKey(EcCurve.P256)
+        }
         transferManager.setupNfcEngagement(this)
         nfcEngagement = NfcEngagementHelper.Builder(
             applicationContext,

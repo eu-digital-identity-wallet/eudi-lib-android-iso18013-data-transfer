@@ -28,8 +28,8 @@ import org.multipaz.document.NameSpacedData
 import org.multipaz.mdoc.credential.MdocCredential
 import org.multipaz.mdoc.response.DocumentGenerator
 import org.multipaz.mdoc.util.MdocUtil
+import org.multipaz.prompt.Reason
 import org.multipaz.securearea.KeyUnlockData
-import org.multipaz.securearea.UnlockReason
 
 internal object DocumentResponseGenerator {
 
@@ -135,7 +135,7 @@ internal object DocumentResponseGenerator {
                 dataElements = NameSpacedData.Builder().build(),
                 secureArea = credential.secureArea,
                 keyAlias = credential.alias,
-                unlockReason = UnlockReason.Unspecified
+                unlockReason = Reason.Unspecified
             )
             .generate()
     }

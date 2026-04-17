@@ -34,9 +34,10 @@ import eu.europa.ec.eudi.wallet.document.DocumentId
 import eu.europa.ec.eudi.wallet.document.DocumentManager
 import eu.europa.ec.eudi.wallet.document.IssuedDocument
 import kotlinx.coroutines.runBlocking
-import kotlinx.io.bytestring.ByteString
+import org.multipaz.cbor.Cbor
 import org.multipaz.crypto.Algorithm
 import org.multipaz.mdoc.response.DeviceResponseGenerator
+import org.multipaz.mdoc.response.MdocDocument
 import org.multipaz.util.Constants
 import kotlin.time.ExperimentalTime
 
@@ -167,8 +168,8 @@ class ProcessedDeviceRequest(
         val zkResult = runCatching {
             matchedZkSystem.system.generateProof(
                 zkSystemSpec = matchedZkSystem.spec,
-                encodedDocument = ByteString(encodedDocument),
-                encodedSessionTranscript = ByteString(sessionTranscript)
+                document = runBlocking { MdocDocument.fromDataItem(Cbor.decode(encodedDocument)) },
+                sessionTranscript = Cbor.decode(sessionTranscript)
             )
         }
 

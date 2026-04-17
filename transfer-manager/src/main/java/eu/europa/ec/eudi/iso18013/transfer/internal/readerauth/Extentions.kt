@@ -19,6 +19,7 @@ package eu.europa.ec.eudi.iso18013.transfer.internal.readerauth
 import eu.europa.ec.eudi.iso18013.transfer.internal.cn
 import eu.europa.ec.eudi.iso18013.transfer.readerauth.ReaderTrustStore
 import eu.europa.ec.eudi.iso18013.transfer.response.ReaderAuth
+import kotlinx.coroutines.runBlocking
 import org.multipaz.cbor.Cbor
 import org.multipaz.cbor.DataItem
 import org.multipaz.cose.Cose
@@ -49,7 +50,9 @@ internal fun ReaderTrustStore.performReaderAuthentication(
 ): ReaderAuth? {
 
     val isSignatureValid = try {
-        parsedRequest.verifyReaderAuthentication(sessionTranscript)
+        runBlocking {
+            parsedRequest.verifyReaderAuthentication(sessionTranscript)
+        }
         true
     } catch (_: SignatureVerificationException) {
         false

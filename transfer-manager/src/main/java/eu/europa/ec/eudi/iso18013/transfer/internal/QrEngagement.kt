@@ -23,6 +23,7 @@ import com.android.identity.android.mdoc.engagement.QrEngagementHelper
 import com.android.identity.android.mdoc.transport.DataTransport
 import eu.europa.ec.eudi.iso18013.transfer.engagement.DeviceRetrievalMethod
 import eu.europa.ec.eudi.iso18013.transfer.engagement.QrCode
+import kotlinx.coroutines.runBlocking
 import org.multipaz.crypto.Crypto
 import org.multipaz.crypto.EcCurve
 import org.multipaz.crypto.EcPrivateKey
@@ -142,7 +143,9 @@ internal class QrEngagement(
      * Configures the QR engagement
      */
     fun configure() {
-        eDevicePrivateKey = Crypto.createEcPrivateKey(EcCurve.P256)
+        eDevicePrivateKey = runBlocking {
+            Crypto.createEcPrivateKey(EcCurve.P256)
+        }
         helper = QrEngagementHelper.Builder(
             context,
             eDevicePrivateKey.publicKey,
