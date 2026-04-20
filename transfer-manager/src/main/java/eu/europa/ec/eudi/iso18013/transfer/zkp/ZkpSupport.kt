@@ -16,11 +16,13 @@
 
 package eu.europa.ec.eudi.iso18013.transfer.zkp
 
-import org.multipaz.documenttype.DocumentTypeRepository
-import org.multipaz.mdoc.request.DocRequest
+import eu.europa.ec.eudi.iso18013.transfer.response.DisclosedDocument
+import eu.europa.ec.eudi.iso18013.transfer.response.RequestedDocument
+import eu.europa.ec.eudi.iso18013.transfer.response.device.MsoMdocItem
 import org.multipaz.mdoc.zkp.ZkSystem
 import org.multipaz.mdoc.zkp.ZkSystemRepository
 import org.multipaz.mdoc.zkp.ZkSystemSpec
+import org.multipaz.request.MdocRequestedClaim
 
 /**
  * Data class representing a matched zero-knowledge proof system along with its specification.
@@ -34,30 +36,63 @@ data class MatchedZkSystem(
 )
 
 /**
- * Find the matched zero-knowledge proof system for the [DocRequest].
- * @param zkSystemRepository the zero-knowledge proof system repository
- * @param documentTypeRepository the document type repository
- * @return the matched zero-knowledge proof system and its specification, or null if none found
+ * Match a ZKP system against the claims the user selected to disclose.
+ *
+ * Returns null when [zkSystemRepository] is not configured, the verifier did not request ZKP,
+ * or no compatible system spec was found for the disclosed claim set.
+ *
+ * @param zkSystemRepository the ZKP system repository, or null if not configured
+ * @param requestedDocument the original request carrying the verifier's ZK system specs and intentToRetain
+ * @param disclosedDocument the document the user selected to disclose
+ * @param docType the mdoc docType the claims belong to
  */
-internal fun DocRequest.findMatchedZkSystem(
+internal fun matchZkSystem(
+    zkSystemRepository: ZkSystemRepository?,
+    requestedDocument: RequestedDocument,
+    disclosedDocument: DisclosedDocument,
+    docType: String,
+): MatchedZkSystem? = zkSystemRepository?.let { repo ->
+    requestedDocument.zkRequestSystemSpecs?.let { specs ->
+        val requestedClaims = disclosedDocument.disclosedItems
+            .filterIsInstance<MsoMdocItem>()
+            .map { item ->
+                MdocRequestedClaim(
+                    docType = docType,
+                    namespaceName = item.namespace,
+                    dataElementName = item.elementIdentifier,
+                    intentToRetain = requestedDocument.requestedItems[item]!!,
+                )
+            }
+        findMatchingZkSystem(
+            zkSystemRepository = repo,
+            zkSystemSpecs = specs,
+            requestedClaims = requestedClaims,
+        )
+    }
+}
+
+/**
+ * Find the ZKP system that matches the requested claims against the verifier's
+ * requested [zkSystemSpecs].
+ *
+ * @param zkSystemRepository the ZKP proof system repository
+ * @param zkSystemSpecs the ZKP system specs requested by the verifier
+ * @param requestedClaims the requested claims the proof will cover
+ * @return the matched ZKP system and its specification, or null if none found
+ */
+private fun findMatchingZkSystem(
     zkSystemRepository: ZkSystemRepository,
-    documentTypeRepository: DocumentTypeRepository = DocumentTypeRepository(),
+    zkSystemSpecs: List<ZkSystemSpec>,
+    requestedClaims: List<MdocRequestedClaim>,
 ): MatchedZkSystem? {
+    if (zkSystemSpecs.isEmpty()) return null
 
-    val zkRequestSystemSpecs = docRequestInfo?.zkRequest?.systemSpecs ?: return null
-    if (zkRequestSystemSpecs.isEmpty()) return null
-
-    val requestedClaims = toMdocRequest(
-        documentTypeRepository = documentTypeRepository,
-        mdocCredential = null
-    ).requestedClaims
-
-    return zkRequestSystemSpecs
+    return zkSystemSpecs
         .asSequence()
         .mapNotNull { zkSpec ->
             val system = zkSystemRepository.lookup(zkSpec.system) ?: return@mapNotNull null
             val spec = system.getMatchingSystemSpec(
-                zkSystemSpecs = zkRequestSystemSpecs,
+                zkSystemSpecs = zkSystemSpecs,
                 requestedClaims = requestedClaims
             ) ?: return@mapNotNull null
             MatchedZkSystem(system, spec)

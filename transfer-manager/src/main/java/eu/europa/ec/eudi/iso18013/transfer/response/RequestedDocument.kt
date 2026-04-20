@@ -17,8 +17,8 @@
 package eu.europa.ec.eudi.iso18013.transfer.response
 
 import eu.europa.ec.eudi.iso18013.transfer.IntentToRetain
-import eu.europa.ec.eudi.iso18013.transfer.zkp.MatchedZkSystem
 import eu.europa.ec.eudi.wallet.document.DocumentId
+import org.multipaz.mdoc.zkp.ZkSystemSpec
 
 /**
  * Represents a request received by a verifier and contains the requested documents and elements
@@ -26,12 +26,12 @@ import eu.europa.ec.eudi.wallet.document.DocumentId
  * @property documentId the unique id of the document
  * @property requestedItems the list of requested items
  * @property readerAuth the result of the reader authentication
- * @property matchedZkSystem the matched zero-knowledge proof system and its specification, if applicable
+ * @property zkRequestSystemSpecs the ZKP system specs requested by the verifier, or null if none
  */
 
 data class RequestedDocument(
     val documentId: DocumentId,
     val requestedItems: Map<out DocItem, IntentToRetain>,
     val readerAuth: ReaderAuth?,
-    internal val matchedZkSystem: MatchedZkSystem? = null
+    internal val zkRequestSystemSpecs: List<ZkSystemSpec>? = null
 )
