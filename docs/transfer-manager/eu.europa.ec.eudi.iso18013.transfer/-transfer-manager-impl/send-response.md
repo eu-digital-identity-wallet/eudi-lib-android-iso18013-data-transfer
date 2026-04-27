@@ -5,7 +5,11 @@
 [androidJvm]\
 open override fun [sendResponse](send-response.md)(response: [Response](../../eu.europa.ec.eudi.iso18013.transfer.response/-response/index.md))
 
-Sends the response bytes to the connected mdoc verifier To generate the response, use the [eu.europa.ec.eudi.iso18013.transfer.response.device.ProcessedDeviceRequest.generateResponse](../../eu.europa.ec.eudi.iso18013.transfer.response.device/-processed-device-request/generate-response.md) that is provided by the [eu.europa.ec.eudi.iso18013.transfer.TransferEvent.RequestReceived](../-transfer-event/-request-received/index.md) event.
+Sends the response bytes to the connected mdoc verifier and terminates the session.
+
+**Note:** Currently, only a single request-response cycle per session is supported. The response is sent with Constants.SESSION_DATA_STATUS_SESSION_TERMINATION, which signals the end of the session to the verifier. Although ISO 18013-5 permits multiple request-response exchanges within a single session, this library always terminates the session after the first response.
+
+To generate the response, use the [eu.europa.ec.eudi.iso18013.transfer.response.device.ProcessedDeviceRequest.generateResponse](../../eu.europa.ec.eudi.iso18013.transfer.response.device/-processed-device-request/generate-response.md) that is provided by the [eu.europa.ec.eudi.iso18013.transfer.TransferEvent.RequestReceived](../-transfer-event/-request-received/index.md) event.
 
 #### Parameters
 

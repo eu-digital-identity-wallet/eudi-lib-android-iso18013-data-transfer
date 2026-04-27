@@ -3,7 +3,7 @@
 # ProcessedDeviceRequest
 
 [androidJvm]\
-class [ProcessedDeviceRequest](index.md)(documentManager: DocumentManager, sessionTranscript: [ByteArray](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-byte-array/index.html), val requestedDocuments: [RequestedDocuments](../../eu.europa.ec.eudi.iso18013.transfer.response/-requested-documents/index.md), readerAuthPolicy: [ReaderAuthPolicy](../../eu.europa.ec.eudi.iso18013.transfer.response/-reader-auth-policy/index.md) = ReaderAuthPolicy.EnforceIfPresent) : [RequestProcessor.ProcessedRequest.Success](../../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/-processed-request/-success/index.md)
+class [ProcessedDeviceRequest](index.md)(documentManager: DocumentManager, sessionTranscript: [ByteArray](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-byte-array/index.html), val requestedDocuments: [RequestedDocuments](../../eu.europa.ec.eudi.iso18013.transfer.response/-requested-documents/index.md), readerAuthPolicy: [ReaderAuthPolicy](../../eu.europa.ec.eudi.iso18013.transfer.response/-reader-auth-policy/index.md) = ReaderAuthPolicy.EnforceIfPresent, zkResponsePolicy: [ZkResponsePolicy](../../eu.europa.ec.eudi.iso18013.transfer.zkp/-zk-response-policy/index.md) = ZkResponsePolicy.FallbackToFullDisclosure) : [RequestProcessor.ProcessedRequest.Success](../../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/-processed-request/-success/index.md)
 
 Implementation of [RequestProcessor.ProcessedRequest.Success](../../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/-processed-request/-success/index.md) for [DeviceRequest](../-device-request/index.md).
 
@@ -11,7 +11,7 @@ Implementation of [RequestProcessor.ProcessedRequest.Success](../../eu.europa.ec
 
 | | |
 |---|---|
-| [ProcessedDeviceRequest](-processed-device-request.md) | [androidJvm]<br>constructor(documentManager: DocumentManager, sessionTranscript: [ByteArray](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-byte-array/index.html), requestedDocuments: [RequestedDocuments](../../eu.europa.ec.eudi.iso18013.transfer.response/-requested-documents/index.md), readerAuthPolicy: [ReaderAuthPolicy](../../eu.europa.ec.eudi.iso18013.transfer.response/-reader-auth-policy/index.md) = ReaderAuthPolicy.EnforceIfPresent) |
+| [ProcessedDeviceRequest](-processed-device-request.md) | [androidJvm]<br>constructor(documentManager: DocumentManager, sessionTranscript: [ByteArray](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-byte-array/index.html), requestedDocuments: [RequestedDocuments](../../eu.europa.ec.eudi.iso18013.transfer.response/-requested-documents/index.md), readerAuthPolicy: [ReaderAuthPolicy](../../eu.europa.ec.eudi.iso18013.transfer.response/-reader-auth-policy/index.md) = ReaderAuthPolicy.EnforceIfPresent, zkResponsePolicy: [ZkResponsePolicy](../../eu.europa.ec.eudi.iso18013.transfer.zkp/-zk-response-policy/index.md) = ZkResponsePolicy.FallbackToFullDisclosure) |
 
 ## Properties
 
