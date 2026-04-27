@@ -118,6 +118,8 @@ dependencies {
     testImplementation(libs.mockito.inline)
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.robolectric.robolectric)
+    testImplementation(libs.cbor)
+    testImplementation(libs.cose)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
