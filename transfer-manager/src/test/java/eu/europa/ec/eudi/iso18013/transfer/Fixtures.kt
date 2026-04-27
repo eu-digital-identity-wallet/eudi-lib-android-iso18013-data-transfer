@@ -21,7 +21,6 @@ import eu.europa.ec.eudi.iso18013.transfer.response.device.DeviceRequest
 import eu.europa.ec.eudi.wallet.document.CreateDocumentSettings
 import eu.europa.ec.eudi.wallet.document.DocumentManager
 import eu.europa.ec.eudi.wallet.document.DocumentManagerImpl
-import eu.europa.ec.eudi.wallet.document.sample.SampleDocumentManagerImpl
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -40,42 +39,42 @@ val Context: Context = mockk {
 }
 const val KeyLockPassphrase = "1234"
 
-@OptIn(ExperimentalEncodingApi::class, ExperimentalTime::class)
-fun createDocumentManager(keyLockPassphrase: String?): DocumentManager {
-    val storage = EphemeralStorage()
-    val secureArea = runBlocking { SoftwareSecureArea.create(storage) }
-    val secureAreaRep = SecureAreaRepository.Builder()
-        .add(secureArea)
-        .build()
-    return SampleDocumentManagerImpl(
-        DocumentManagerImpl(
-            identifier = "DocumentManager",
-            storage = storage,
-            secureAreaRepository = secureAreaRep,
-            ktorHttpClientFactory = null,
-        )
-    ).apply {
-        loadMdocSampleDocuments(
-            sampleData = Base64.decode(getResourceAsText("sample_documents.txt")),
-            createSettings = CreateDocumentSettings(
-                secureAreaIdentifier = secureArea.identifier,
-                createKeySettings = keyLockPassphrase?.let { p ->
-                    SoftwareCreateKeySettings.Builder()
-                        .setPassphraseRequired(
-                            true,
-                            p,
-                            PassphraseConstraints.PIN_FOUR_DIGITS
-                        )
-                        .build()
-                } ?: SoftwareCreateKeySettings.Builder().build(),
-            ),
-            documentNamesMap = mapOf(
-                "eu.europa.ec.eudi.pid.1" to "EU PID",
-                "org.iso.18013.5.1.mDL" to "mDL"
-            )
-        ).getOrThrow()
-    }
-}
+//@OptIn(ExperimentalEncodingApi::class, ExperimentalTime::class)
+//fun createDocumentManager(keyLockPassphrase: String?): DocumentManager {
+//    val storage = EphemeralStorage()
+//    val secureArea = runBlocking { SoftwareSecureArea.create(storage) }
+//    val secureAreaRep = SecureAreaRepository.Builder()
+//        .add(secureArea)
+//        .build()
+//    return SampleDocumentManagerImpl(
+//        DocumentManagerImpl(
+//            identifier = "DocumentManager",
+//            storage = storage,
+//            secureAreaRepository = secureAreaRep,
+//            ktorHttpClientFactory = null,
+//        )
+//    ).apply {
+//        loadMdocSampleDocuments(
+//            sampleData = Base64.decode(getResourceAsText("sample_documents.txt")),
+//            createSettings = CreateDocumentSettings(
+//                secureAreaIdentifier = secureArea.identifier,
+//                createKeySettings = keyLockPassphrase?.let { p ->
+//                    SoftwareCreateKeySettings.Builder()
+//                        .setPassphraseRequired(
+//                            true,
+//                            p,
+//                            PassphraseConstraints.PIN_FOUR_DIGITS
+//                        )
+//                        .build()
+//                } ?: SoftwareCreateKeySettings.Builder().build(),
+//            ),
+//            documentNamesMap = mapOf(
+//                "eu.europa.ec.eudi.pid.1" to "EU PID",
+//                "org.iso.18013.5.1.mDL" to "mDL"
+//            )
+//        ).getOrThrow()
+//    }
+//}
 
 /**
  * namespace = "org.iso.18013.5.1", elementIdentifier = "given_name", intentToRetail = true
