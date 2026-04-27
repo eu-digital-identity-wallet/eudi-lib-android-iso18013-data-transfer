@@ -21,6 +21,8 @@ robolectricVersion = "4.15.1"
 sonarqube = "6.2.0.5505"
 zxing-core = "3.5.3"
 kover = "0.9.1"
+cbor = "4.5.6"
+cose = "1.1.0"
 
 [libraries]
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -39,6 +41,8 @@ multipaz-android = { module = "org.multipaz:multipaz-android", version.ref = "mu
 multipaz-android-legacy = { module = "org.multipaz:multipaz-android-legacy", version.ref = "multipaz" }
 robolectric-robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectricVersion" }
 zxing-core = { module = "com.google.zxing:core", version.ref = "zxing-core" }
+cbor = { module = "com.upokecenter:cbor", version.ref = "cbor" }
+cose = { module = "com.augustcellars.cose:cose-java", version.ref = "cose" }
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "agp" }

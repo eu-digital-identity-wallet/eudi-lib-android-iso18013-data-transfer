@@ -45,15 +45,15 @@ class TransferManagerImplBuilderTest {
         mockLog.close()
     }
 
-//    @Test
-//    fun buildTransferManagerWithDefaults() {
-//        val transferManager = TransferManagerImpl.Builder(Context)
-//            .documentManager(createDocumentManager(null))
-//            .build()
-//
-//        assertNotNull(transferManager)
-//        assertIs<DeviceRequestProcessor>(transferManager.requestProcessor)
-//    }
+    @Test
+    fun buildTransferManagerWithDefaults() {
+        val transferManager = TransferManagerImpl.Builder(Context)
+            .documentManager(createDocumentManager(null))
+            .build()
+
+        assertNotNull(transferManager)
+        assertIs<DeviceRequestProcessor>(transferManager.requestProcessor)
+    }
 
     @Test
     fun buildTransferManagerWithoutDocumentManagerThrowsException() {
@@ -64,43 +64,43 @@ class TransferManagerImplBuilderTest {
         assertEquals("Document manager must be provided", throwable.message)
     }
 
-//    @Test
-//    fun buildTransferManagerWithRetrievalMethods() {
-//        val retrievalMethods: List<DeviceRetrievalMethod> = listOf(mockk(), mockk())
-//        val transferManager = TransferManagerImpl.Builder(Context)
-//            .documentManager(createDocumentManager(null))
-//            .retrievalMethods(retrievalMethods)
-//            .build()
-//
-//        assertNotNull(transferManager)
-//        assertIs<DeviceRequestProcessor>(transferManager.requestProcessor)
-//        assertEquals(retrievalMethods, transferManager.retrievalMethods)
-//    }
-//
-//    @Test
-//    fun buildTransferManagerWithDefaultZkResponsePolicy() {
-//        val transferManager = TransferManagerImpl.Builder(Context)
-//            .documentManager(createDocumentManager(null))
-//            .build()
-//
-//        assertNotNull(transferManager)
-//        assertIs<DeviceRequestProcessor>(transferManager.requestProcessor)
-//        assertEquals(
-//            ZkResponsePolicy.FallbackToFullDisclosure,
-//            (transferManager.requestProcessor as DeviceRequestProcessor).zkResponsePolicy
-//        )
-//    }
-//
-//    @Test
-//    fun buildTransferManagerWithReaderTrustStore() {
-//        val readerTrustStore = mockk<ReaderTrustStore>()
-//        val transferManager = TransferManagerImpl.Builder(Context)
-//            .documentManager(createDocumentManager(null))
-//            .readerTrustStore(readerTrustStore)
-//            .build()
-//
-//        assertNotNull(transferManager)
-//        assertIs<DeviceRequestProcessor>(transferManager.requestProcessor)
-//        assertEquals(readerTrustStore, transferManager.requestProcessor.readerTrustStore)
-//    }
+    @Test
+    fun buildTransferManagerWithRetrievalMethods() {
+        val retrievalMethods: List<DeviceRetrievalMethod> = listOf(mockk(), mockk())
+        val transferManager = TransferManagerImpl.Builder(Context)
+            .documentManager(createDocumentManager(null))
+            .retrievalMethods(retrievalMethods)
+            .build()
+
+        assertNotNull(transferManager)
+        assertIs<DeviceRequestProcessor>(transferManager.requestProcessor)
+        assertEquals(retrievalMethods, transferManager.retrievalMethods)
+    }
+
+    @Test
+    fun buildTransferManagerWithDefaultZkResponsePolicy() {
+        val transferManager = TransferManagerImpl.Builder(Context)
+            .documentManager(createDocumentManager(null))
+            .build()
+
+        assertNotNull(transferManager)
+        assertIs<DeviceRequestProcessor>(transferManager.requestProcessor)
+        assertEquals(
+            ZkResponsePolicy.FallbackToFullDisclosure,
+            (transferManager.requestProcessor as DeviceRequestProcessor).zkResponsePolicy
+        )
+    }
+
+    @Test
+    fun buildTransferManagerWithReaderTrustStore() {
+        val readerTrustStore = mockk<ReaderTrustStore>()
+        val transferManager = TransferManagerImpl.Builder(Context)
+            .documentManager(createDocumentManager(null))
+            .readerTrustStore(readerTrustStore)
+            .build()
+
+        assertNotNull(transferManager)
+        assertIs<DeviceRequestProcessor>(transferManager.requestProcessor)
+        assertEquals(readerTrustStore, transferManager.requestProcessor.readerTrustStore)
+    }
 }

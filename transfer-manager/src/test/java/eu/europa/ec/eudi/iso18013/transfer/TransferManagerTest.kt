@@ -43,40 +43,40 @@ class TransferManagerTest {
         mockLog.close()
     }
 
-//    @Test
-//    fun `makeMsoMdocTransferManager method should return a MsoMdocTransferManager instance`() {
-//        val transferManager =
-//            TransferManager.getDefault(Context, createDocumentManager(null))
-//
-//        assertIs<eu.europa.ec.eudi.iso18013.transfer.TransferManagerImpl>(transferManager)
-//        assertIs<DeviceRequestProcessor>(transferManager.requestProcessor)
-//    }
+    @Test
+    fun `makeMsoMdocTransferManager method should return a MsoMdocTransferManager instance`() {
+        val transferManager =
+            TransferManager.getDefault(Context, createDocumentManager(null))
 
-//    @Test
-//    fun `makeMsoMdocTransferManager with deviceRetrievalMethods method should return a MsoMdocTransferManager instance`() {
-//        val deviceRetrievalMethods: List<DeviceRetrievalMethod> = listOf(mockk(), mock())
-//        val transferManager = TransferManager.getDefault(
-//            context = Context,
-//            documentManager = createDocumentManager(null),
-//            retrievalMethods = deviceRetrievalMethods
-//        )
-//
-//        assertIs<eu.europa.ec.eudi.iso18013.transfer.TransferManagerImpl>(transferManager)
-//        assertIs<DeviceRequestProcessor>(transferManager.requestProcessor)
-//        assertEquals(deviceRetrievalMethods, transferManager.retrievalMethods)
-//    }
+        assertIs<eu.europa.ec.eudi.iso18013.transfer.TransferManagerImpl>(transferManager)
+        assertIs<DeviceRequestProcessor>(transferManager.requestProcessor)
+    }
 
-//    @Test
-//    fun `makeMsoMdocTransferManager with readerTrustStore method should return a MsoMdocTransferManager instance`() {
-//        val readerTrustStore: ReaderTrustStore = mockk()
-//        val transferManager = TransferManager.getDefault(
-//            context = Context,
-//            documentManager = createDocumentManager(null),
-//            readerTrustStore = readerTrustStore
-//        )
-//
-//        assertIs<eu.europa.ec.eudi.iso18013.transfer.TransferManagerImpl>(transferManager)
-//        assertIs<DeviceRequestProcessor>(transferManager.requestProcessor)
-//        assertEquals(readerTrustStore, transferManager.requestProcessor.readerTrustStore)
-//    }
+    @Test
+    fun `makeMsoMdocTransferManager with deviceRetrievalMethods method should return a MsoMdocTransferManager instance`() {
+        val deviceRetrievalMethods: List<DeviceRetrievalMethod> = listOf(mockk(), mock())
+        val transferManager = TransferManager.getDefault(
+            context = Context,
+            documentManager = createDocumentManager(null),
+            retrievalMethods = deviceRetrievalMethods
+        )
+
+        assertIs<eu.europa.ec.eudi.iso18013.transfer.TransferManagerImpl>(transferManager)
+        assertIs<DeviceRequestProcessor>(transferManager.requestProcessor)
+        assertEquals(deviceRetrievalMethods, transferManager.retrievalMethods)
+    }
+
+    @Test
+    fun `makeMsoMdocTransferManager with readerTrustStore method should return a MsoMdocTransferManager instance`() {
+        val readerTrustStore: ReaderTrustStore = mockk()
+        val transferManager = TransferManager.getDefault(
+            context = Context,
+            documentManager = createDocumentManager(null),
+            readerTrustStore = readerTrustStore
+        )
+
+        assertIs<eu.europa.ec.eudi.iso18013.transfer.TransferManagerImpl>(transferManager)
+        assertIs<DeviceRequestProcessor>(transferManager.requestProcessor)
+        assertEquals(readerTrustStore, transferManager.requestProcessor.readerTrustStore)
+    }
 }
