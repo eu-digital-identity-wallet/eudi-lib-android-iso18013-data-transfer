@@ -26,9 +26,7 @@ import eu.europa.ec.eudi.iso18013.transfer.response.Request
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestProcessor
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestedDocument
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestedDocuments
-import eu.europa.ec.eudi.iso18013.transfer.zkp.MatchedZkSystem
 import eu.europa.ec.eudi.iso18013.transfer.zkp.ZkResponsePolicy
-import eu.europa.ec.eudi.iso18013.transfer.zkp.findMatchedZkSystem
 import eu.europa.ec.eudi.wallet.document.DocType
 import eu.europa.ec.eudi.wallet.document.DocumentManager
 import eu.europa.ec.eudi.wallet.document.ElementIdentifier
@@ -101,7 +99,7 @@ class DeviceRequestProcessor(
                 documentManager = documentManager,
                 requestedDocuments = requestedDocuments,
                 sessionTranscript = request.sessionTranscriptBytes,
-                zkSystemRepository = zkSystemRepository
+                zkSystemRepository = zkSystemRepository,
                 readerAuthPolicy = readerAuthPolicy,
                 zkResponsePolicy = zkResponsePolicy,
             )

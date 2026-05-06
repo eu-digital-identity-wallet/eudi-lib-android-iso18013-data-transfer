@@ -31,7 +31,6 @@ import eu.europa.ec.eudi.iso18013.transfer.response.RequestedDocument
 import eu.europa.ec.eudi.iso18013.transfer.response.RequestedDocuments
 import eu.europa.ec.eudi.iso18013.transfer.response.ResponseResult
 import eu.europa.ec.eudi.iso18013.transfer.toDocItems
-import eu.europa.ec.eudi.iso18013.transfer.zkp.MatchedZkSystem
 import eu.europa.ec.eudi.iso18013.transfer.zkp.ZkResponsePolicy
 import eu.europa.ec.eudi.wallet.document.IssuedDocument
 import eu.europa.ec.eudi.wallet.document.format.MsoMdocData
@@ -43,7 +42,10 @@ import org.junit.Test
 import org.mockito.MockedStatic
 import org.multipaz.crypto.Algorithm
 import org.multipaz.mdoc.response.DeviceResponseParser
+import org.multipaz.cbor.DataItem
+import org.multipaz.mdoc.response.MdocDocument
 import org.multipaz.mdoc.zkp.ZkSystem
+import org.multipaz.mdoc.zkp.ZkSystemRepository
 import org.multipaz.mdoc.zkp.ZkSystemSpec
 import org.multipaz.securearea.KeyLockedException
 import org.multipaz.securearea.software.SoftwareKeyUnlockData
@@ -543,21 +545,26 @@ class DeviceRequestProcessorTest {
         val documentData = expectedDocument.data
         assertIs<MsoMdocData>(documentData)
 
-        // Create a matched ZK system that throws on generateProof
-        val failingZkSystem = mockk<ZkSystem> {
-            every { generateProof(any(), any(), any()) } throws RuntimeException("ZK proof generation failed")
+        val zkSpec = ZkSystemSpec(id = "test-spec-id", system = "test-system")
+        val failingZkSystem = mockk<ZkSystem>(relaxed = true) {
+            every { name } returns "test-system"
+            every { systemSpecs } returns listOf(zkSpec)
+            every { getMatchingSystemSpec(any(), any()) } returns zkSpec
+            every {
+                generateProof(any(), any<MdocDocument>(), any<DataItem>(), any())
+            } throws RuntimeException("ZK proof generation failed")
         }
-        val zkSystemSpec = mockk<ZkSystemSpec>()
-        val matchedZkSystem = MatchedZkSystem(failingZkSystem, zkSystemSpec)
+        val zkSystemRepository = mockk<ZkSystemRepository> {
+            every { lookup(any()) } returns failingZkSystem
+        }
 
-        // Rebuild requestedDocuments with the failing matchedZkSystem
         val requestedDocumentsWithZk = RequestedDocuments(
             processedRequest.requestedDocuments.map { reqDoc ->
                 RequestedDocument(
                     documentId = reqDoc.documentId,
                     requestedItems = reqDoc.requestedItems,
                     readerAuth = reqDoc.readerAuth,
-                    matchedZkSystem = matchedZkSystem
+                    zkRequestSystemSpecs = listOf(zkSpec)
                 )
             }
         )
@@ -566,6 +573,7 @@ class DeviceRequestProcessorTest {
             documentManager = documentManager,
             sessionTranscript = DeviceRequest.sessionTranscriptBytes,
             requestedDocuments = requestedDocumentsWithZk,
+            zkSystemRepository = zkSystemRepository,
             zkResponsePolicy = ZkResponsePolicy.Strict,
         )
 
@@ -596,11 +604,18 @@ class DeviceRequestProcessorTest {
         val documentData = expectedDocument.data
         assertIs<MsoMdocData>(documentData)
 
-        val failingZkSystem = mockk<ZkSystem> {
-            every { generateProof(any(), any(), any()) } throws RuntimeException("ZK proof generation failed")
+        val zkSpec = ZkSystemSpec(id = "test-spec-id", system = "test-system")
+        val failingZkSystem = mockk<ZkSystem>(relaxed = true) {
+            every { name } returns "test-system"
+            every { systemSpecs } returns listOf(zkSpec)
+            every { getMatchingSystemSpec(any(), any()) } returns zkSpec
+            every {
+                generateProof(any(), any<MdocDocument>(), any<DataItem>(), any())
+            } throws RuntimeException("ZK proof generation failed")
         }
-        val zkSystemSpec = mockk<ZkSystemSpec>()
-        val matchedZkSystem = MatchedZkSystem(failingZkSystem, zkSystemSpec)
+        val zkSystemRepository = mockk<ZkSystemRepository> {
+            every { lookup(any()) } returns failingZkSystem
+        }
 
         val requestedDocumentsWithZk = RequestedDocuments(
             processedRequest.requestedDocuments.map { reqDoc ->
@@ -608,7 +623,7 @@ class DeviceRequestProcessorTest {
                     documentId = reqDoc.documentId,
                     requestedItems = reqDoc.requestedItems,
                     readerAuth = reqDoc.readerAuth,
-                    matchedZkSystem = matchedZkSystem
+                    zkRequestSystemSpecs = listOf(zkSpec)
                 )
             }
         )
@@ -617,6 +632,7 @@ class DeviceRequestProcessorTest {
             documentManager = documentManager,
             sessionTranscript = DeviceRequest.sessionTranscriptBytes,
             requestedDocuments = requestedDocumentsWithZk,
+            zkSystemRepository = zkSystemRepository,
             zkResponsePolicy = ZkResponsePolicy.FallbackToFullDisclosure,
         )
 

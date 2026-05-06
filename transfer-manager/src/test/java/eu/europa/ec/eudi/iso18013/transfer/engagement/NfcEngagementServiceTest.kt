@@ -21,6 +21,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkConstructor
 import io.mockk.unmockkAll
+import kotlinx.coroutines.runBlocking
 import org.junit.runner.RunWith
 import org.multipaz.crypto.Crypto
 import org.multipaz.crypto.EcCurve
@@ -64,7 +65,7 @@ class NfcEngagementServiceTest {
         // Simulate what onCreate() does for key generation: generate a fresh key
         val field = NfcEngagementService::class.java.getDeclaredField("eDevicePrivateKey")
         field.isAccessible = true
-        field.set(service, Crypto.createEcPrivateKey(EcCurve.P256))
+        field.set(service, runBlocking { Crypto.createEcPrivateKey(EcCurve.P256) })
     }
 
     @Test
