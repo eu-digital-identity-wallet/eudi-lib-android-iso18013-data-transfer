@@ -2,5 +2,5 @@
 
 # peripheralServerMode
 
-[androidJvm]\
-val [peripheralServerMode](peripheral-server-mode.md): [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html)
+[release]\
+val [peripheralServerMode](peripheral-server-mode.md): [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html)

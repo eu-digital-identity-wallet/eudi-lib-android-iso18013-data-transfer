@@ -1,7 +1,7 @@
 
 # EUDI ISO 18013-5 document transfer library
 ## Dependency License Report
-_2026-04-07 13:25:55 EEST_
+_2026-05-06 16:38:21 EEST_
 ## Apache License, Version 2.0
 
 **1** **Group:** `androidx.appcompat` **Name:** `appcompat` **Version:** `1.7.1` 
@@ -13,35 +13,33 @@ _2026-04-07 13:25:55 EEST_
 > - **Manifest License**: Apache License, Version 2.0 (Not Packaged)
 > - **POM License**: Apache License, Version 2.0 - [https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
-**3** **Group:** `org.jetbrains.kotlin` **Name:** `kotlin-parcelize-runtime` **Version:** `2.1.21` 
+**3** **Group:** `org.jetbrains.kotlin` **Name:** `kotlin-stdlib` **Version:** `2.2.21` 
 > - **POM Project URL**: [https://kotlinlang.org/](https://kotlinlang.org/)
 > - **POM License**: Apache License, Version 2.0 - [https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
-**4** **Group:** `org.jetbrains.kotlin` **Name:** `kotlin-stdlib` **Version:** `2.2.10` 
-> - **POM Project URL**: [https://kotlinlang.org/](https://kotlinlang.org/)
-> - **POM License**: Apache License, Version 2.0 - [https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0)
-
-**5** **Group:** `org.jetbrains.kotlinx` **Name:** `kotlinx-io-core` **Version:** `0.8.0` 
+**4** **Group:** `org.jetbrains.kotlinx` **Name:** `kotlinx-io-core` **Version:** `0.8.2` 
 > - **POM Project URL**: [https://github.com/Kotlin/kotlinx-io](https://github.com/Kotlin/kotlinx-io)
 > - **POM License**: Apache License, Version 2.0 - [https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
-**6** **Group:** `org.jetbrains.kotlinx` **Name:** `kotlinx-io-bytestring` **Version:** `0.8.0` 
+**5** **Group:** `org.jetbrains.kotlinx` **Name:** `kotlinx-io-bytestring` **Version:** `0.8.2` 
 > - **POM Project URL**: [https://github.com/Kotlin/kotlinx-io](https://github.com/Kotlin/kotlinx-io)
 > - **POM License**: Apache License, Version 2.0 - [https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
-**7** **Group:** `org.multipaz` **Name:** `multipaz-android` **Version:** `0.95.0` 
+**6** **Group:** `org.multipaz` **Name:** `multipaz-android` **Version:** `0.99.0` 
+> - **POM Project URL**: [https://github.com/openwallet-foundation/multipaz](https://github.com/openwallet-foundation/multipaz)
 > - **POM License**: Apache License, Version 2.0 - [https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
-**8** **Group:** `org.multipaz` **Name:** `multipaz-android-legacy` **Version:** `0.95.0` 
+**7** **Group:** `org.multipaz` **Name:** `multipaz-android-legacy` **Version:** `0.99.0` 
+> - **POM Project URL**: [https://github.com/openwallet-foundation/multipaz](https://github.com/openwallet-foundation/multipaz)
 > - **POM License**: Apache License, Version 2.0 - [https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
 ## Bouncy Castle Licence
 
-**9** **Group:** `org.bouncycastle` **Name:** `bcpkix-jdk18on` **Version:** `1.78.1` 
+**8** **Group:** `org.bouncycastle` **Name:** `bcpkix-jdk18on` **Version:** `1.78.1` 
 > - **POM Project URL**: [https://www.bouncycastle.org/java.html](https://www.bouncycastle.org/java.html)
 > - **POM License**: Bouncy Castle Licence - [https://www.bouncycastle.org/licence.html](https://www.bouncycastle.org/licence.html)
 
-**10** **Group:** `org.bouncycastle` **Name:** `bcprov-jdk18on` **Version:** `1.78.1` 
+**9** **Group:** `org.bouncycastle` **Name:** `bcprov-jdk18on` **Version:** `1.78.1` 
 > - **POM Project URL**: [https://www.bouncycastle.org/java.html](https://www.bouncycastle.org/java.html)
 > - **POM License**: Bouncy Castle Licence - [https://www.bouncycastle.org/licence.html](https://www.bouncycastle.org/licence.html)
 

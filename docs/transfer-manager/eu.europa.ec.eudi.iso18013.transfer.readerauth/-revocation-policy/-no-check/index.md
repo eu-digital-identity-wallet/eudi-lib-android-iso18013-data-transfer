@@ -2,7 +2,7 @@
 
 # NoCheck
 
-[androidJvm]\
+[release]\
 data object [NoCheck](index.md) : [RevocationPolicy](../index.md)
 
 No revocation checking is performed. This is the default for backwards compatibility.

@@ -2,5 +2,5 @@
 
 # readerTrustStore
 
-[androidJvm]\
+[release]\
 open override var [readerTrustStore](reader-trust-store.md): [ReaderTrustStore](../../eu.europa.ec.eudi.iso18013.transfer.readerauth/-reader-trust-store/index.md)?

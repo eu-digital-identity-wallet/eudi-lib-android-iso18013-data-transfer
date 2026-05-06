@@ -2,5 +2,5 @@
 
 # DeviceRequest
 
-[androidJvm]\
+[release]\
 constructor(deviceRequestBytes: [DeviceRequestBytes](../../eu.europa.ec.eudi.iso18013.transfer/-device-request-bytes/index.md), sessionTranscriptBytes: [SessionTranscriptBytes](../../eu.europa.ec.eudi.iso18013.transfer/-session-transcript-bytes/index.md))

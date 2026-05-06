@@ -2,5 +2,5 @@
 
 # Helper
 
-[androidJvm]\
+[release]\
 constructor(documentManager: DocumentManager)

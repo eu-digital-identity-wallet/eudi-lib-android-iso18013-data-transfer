@@ -2,5 +2,5 @@
 
 # MatchedZkSystem
 
-[androidJvm]\
+[release]\
 constructor(system: ZkSystem, spec: ZkSystemSpec)

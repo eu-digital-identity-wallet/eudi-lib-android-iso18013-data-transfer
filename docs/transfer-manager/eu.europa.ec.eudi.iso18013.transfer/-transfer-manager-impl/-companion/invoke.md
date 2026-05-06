@@ -2,7 +2,7 @@
 
 # invoke
 
-[androidJvm]\
-operator fun [invoke](invoke.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html), builder: [TransferManagerImpl.Builder](../-builder/index.md).() -&gt; [Unit](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html)): [TransferManagerImpl](../index.md)
+[release]\
+operator fun [invoke](invoke.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html), builder: [TransferManagerImpl.Builder](../-builder/index.md).() -&gt; [Unit](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html)): [TransferManagerImpl](../index.md)
 
 Create a new instance of [TransferManager](../../-transfer-manager/index.md)

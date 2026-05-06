@@ -2,20 +2,20 @@
 
 # DisclosedDocument
 
-[androidJvm]\
-constructor(requestedDocument: [RequestedDocument](../-requested-document/index.md), disclosedItems: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html)&lt;[DocItem](../-doc-item/index.md)&gt;? = null, keyUnlockData: KeyUnlockData? = null)
+[release]\
+constructor(documentId: DocumentId, disclosedItems: [List](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html)&lt;[DocItem](../-doc-item/index.md)&gt;, keyUnlockData: KeyUnlockData? = null)
 
-Alternative constructor that takes a [RequestedDocument](../-requested-document/index.md) and a [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html) of [DocItem](../-doc-item/index.md) to create a [DisclosedDocument](index.md)
+[release]\
+constructor(requestedDocument: [RequestedDocument](../-requested-document/index.md), disclosedItems: [List](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html)&lt;[DocItem](../-doc-item/index.md)&gt;? = null, keyUnlockData: KeyUnlockData? = null)
+
+Alternative constructor that takes a [RequestedDocument](../-requested-document/index.md) and a [List](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html) of [DocItem](../-doc-item/index.md) to create a [DisclosedDocument](-disclosed-document.md)
 
 #### Parameters
 
-androidJvm
+release
 
 | | |
 |---|---|
 | requestedDocument | the requested document |
 | disclosedItems | the list of disclosed items. If not provided, it will be set to the list of requested items |
 | keyUnlockData | the key unlock data |
-
-[androidJvm]\
-constructor(documentId: &lt;Error class: unknown class&gt;, disclosedItems: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html)&lt;[DocItem](../-doc-item/index.md)&gt;, keyUnlockData: KeyUnlockData? = null)

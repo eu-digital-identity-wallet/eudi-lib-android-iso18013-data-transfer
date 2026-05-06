@@ -2,7 +2,7 @@
 
 # removeAllTransferEventListeners
 
-[androidJvm]\
+[release]\
 abstract fun [removeAllTransferEventListeners](remove-all-transfer-event-listeners.md)(): [TransferEvent.Listenable](index.md)
 
 Remove all transfer event listeners

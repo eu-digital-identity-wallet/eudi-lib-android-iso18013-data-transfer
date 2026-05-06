@@ -23,4 +23,4 @@ Interface that indicates that implementation are aware of a [ReaderTrustStore](.
 
 | Name | Summary |
 |---|---|
-| [readerTrustStore](reader-trust-store.md) | [androidJvm]<br>abstract var [readerTrustStore](reader-trust-store.md): [ReaderTrustStore](../-reader-trust-store/index.md)?<br>the reader trust store |
+| [readerTrustStore](reader-trust-store.md) | [release]<br>abstract var [readerTrustStore](reader-trust-store.md): [ReaderTrustStore](../-reader-trust-store/index.md)?<br>the reader trust store |

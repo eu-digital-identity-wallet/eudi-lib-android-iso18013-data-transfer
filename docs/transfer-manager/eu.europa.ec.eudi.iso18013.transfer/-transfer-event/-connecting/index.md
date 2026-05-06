@@ -2,7 +2,7 @@
 
 # Connecting
 
-[androidJvm]\
+[release]\
 data object [Connecting](index.md) : [TransferEvent](../index.md)
 
 Connecting event. This event is triggered when the transfer is connecting.

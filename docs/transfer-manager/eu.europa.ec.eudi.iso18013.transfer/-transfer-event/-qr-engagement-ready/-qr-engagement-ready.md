@@ -2,5 +2,5 @@
 
 # QrEngagementReady
 
-[androidJvm]\
+[release]\
 constructor(qrCode: [QrCode](../../../eu.europa.ec.eudi.iso18013.transfer.engagement/-qr-code/index.md))

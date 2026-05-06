@@ -2,5 +2,5 @@
 
 # sessionTranscriptBytes
 
-[androidJvm]\
+[release]\
 val [sessionTranscriptBytes](session-transcript-bytes.md): [SessionTranscriptBytes](../../eu.europa.ec.eudi.iso18013.transfer/-session-transcript-bytes/index.md)

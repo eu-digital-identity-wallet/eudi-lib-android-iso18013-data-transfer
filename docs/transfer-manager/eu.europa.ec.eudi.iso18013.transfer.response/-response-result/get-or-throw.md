@@ -2,7 +2,7 @@
 
 # getOrThrow
 
-[androidJvm]\
+[release]\
 open fun [getOrThrow](get-or-throw.md)(): [Response](../-response/index.md)
 
 Returns the response or throws the throwable
@@ -15,4 +15,4 @@ the response
 
 | | |
 |---|---|
-| [Throwable](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-throwable/index.html) | the throwable |
+| [Throwable](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-throwable/index.html) | the throwable |

@@ -2,7 +2,7 @@
 
 # transferManager
 
-[androidJvm]\
+[release]\
 abstract val [transferManager](transfer-manager.md): [TransferManager](../../eu.europa.ec.eudi.iso18013.transfer/-transfer-manager/index.md)
 
 Transfer manager

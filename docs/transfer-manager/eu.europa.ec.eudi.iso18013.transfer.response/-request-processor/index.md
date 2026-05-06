@@ -16,10 +16,10 @@ Interface for request processor. A request processor processes the raw request a
 
 | Name | Summary |
 |---|---|
-| [ProcessedRequest](-processed-request/index.md) | [androidJvm]<br>sealed interface [ProcessedRequest](-processed-request/index.md)<br>Represents the result of a processed request |
+| [ProcessedRequest](-processed-request/index.md) | [release]<br>sealed interface [ProcessedRequest](-processed-request/index.md)<br>Represents the result of a processed request |
 
 ## Functions
 
 | Name | Summary |
 |---|---|
-| [process](process.md) | [androidJvm]<br>abstract fun [process](process.md)(request: [Request](../-request/index.md)): [RequestProcessor.ProcessedRequest](-processed-request/index.md)<br>Processes the request |
+| [process](process.md) | [release]<br>abstract fun [process](process.md)(request: [Request](../-request/index.md)): [RequestProcessor.ProcessedRequest](-processed-request/index.md)<br>Processes the request |

@@ -2,5 +2,5 @@
 
 # SessionTranscriptBytes
 
-[androidJvm]\
-typealias [SessionTranscriptBytes](index.md) = [ByteArray](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-byte-array/index.html)
+[release]\
+typealias [SessionTranscriptBytes](index.md) = [ByteArray](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-byte-array/index.html)

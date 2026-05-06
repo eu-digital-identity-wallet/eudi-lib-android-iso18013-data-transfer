@@ -2,5 +2,5 @@
 
 # system
 
-[androidJvm]\
+[release]\
 val [system](system.md): ZkSystem

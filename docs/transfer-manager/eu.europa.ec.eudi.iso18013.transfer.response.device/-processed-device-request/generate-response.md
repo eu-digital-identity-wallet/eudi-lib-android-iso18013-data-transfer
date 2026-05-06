@@ -2,8 +2,8 @@
 
 # generateResponse
 
-[androidJvm]\
-open override fun [generateResponse](generate-response.md)(disclosedDocuments: [DisclosedDocuments](../../eu.europa.ec.eudi.iso18013.transfer.response/-disclosed-documents/index.md), signatureAlgorithm: Algorithm?): [ResponseResult](../../eu.europa.ec.eudi.iso18013.transfer.response/-response-result/index.md)
+[release]\
+open override fun [generateResponse](generate-response.md)(disclosedDocuments: [DisclosedDocuments](../../eu.europa.ec.eudi.iso18013.transfer.response/-disclosed-documents/index.md), signatureAlgorithm: Algorithm? = null): [ResponseResult](../../eu.europa.ec.eudi.iso18013.transfer.response/-response-result/index.md)
 
 Generate the response for the disclosed documents.
 
@@ -13,7 +13,7 @@ the response result with the device response or the error
 
 #### Parameters
 
-androidJvm
+release
 
 | | |
 |---|---|

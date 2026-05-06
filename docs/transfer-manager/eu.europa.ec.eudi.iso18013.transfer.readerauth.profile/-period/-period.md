@@ -2,5 +2,5 @@
 
 # Period
 
-[androidJvm]\
+[release]\
 constructor()

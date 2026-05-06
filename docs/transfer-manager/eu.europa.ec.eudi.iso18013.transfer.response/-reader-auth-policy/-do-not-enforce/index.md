@@ -2,7 +2,7 @@
 
 # DoNotEnforce
 
-[androidJvm]\
+[release]\
 data object [DoNotEnforce](index.md) : [ReaderAuthPolicy](../index.md)
 
 Do not enforce reader authentication results. Documents are always included in the response regardless of [ReaderAuth](../../-reader-auth/index.md) status.

@@ -2,11 +2,11 @@
 
 # Companion
 
-[androidJvm]\
+[release]\
 object [Companion](index.md)
 
 ## Properties
 
 | Name | Summary |
 |---|---|
-| [DEFAULT](-d-e-f-a-u-l-t.md) | [androidJvm]<br>@[JvmStatic](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)<br>val [DEFAULT](-d-e-f-a-u-l-t.md): [ProfileValidation](../index.md) |
+| [DEFAULT](-d-e-f-a-u-l-t.md) | [release]<br>@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)<br>val [DEFAULT](-d-e-f-a-u-l-t.md): [ProfileValidation](../index.md) |

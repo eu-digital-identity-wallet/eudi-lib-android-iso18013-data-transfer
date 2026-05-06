@@ -2,5 +2,5 @@
 
 # KeyUsage
 
-[androidJvm]\
+[release]\
 constructor()

@@ -2,5 +2,5 @@
 
 # processedRequest
 
-[androidJvm]\
+[release]\
 val [processedRequest](processed-request.md): [RequestProcessor.ProcessedRequest](../../../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/-processed-request/index.md)

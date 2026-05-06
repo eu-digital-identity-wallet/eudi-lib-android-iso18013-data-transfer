@@ -2,7 +2,7 @@
 
 # onTransferEvent
 
-[androidJvm]\
+[release]\
 abstract fun [onTransferEvent](on-transfer-event.md)(event: [TransferEvent](../index.md))
 
 On transfer event callback

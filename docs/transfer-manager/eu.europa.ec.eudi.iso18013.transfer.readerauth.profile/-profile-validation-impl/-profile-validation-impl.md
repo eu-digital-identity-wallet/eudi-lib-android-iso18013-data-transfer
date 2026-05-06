@@ -2,5 +2,5 @@
 
 # ProfileValidationImpl
 
-[androidJvm]\
-constructor(profileValidations: [Collection](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-collection/index.html)&lt;[ProfileValidation](../-profile-validation/index.md)&gt;)
+[release]\
+constructor(profileValidations: [Collection](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-collection/index.html)&lt;[ProfileValidation](../-profile-validation/index.md)&gt;)

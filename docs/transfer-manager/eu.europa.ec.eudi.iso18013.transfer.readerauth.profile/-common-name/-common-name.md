@@ -2,5 +2,5 @@
 
 # CommonName
 
-[androidJvm]\
+[release]\
 constructor()

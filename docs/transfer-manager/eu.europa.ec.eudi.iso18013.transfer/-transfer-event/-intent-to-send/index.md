@@ -2,7 +2,7 @@
 
 # IntentToSend
 
-[androidJvm]\
+[release]\
 data class [IntentToSend](index.md)(val intent: [Intent](https://developer.android.com/reference/kotlin/android/content/Intent.html)) : [TransferEvent](../index.md)
 
 Intent to send event. This event is triggered when an intent is to be sent. This event is to be used for implementation of Digital Credentials API.
@@ -11,10 +11,10 @@ Intent to send event. This event is triggered when an intent is to be sent. This
 
 | | |
 |---|---|
-| [IntentToSend](-intent-to-send.md) | [androidJvm]<br>constructor(intent: [Intent](https://developer.android.com/reference/kotlin/android/content/Intent.html)) |
+| [IntentToSend](-intent-to-send.md) | [release]<br>constructor(intent: [Intent](https://developer.android.com/reference/kotlin/android/content/Intent.html)) |
 
 ## Properties
 
 | Name | Summary |
 |---|---|
-| [intent](intent.md) | [androidJvm]<br>val [intent](intent.md): [Intent](https://developer.android.com/reference/kotlin/android/content/Intent.html)<br>the intent to be sent |
+| [intent](intent.md) | [release]<br>val [intent](intent.md): [Intent](https://developer.android.com/reference/kotlin/android/content/Intent.html)<br>the intent to be sent |

@@ -2,5 +2,5 @@
 
 # centralClientMode
 
-[androidJvm]\
-val [centralClientMode](central-client-mode.md): [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html)
+[release]\
+val [centralClientMode](central-client-mode.md): [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html)

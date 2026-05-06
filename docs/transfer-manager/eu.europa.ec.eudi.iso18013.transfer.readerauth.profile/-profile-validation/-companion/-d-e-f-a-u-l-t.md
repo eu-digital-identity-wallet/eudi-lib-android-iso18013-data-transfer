@@ -2,8 +2,8 @@
 
 # DEFAULT
 
-[androidJvm]\
+[release]\
 
-@[JvmStatic](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)
+@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)
 
 val [DEFAULT](-d-e-f-a-u-l-t.md): [ProfileValidation](../index.md)

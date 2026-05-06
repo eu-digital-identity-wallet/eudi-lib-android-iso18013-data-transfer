@@ -2,5 +2,5 @@
 
 # error
 
-[androidJvm]\
-val [error](error.md): [Throwable](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-throwable/index.html)
+[release]\
+val [error](error.md): [Throwable](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-throwable/index.html)

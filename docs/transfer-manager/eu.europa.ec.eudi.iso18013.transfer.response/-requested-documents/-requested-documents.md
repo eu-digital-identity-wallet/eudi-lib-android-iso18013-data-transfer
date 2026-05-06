@@ -2,25 +2,25 @@
 
 # RequestedDocuments
 
-[androidJvm]\
+[release]\
+constructor(documents: [List](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html)&lt;[RequestedDocument](../-requested-document/index.md)&gt;)
+
+#### Parameters
+
+release
+
+| | |
+|---|---|
+| documents | the list of requested documents |
+
+[release]\
 constructor(vararg documents: [RequestedDocument](../-requested-document/index.md))
 
 Constructor that takes a vararg of [RequestedDocument](../-requested-document/index.md) and converts it to a list
 
 #### Parameters
 
-androidJvm
-
-| | |
-|---|---|
-| documents | the list of requested documents |
-
-[androidJvm]\
-constructor(documents: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html)&lt;[RequestedDocument](../-requested-document/index.md)&gt;)
-
-#### Parameters
-
-androidJvm
+release
 
 | | |
 |---|---|

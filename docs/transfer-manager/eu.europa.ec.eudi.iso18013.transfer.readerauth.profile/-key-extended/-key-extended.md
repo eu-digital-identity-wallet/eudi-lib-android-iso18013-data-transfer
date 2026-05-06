@@ -2,5 +2,5 @@
 
 # KeyExtended
 
-[androidJvm]\
+[release]\
 constructor()

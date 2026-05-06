@@ -2,5 +2,5 @@
 
 # NfcEngagementService
 
-[androidJvm]\
+[release]\
 constructor()

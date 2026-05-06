@@ -2,5 +2,5 @@
 
 # spec
 
-[androidJvm]\
+[release]\
 val [spec](spec.md): ZkSystemSpec

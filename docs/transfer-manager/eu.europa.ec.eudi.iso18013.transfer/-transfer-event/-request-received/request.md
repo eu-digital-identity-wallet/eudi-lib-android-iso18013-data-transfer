@@ -2,5 +2,5 @@
 
 # request
 
-[androidJvm]\
+[release]\
 val [request](request.md): [Request](../../../eu.europa.ec.eudi.iso18013.transfer.response/-request/index.md)

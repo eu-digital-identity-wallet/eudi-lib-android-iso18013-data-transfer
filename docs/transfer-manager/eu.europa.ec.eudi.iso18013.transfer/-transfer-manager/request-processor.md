@@ -2,5 +2,5 @@
 
 # requestProcessor
 
-[androidJvm]\
+[release]\
 abstract val [requestProcessor](request-processor.md): [RequestProcessor](../../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/index.md)

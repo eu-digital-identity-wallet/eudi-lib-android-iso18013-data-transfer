@@ -2,7 +2,7 @@
 
 # removeTransferEventListener
 
-[androidJvm]\
+[release]\
 abstract fun [removeTransferEventListener](remove-transfer-event-listener.md)(listener: [TransferEvent.Listener](../-listener/index.md)): [TransferEvent.Listenable](index.md)
 
 Remove transfer event listener
@@ -13,7 +13,7 @@ a [Listenable](index.md)
 
 #### Parameters
 
-androidJvm
+release
 
 | |
 |---|

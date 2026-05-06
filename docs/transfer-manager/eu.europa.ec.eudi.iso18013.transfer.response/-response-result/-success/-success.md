@@ -2,5 +2,5 @@
 
 # Success
 
-[androidJvm]\
+[release]\
 constructor(response: [Response](../../-response/index.md))

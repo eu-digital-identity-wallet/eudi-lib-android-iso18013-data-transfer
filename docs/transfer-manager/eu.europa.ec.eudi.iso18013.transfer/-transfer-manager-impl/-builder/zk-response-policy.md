@@ -2,18 +2,18 @@
 
 # zkResponsePolicy
 
-[androidJvm]\
-fun [zkResponsePolicy](zk-response-policy.md)(zkResponsePolicy: [ZkResponsePolicy](../../../eu.europa.ec.eudi.iso18013.transfer.zkp/-zk-response-policy/index.md)): &lt;Error class: unknown class&gt;
+[release]\
+fun [zkResponsePolicy](zk-response-policy.md)(zkResponsePolicy: [ZkResponsePolicy](../../../eu.europa.ec.eudi.iso18013.transfer.zkp/-zk-response-policy/index.md)): [TransferManagerImpl.Builder](index.md)
 
 ZK response policy that determines behavior when ZK proof generation fails. Defaults to [ZkResponsePolicy.FallbackToFullDisclosure](../../../eu.europa.ec.eudi.iso18013.transfer.zkp/-zk-response-policy/-fallback-to-full-disclosure/index.md) for backwards compatibility. Consider using [ZkResponsePolicy.Strict](../../../eu.europa.ec.eudi.iso18013.transfer.zkp/-zk-response-policy/-strict/index.md) for production to prevent unintended full disclosure.
 
 #### Parameters
 
-androidJvm
+release
 
 | |
 |---|
 | zkResponsePolicy |
 
-[androidJvm]\
+[release]\
 var [zkResponsePolicy](zk-response-policy.md): [ZkResponsePolicy](../../../eu.europa.ec.eudi.iso18013.transfer.zkp/-zk-response-policy/index.md)

@@ -2,18 +2,18 @@
 
 # documentManager
 
-[androidJvm]\
-fun [documentManager](document-manager.md)(documentManager: DocumentManager): &lt;Error class: unknown class&gt;
+[release]\
+fun [documentManager](document-manager.md)(documentManager: DocumentManager): [TransferManagerImpl.Builder](index.md)
 
 Document manager instance that will be used to retrieve the requested documents
 
 #### Parameters
 
-androidJvm
+release
 
 | |
 |---|
 | documentManager |
 
-[androidJvm]\
+[release]\
 var [documentManager](document-manager.md): DocumentManager?

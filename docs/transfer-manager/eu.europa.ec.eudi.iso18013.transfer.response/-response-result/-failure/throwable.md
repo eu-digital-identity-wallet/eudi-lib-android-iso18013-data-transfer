@@ -2,5 +2,5 @@
 
 # throwable
 
-[androidJvm]\
-val [throwable](throwable.md): [Throwable](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-throwable/index.html)
+[release]\
+val [throwable](throwable.md): [Throwable](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-throwable/index.html)

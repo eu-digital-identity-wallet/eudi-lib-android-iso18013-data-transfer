@@ -2,5 +2,5 @@
 
 # MandatoryExtensions
 
-[androidJvm]\
+[release]\
 constructor()

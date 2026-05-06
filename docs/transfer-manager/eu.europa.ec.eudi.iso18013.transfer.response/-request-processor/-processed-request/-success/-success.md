@@ -2,5 +2,5 @@
 
 # Success
 
-[androidJvm]\
+[release]\
 constructor(requestedDocuments: [RequestedDocuments](../../../-requested-documents/index.md))

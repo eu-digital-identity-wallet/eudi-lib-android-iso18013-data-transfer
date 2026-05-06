@@ -2,5 +2,5 @@
 
 # RequestReceived
 
-[androidJvm]\
+[release]\
 constructor(processedRequest: [RequestProcessor.ProcessedRequest](../../../eu.europa.ec.eudi.iso18013.transfer.response/-request-processor/-processed-request/index.md), request: [Request](../../../eu.europa.ec.eudi.iso18013.transfer.response/-request/index.md))

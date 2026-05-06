@@ -2,7 +2,7 @@
 
 # addTransferEventListener
 
-[androidJvm]\
+[release]\
 abstract fun [addTransferEventListener](add-transfer-event-listener.md)(listener: [TransferEvent.Listener](../-listener/index.md)): [TransferEvent.Listenable](index.md)
 
 Add transfer event listener
@@ -13,7 +13,7 @@ a [Listenable](index.md)
 
 #### Parameters
 
-androidJvm
+release
 
 | |
 |---|

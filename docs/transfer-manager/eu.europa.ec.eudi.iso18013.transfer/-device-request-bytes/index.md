@@ -2,5 +2,5 @@
 
 # DeviceRequestBytes
 
-[androidJvm]\
-typealias [DeviceRequestBytes](index.md) = [ByteArray](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-byte-array/index.html)
+[release]\
+typealias [DeviceRequestBytes](index.md) = [ByteArray](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-byte-array/index.html)

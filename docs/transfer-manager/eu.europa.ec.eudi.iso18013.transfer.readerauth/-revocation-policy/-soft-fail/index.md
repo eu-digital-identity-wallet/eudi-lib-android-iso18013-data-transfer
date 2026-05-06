@@ -2,7 +2,7 @@
 
 # SoftFail
 
-[androidJvm]\
+[release]\
 data object [SoftFail](index.md) : [RevocationPolicy](../index.md)
 
 Validation fails if a certificate is revoked, but tolerates CRL unavailability.

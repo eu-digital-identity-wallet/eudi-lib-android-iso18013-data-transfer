@@ -2,5 +2,5 @@
 
 # SignatureAlgorithm
 
-[androidJvm]\
+[release]\
 constructor()

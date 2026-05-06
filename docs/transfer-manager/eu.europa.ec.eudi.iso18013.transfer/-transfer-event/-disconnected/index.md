@@ -2,7 +2,7 @@
 
 # Disconnected
 
-[androidJvm]\
+[release]\
 data object [Disconnected](index.md) : [TransferEvent](../index.md)
 
 Disconnected event. This event is triggered when the transfer is disconnected.

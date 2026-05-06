@@ -2,5 +2,5 @@
 
 # docType
 
-[androidJvm]\
-val [docType](doc-type.md): &lt;Error class: unknown class&gt;
+[release]\
+val [docType](doc-type.md): DocType

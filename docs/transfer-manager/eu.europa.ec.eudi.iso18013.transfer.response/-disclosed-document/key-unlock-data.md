@@ -2,5 +2,5 @@
 
 # keyUnlockData
 
-[androidJvm]\
-val [keyUnlockData](key-unlock-data.md): KeyUnlockData? = null
+[release]\
+val [keyUnlockData](key-unlock-data.md): KeyUnlockData?

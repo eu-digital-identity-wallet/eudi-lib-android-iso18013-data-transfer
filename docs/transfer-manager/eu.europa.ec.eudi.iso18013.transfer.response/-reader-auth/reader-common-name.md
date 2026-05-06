@@ -2,5 +2,5 @@
 
 # readerCommonName
 
-[androidJvm]\
-val [readerCommonName](reader-common-name.md): [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html)
+[release]\
+val [readerCommonName](reader-common-name.md): [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html)

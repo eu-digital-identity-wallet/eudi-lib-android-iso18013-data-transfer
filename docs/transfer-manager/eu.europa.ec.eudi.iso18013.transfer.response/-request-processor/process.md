@@ -2,7 +2,7 @@
 
 # process
 
-[androidJvm]\
+[release]\
 abstract fun [process](process.md)(request: [Request](../-request/index.md)): [RequestProcessor.ProcessedRequest](-processed-request/index.md)
 
 Processes the request
@@ -13,7 +13,7 @@ the processed request
 
 #### Parameters
 
-androidJvm
+release
 
 | | |
 |---|---|

@@ -2,7 +2,7 @@
 
 # getOrThrow
 
-[androidJvm]\
+[release]\
 open fun [getOrThrow](get-or-throw.md)(): [RequestProcessor.ProcessedRequest.Success](-success/index.md)
 
 Returns the processed request or throws the error
@@ -15,4 +15,4 @@ the processed request
 
 | | |
 |---|---|
-| [Throwable](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-throwable/index.html) | the error |
+| [Throwable](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-throwable/index.html) | the error |

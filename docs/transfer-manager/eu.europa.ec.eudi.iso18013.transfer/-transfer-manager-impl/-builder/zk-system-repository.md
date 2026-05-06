@@ -2,18 +2,18 @@
 
 # zkSystemRepository
 
-[androidJvm]\
-fun [zkSystemRepository](zk-system-repository.md)(zkSystemRepository: ZkSystemRepository): &lt;Error class: unknown class&gt;
+[release]\
+fun [zkSystemRepository](zk-system-repository.md)(zkSystemRepository: ZkSystemRepository): [TransferManagerImpl.Builder](index.md)
 
 ZK system repository that holds the zero-knowledge proof systems
 
 #### Parameters
 
-androidJvm
+release
 
 | |
 |---|
 | zkSystemRepository |
 
-[androidJvm]\
+[release]\
 var [zkSystemRepository](zk-system-repository.md): ZkSystemRepository?

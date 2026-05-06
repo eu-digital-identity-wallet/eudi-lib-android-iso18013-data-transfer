@@ -2,18 +2,18 @@
 
 # readerAuthPolicy
 
-[androidJvm]\
-fun [readerAuthPolicy](reader-auth-policy.md)(readerAuthPolicy: [ReaderAuthPolicy](../../../eu.europa.ec.eudi.iso18013.transfer.response/-reader-auth-policy/index.md)): &lt;Error class: unknown class&gt;
+[release]\
+fun [readerAuthPolicy](reader-auth-policy.md)(readerAuthPolicy: [ReaderAuthPolicy](../../../eu.europa.ec.eudi.iso18013.transfer.response/-reader-auth-policy/index.md)): [TransferManagerImpl.Builder](index.md)
 
 Policy for enforcing reader authentication results during response generation. Default is [ReaderAuthPolicy.EnforceIfPresent](../../../eu.europa.ec.eudi.iso18013.transfer.response/-reader-auth-policy/-enforce-if-present/index.md).
 
 #### Parameters
 
-androidJvm
+release
 
 | | |
 |---|---|
 | readerAuthPolicy | the reader authentication policy |
 
-[androidJvm]\
+[release]\
 var [readerAuthPolicy](reader-auth-policy.md): [ReaderAuthPolicy](../../../eu.europa.ec.eudi.iso18013.transfer.response/-reader-auth-policy/index.md)

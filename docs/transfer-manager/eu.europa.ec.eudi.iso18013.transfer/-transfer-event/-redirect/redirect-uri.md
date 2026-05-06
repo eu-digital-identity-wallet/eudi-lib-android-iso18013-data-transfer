@@ -2,5 +2,5 @@
 
 # redirectUri
 
-[androidJvm]\
+[release]\
 val [redirectUri](redirect-uri.md): [URI](https://developer.android.com/reference/kotlin/java/net/URI.html)

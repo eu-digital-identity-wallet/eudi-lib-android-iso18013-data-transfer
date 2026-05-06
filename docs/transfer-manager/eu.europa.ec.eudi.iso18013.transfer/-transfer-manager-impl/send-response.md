@@ -2,7 +2,7 @@
 
 # sendResponse
 
-[androidJvm]\
+[release]\
 open override fun [sendResponse](send-response.md)(response: [Response](../../eu.europa.ec.eudi.iso18013.transfer.response/-response/index.md))
 
 Sends the response bytes to the connected mdoc verifier and terminates the session.
@@ -13,7 +13,7 @@ To generate the response, use the [eu.europa.ec.eudi.iso18013.transfer.response.
 
 #### Parameters
 
-androidJvm
+release
 
 | | |
 |---|---|
@@ -23,4 +23,4 @@ androidJvm
 
 | | |
 |---|---|
-| [IllegalArgumentException](https://developer.android.com/reference/kotlin/java/lang/IllegalArgumentException.html) | if the response is not a [DeviceResponse](../../eu.europa.ec.eudi.iso18013.transfer.response.device/-device-response/index.md) |
+| [IllegalArgumentException](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-illegal-argument-exception/index.html) | if the response is not a [DeviceResponse](../../eu.europa.ec.eudi.iso18013.transfer.response.device/-device-response/index.md) |

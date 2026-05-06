@@ -2,5 +2,5 @@
 
 # CriticalExtensions
 
-[androidJvm]\
+[release]\
 constructor()

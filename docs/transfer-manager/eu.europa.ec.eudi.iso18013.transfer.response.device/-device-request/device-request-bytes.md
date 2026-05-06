@@ -2,5 +2,5 @@
 
 # deviceRequestBytes
 
-[androidJvm]\
+[release]\
 val [deviceRequestBytes](device-request-bytes.md): [DeviceRequestBytes](../../eu.europa.ec.eudi.iso18013.transfer/-device-request-bytes/index.md)

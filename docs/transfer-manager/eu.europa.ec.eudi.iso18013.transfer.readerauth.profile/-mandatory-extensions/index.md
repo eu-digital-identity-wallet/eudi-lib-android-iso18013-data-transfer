@@ -2,17 +2,17 @@
 
 # MandatoryExtensions
 
-[androidJvm]\
+[release]\
 class [MandatoryExtensions](index.md) : [ProfileValidation](../-profile-validation/index.md)
 
 ## Constructors
 
 | | |
 |---|---|
-| [MandatoryExtensions](-mandatory-extensions.md) | [androidJvm]<br>constructor() |
+| [MandatoryExtensions](-mandatory-extensions.md) | [release]<br>constructor() |
 
 ## Functions
 
 | Name | Summary |
 |---|---|
-| [validate](validate.md) | [androidJvm]<br>open override fun [validate](validate.md)(chain: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html)&lt;[X509Certificate](https://developer.android.com/reference/kotlin/java/security/cert/X509Certificate.html)&gt;, trustCA: [X509Certificate](https://developer.android.com/reference/kotlin/java/security/cert/X509Certificate.html)): [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html) |
+| [validate](validate.md) | [release]<br>open override fun [validate](validate.md)(chain: [List](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html)&lt;[X509Certificate](https://developer.android.com/reference/kotlin/java/security/cert/X509Certificate.html)&gt;, trustCA: [X509Certificate](https://developer.android.com/reference/kotlin/java/security/cert/X509Certificate.html)): [Boolean](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html) |

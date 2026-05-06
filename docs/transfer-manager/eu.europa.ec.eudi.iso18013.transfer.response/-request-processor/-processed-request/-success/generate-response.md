@@ -2,7 +2,7 @@
 
 # generateResponse
 
-[androidJvm]\
+[release]\
 abstract fun [generateResponse](generate-response.md)(disclosedDocuments: [DisclosedDocuments](../../../-disclosed-documents/index.md), signatureAlgorithm: Algorithm? = null): [ResponseResult](../../../-response-result/index.md)
 
 Generates the response for the disclosed documents
@@ -13,7 +13,7 @@ the response result containing the response or the error
 
 #### Parameters
 
-androidJvm
+release
 
 | | |
 |---|---|

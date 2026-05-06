@@ -2,7 +2,7 @@
 
 # getOrNull
 
-[androidJvm]\
+[release]\
 open fun [getOrNull](get-or-null.md)(): [Response](../-response/index.md)?
 
 Returns the response or null

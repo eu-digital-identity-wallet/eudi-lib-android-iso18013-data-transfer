@@ -2,9 +2,9 @@
 
 # enable
 
-[androidJvm]\
+[release]\
 
-@[JvmStatic](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)
+@[JvmStatic](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html)
 
 fun [enable](enable.md)(activity: [ComponentActivity](https://developer.android.com/reference/kotlin/androidx/activity/ComponentActivity.html), preferredNfcEngSerCls: [Class](https://developer.android.com/reference/kotlin/java/lang/Class.html)&lt;out [NfcEngagementService](../index.md)&gt;? = null)
 
@@ -12,7 +12,7 @@ Enable NFC engagement
 
 #### Parameters
 
-androidJvm
+release
 
 | |
 |---|

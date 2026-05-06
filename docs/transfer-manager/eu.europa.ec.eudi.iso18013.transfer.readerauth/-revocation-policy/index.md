@@ -18,6 +18,6 @@ Policy that controls how certificate revocation is checked during reader authent
 
 | Name | Summary |
 |---|---|
-| [HardFail](-hard-fail/index.md) | [androidJvm]<br>data object [HardFail](-hard-fail/index.md) : [RevocationPolicy](index.md)<br>Validation fails if a certificate is revoked OR if the CRL cannot be retrieved. |
-| [NoCheck](-no-check/index.md) | [androidJvm]<br>data object [NoCheck](-no-check/index.md) : [RevocationPolicy](index.md)<br>No revocation checking is performed. This is the default for backwards compatibility. |
-| [SoftFail](-soft-fail/index.md) | [androidJvm]<br>data object [SoftFail](-soft-fail/index.md) : [RevocationPolicy](index.md)<br>Validation fails if a certificate is revoked, but tolerates CRL unavailability. |
+| [HardFail](-hard-fail/index.md) | [release]<br>data object [HardFail](-hard-fail/index.md) : [RevocationPolicy](index.md)<br>Validation fails if a certificate is revoked OR if the CRL cannot be retrieved. |
+| [NoCheck](-no-check/index.md) | [release]<br>data object [NoCheck](-no-check/index.md) : [RevocationPolicy](index.md)<br>No revocation checking is performed. This is the default for backwards compatibility. |
+| [SoftFail](-soft-fail/index.md) | [release]<br>data object [SoftFail](-soft-fail/index.md) : [RevocationPolicy](index.md)<br>Validation fails if a certificate is revoked, but tolerates CRL unavailability. |

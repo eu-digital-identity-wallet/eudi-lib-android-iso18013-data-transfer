@@ -2,5 +2,5 @@
 
 # readerAuth
 
-[androidJvm]\
+[release]\
 val [readerAuth](reader-auth.md): [ReaderAuth](../-reader-auth/index.md)?

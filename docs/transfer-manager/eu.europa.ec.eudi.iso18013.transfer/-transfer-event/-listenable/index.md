@@ -16,6 +16,6 @@ Interface for events listenable
 
 | Name | Summary |
 |---|---|
-| [addTransferEventListener](add-transfer-event-listener.md) | [androidJvm]<br>abstract fun [addTransferEventListener](add-transfer-event-listener.md)(listener: [TransferEvent.Listener](../-listener/index.md)): [TransferEvent.Listenable](index.md)<br>Add transfer event listener |
-| [removeAllTransferEventListeners](remove-all-transfer-event-listeners.md) | [androidJvm]<br>abstract fun [removeAllTransferEventListeners](remove-all-transfer-event-listeners.md)(): [TransferEvent.Listenable](index.md)<br>Remove all transfer event listeners |
-| [removeTransferEventListener](remove-transfer-event-listener.md) | [androidJvm]<br>abstract fun [removeTransferEventListener](remove-transfer-event-listener.md)(listener: [TransferEvent.Listener](../-listener/index.md)): [TransferEvent.Listenable](index.md)<br>Remove transfer event listener |
+| [addTransferEventListener](add-transfer-event-listener.md) | [release]<br>abstract fun [addTransferEventListener](add-transfer-event-listener.md)(listener: [TransferEvent.Listener](../-listener/index.md)): [TransferEvent.Listenable](index.md)<br>Add transfer event listener |
+| [removeAllTransferEventListeners](remove-all-transfer-event-listeners.md) | [release]<br>abstract fun [removeAllTransferEventListeners](remove-all-transfer-event-listeners.md)(): [TransferEvent.Listenable](index.md)<br>Remove all transfer event listeners |
+| [removeTransferEventListener](remove-transfer-event-listener.md) | [release]<br>abstract fun [removeTransferEventListener](remove-transfer-event-listener.md)(listener: [TransferEvent.Listener](../-listener/index.md)): [TransferEvent.Listenable](index.md)<br>Remove transfer event listener |

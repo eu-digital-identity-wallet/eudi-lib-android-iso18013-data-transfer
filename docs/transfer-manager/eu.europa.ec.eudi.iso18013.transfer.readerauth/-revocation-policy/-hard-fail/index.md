@@ -2,7 +2,7 @@
 
 # HardFail
 
-[androidJvm]\
+[release]\
 data object [HardFail](index.md) : [RevocationPolicy](../index.md)
 
 Validation fails if a certificate is revoked OR if the CRL cannot be retrieved.

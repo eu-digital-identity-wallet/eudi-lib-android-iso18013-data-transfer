@@ -2,5 +2,5 @@
 
 # qrCode
 
-[androidJvm]\
+[release]\
 val [qrCode](qr-code.md): [QrCode](../../../eu.europa.ec.eudi.iso18013.transfer.engagement/-qr-code/index.md)

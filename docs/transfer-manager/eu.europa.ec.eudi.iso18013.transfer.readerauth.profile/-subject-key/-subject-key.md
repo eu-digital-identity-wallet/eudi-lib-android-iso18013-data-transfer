@@ -2,5 +2,5 @@
 
 # SubjectKey
 
-[androidJvm]\
+[release]\
 constructor()

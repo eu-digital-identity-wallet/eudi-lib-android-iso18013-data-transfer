@@ -2,7 +2,7 @@
 
 # ResponseSent
 
-[androidJvm]\
+[release]\
 data object [ResponseSent](index.md) : [TransferEvent](../index.md)
 
 Response sent event. This event is triggered when the response is sent.

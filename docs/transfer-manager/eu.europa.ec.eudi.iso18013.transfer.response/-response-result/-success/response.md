@@ -2,5 +2,5 @@
 
 # response
 
-[androidJvm]\
+[release]\
 val [response](response.md): [Response](../../-response/index.md)

@@ -2,7 +2,7 @@
 
 # sendResponse
 
-[androidJvm]\
+[release]\
 abstract fun [sendResponse](send-response.md)(response: [Response](../../eu.europa.ec.eudi.iso18013.transfer.response/-response/index.md))
 
 Sends response bytes to the connected reader and terminates the session.
@@ -13,7 +13,7 @@ To generate the response, use the [RequestProcessor.ProcessedRequest.Success.gen
 
 #### Parameters
 
-androidJvm
+release
 
 | | |
 |---|---|

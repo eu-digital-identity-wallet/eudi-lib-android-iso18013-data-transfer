@@ -2,5 +2,5 @@
 
 # AuthorityKey
 
-[androidJvm]\
+[release]\
 constructor()

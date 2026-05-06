@@ -2,7 +2,7 @@
 
 # build
 
-[androidJvm]\
+[release]\
 fun [build](build.md)(): [TransferManagerImpl](../index.md)
 
 Build a [eu.europa.ec.eudi.iso18013.transfer.TransferManagerImpl](../index.md) instance with [DeviceRequestProcessor](../../../eu.europa.ec.eudi.iso18013.transfer.response.device/-device-request-processor/index.md) instance

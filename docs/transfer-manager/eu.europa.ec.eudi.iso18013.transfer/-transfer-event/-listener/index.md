@@ -2,7 +2,7 @@
 
 # Listener
 
-[androidJvm]\
+[release]\
 fun interface [Listener](index.md)
 
 Interface for transfer event listener
@@ -11,4 +11,4 @@ Interface for transfer event listener
 
 | Name | Summary |
 |---|---|
-| [onTransferEvent](on-transfer-event.md) | [androidJvm]<br>abstract fun [onTransferEvent](on-transfer-event.md)(event: [TransferEvent](../index.md))<br>On transfer event callback |
+| [onTransferEvent](on-transfer-event.md) | [release]<br>abstract fun [onTransferEvent](on-transfer-event.md)(event: [TransferEvent](../index.md))<br>On transfer event callback |
