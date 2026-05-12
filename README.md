@@ -85,7 +85,7 @@ file.
 
 ```groovy
 dependencies {
-    implementation "eu.europa.ec.eudi:eudi-lib-android-iso18013-data-transfer:0.14.0-SNAPSHOT"
+    implementation "eu.europa.ec.eudi:eudi-lib-android-iso18013-data-transfer:0.14.0"
 }
 ```
 
