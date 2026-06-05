@@ -1,5 +1,13 @@
 # EUDI ISO 18013-5 Wallet Transfer library for Android
 
+:heavy_exclamation_mark: **This repository has been discontinued.** :heavy_exclamation_mark:
+The Transfer Manager library has been merged into the
+[eudi-lib-android-wallet-core](https://github.com/eu-digital-identity-wallet/eudi-lib-android-wallet-core)
+monorepo. All future development, issues, and releases will happen there.
+The Maven artifact `eu.europa.ec.eudi:eudi-lib-android-iso18013-data-transfer` continues to be
+published from the monorepo under the same group and artifact ID.
+
+
 :heavy_exclamation_mark: **Important!** Before you proceed, please read
 the [EUDI Wallet Reference Implementation project description](https://github.com/eu-digital-identity-wallet/.github/blob/main/profile/reference-implementation.md)
 
